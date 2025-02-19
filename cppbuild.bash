@@ -13,4 +13,5 @@ tar -xvf llamacpp.tar.gz
 
 cd llama.cpp-$LLAMACPP_VERSION
 
-make
+cmake -B build -DGGML_CUDA=ON
+cmake --build build --config Release
