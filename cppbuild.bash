@@ -11,7 +11,11 @@ fi
 
 tar -xvf llamacpp.tar.gz
 
+cp ../patches/CMakeLists.txt.gguf-cuda.patch llama.cpp-$LLAMACPP_VERSION/CMakeLists.txt.gguf-cuda.patch
+
 cd llama.cpp-$LLAMACPP_VERSION
+
+patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
 cmake -B build -DGGML_CUDA=ON
 cmake --build build --config Release

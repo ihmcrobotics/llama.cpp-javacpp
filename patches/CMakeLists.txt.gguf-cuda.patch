@@ -1,0 +1,4 @@
+1c1
+<   cmake_minimum_required(VERSION 3.18)  # for CMAKE_CUDA_ARCHITECTURES
+---
+>   cmake_minimum_required(VERSION 3.16)  # for CMAKE_CUDA_ARCHITECTURES
