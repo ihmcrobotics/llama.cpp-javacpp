@@ -5,11 +5,7 @@ mkdir cppbuild
 cd cppbuild
 
 LLAMACPP_VERSION=b4743
-if [ ! -f "llamacpp.tar.gz" ]; then
-  curl -o llamacpp.tar.gz https://codeload.github.com/ggml-org/llama.cpp/tar.gz/refs/tags/$LLAMACPP_VERSION
-fi
-
-tar -xvf llamacpp.tar.gz
+git clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
 
 cp ../patches/CMakeLists.txt.gguf-cuda.patch llama.cpp-$LLAMACPP_VERSION/CMakeLists.txt.gguf-cuda.patch
 
