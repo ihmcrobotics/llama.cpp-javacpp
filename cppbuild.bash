@@ -25,8 +25,9 @@ popd
 cd cppbuild
 cp -r ../src/main/java/* .
 
-JAVACPP_VERSION=1.5.11-ihmc-2
-JAVACPP_CUDA_VERSION=12.6-9.5-1.5.11-ihmc-2
+# TODO: Use ihmc-2?
+JAVACPP_VERSION=1.5.11
+JAVACPP_CUDA_VERSION=12.6-9.5-1.5.11
 if [ ! -f javacpp.jar ]; then
   curl -L https://github.com/bytedeco/javacpp/releases/download/$JAVACPP_VERSION/javacpp-platform-$JAVACPP_VERSION-bin.zip -o javacpp-platform-$JAVACPP_VERSION-bin.zip
   unzip -j javacpp-platform-$JAVACPP_VERSION-bin.zip
@@ -56,7 +57,7 @@ java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco
 ##### Copy shared libs to resources ####
 # Linux
 mkdir -p ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
-if [ -f "javainstall/libjnized.so" ]; then
+if [ -f "javainstall/libjnillamacpp.so" ]; then
   if [ "$LINUX_CROSS_COMPILE_ARM" == "1" ]; then
     cp javainstall/libjnized.so ../src/main/resources/llamacpp-javacpp/native/linux-arm64
   else
