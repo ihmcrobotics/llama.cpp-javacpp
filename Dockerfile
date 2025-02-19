@@ -5,7 +5,9 @@ RUN apt-get --quiet 2 --yes update  \
     git \
     wget \
     curl \
+    unzip \
     cmake \
     build-essential \
+    openjdk-17-jdk \
     > /dev/null \
  && rm -rf /var/lib/apt/lists/*

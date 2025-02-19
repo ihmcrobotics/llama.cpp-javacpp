@@ -18,11 +18,12 @@ cd llama.cpp-$LLAMACPP_VERSION
 # patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
 cmake -B build -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs -DGGML_CUDA=ON
-cmake --build build --config Release
+cmake --build build --config Release -j 8
 
+popd
 ### Java generation ####
+cd cppbuild
 cp -r ../src/main/java/* .
-
 
 JAVACPP_VERSION=1.5.11-ihmc-2
 JAVACPP_CUDA_VERSION=12.6-9.5-1.5.11-ihmc-2
