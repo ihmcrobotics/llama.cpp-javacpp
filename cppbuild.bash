@@ -5,7 +5,9 @@ mkdir cppbuild
 cd cppbuild
 
 LLAMACPP_VERSION=b4743
-git clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
+
+# Non-shallow clone required for llama.cpp build
+git -c advice.detachedHead=false clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
 
 cp ../patches/CMakeLists.txt.gguf-cuda.patch llama.cpp-$LLAMACPP_VERSION/CMakeLists.txt.gguf-cuda.patch
 
@@ -13,5 +15,5 @@ cd llama.cpp-$LLAMACPP_VERSION
 
 patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
-cmake -B build -DGGML_CUDA=ON
+cmake -B build -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs -DGGML_CUDA=ON
 cmake --build build --config Release
