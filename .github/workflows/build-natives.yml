@@ -12,12 +12,12 @@ jobs:
   build-linux-cuda-x86_64:
     runs-on: [self-hosted, ihmc-runner-nvidia]
     container:
-      image: stereolabs/zed:4.2-devel-cuda12.1-ubuntu20.04
+      image: ihmcrobotics/ihmc-runner-nvidia:1.0.2
     steps:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install git wget curl build-essential libusb-dev -y
+          apt-get install git wget curl build-essential -y
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
