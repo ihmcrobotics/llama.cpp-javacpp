@@ -69,8 +69,8 @@ java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco
 mkdir -p ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
 if [ -f "javainstall/libjnillamacpp.so" ]; then
   if [ "$LINUX_CROSS_COMPILE_ARM" == "1" ]; then
-    cp javainstall/libjnized.so ../src/main/resources/llamacpp-javacpp/native/linux-arm64
+    cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-arm64
   else
-    cp javainstall/libjnized.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+    cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
   fi
 fi
