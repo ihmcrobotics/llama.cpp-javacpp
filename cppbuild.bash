@@ -53,6 +53,11 @@ case $( "${UNAME}" | tr '[:upper:]' '[:lower:]') in
 esac
 
 java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/LlamaCPPConfig.java
+
+# Remove problematic occurrences of GGML_RESTRICT in java files
+find us/ihmc/llamacpp -type f -name "*.java" ! -name "LlamaCPPConfig.java" -exec sed -i 's/GGML_RESTRICT//g' {} \;
+find us/ihmc/llamacpp -type f -name "*.java" -exec sed -i 's/\/\*\([a-z]\)\*\//\1/g' {} \;
+
 cp us/ihmc/llamacpp/*.java ../src/main/java/us/ihmc/llamacpp
 cp us/ihmc/llamacpp/global/*.java ../src/main/java/us/ihmc/llamacpp/global/
 
