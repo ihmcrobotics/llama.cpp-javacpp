@@ -19,8 +19,7 @@ cd llama.cpp-$LLAMACPP_VERSION
 
 # patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
-cmake -B build -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64 \
-               -DGGML_CUDA=ON \
+cmake -B build -DGGML_CUDA=ON \
                -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
                -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
                -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
