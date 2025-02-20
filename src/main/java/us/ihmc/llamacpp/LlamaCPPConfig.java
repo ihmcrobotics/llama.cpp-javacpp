@@ -7,9 +7,9 @@ import org.bytedeco.javacpp.tools.InfoMapper;
 
 @Properties(value = {
       @Platform(
-            include = {"llama.cpp-b4743/include/llama.h", "llama.cpp-b4743/include/llama-cpp.h"},
+            include = {"llama.h"},
             linkpath = "lib",
-            link = {"llama", "ggml", "ggml-base", "ggml-cpu", "ggml-cuda", "llava_shared"},
+            link = {"llama"},
             preload = "jnillamacpp"
       ),
       @Platform(
@@ -18,7 +18,7 @@ import org.bytedeco.javacpp.tools.InfoMapper;
       ),
 },
       target = "us.ihmc.llama",
-      global = "us.ihmc.llama.global"
+      global = "us.ihmc.llama.global.llama"
 )
 public class LlamaCPPConfig implements InfoMapper {
    @Override
