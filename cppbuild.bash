@@ -13,12 +13,18 @@ git -c advice.detachedHead=false clone -b $LLAMACPP_VERSION https://github.com/g
 # This patch file currently not working yet. nvcc error during build
 # cp ../patches/CMakeLists.txt.gguf-cuda.patch llama.cpp-$LLAMACPP_VERSION/CMakeLists.txt.gguf-cuda.patch
 
+INSTALL_DIR=$(pwd)
+
 cd llama.cpp-$LLAMACPP_VERSION
 
 # patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
-cmake -B build -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs -DGGML_CUDA=ON
-cmake --build build --config Release -j 8
+cmake -B build -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64 \
+               -DGGML_CUDA=ON \
+               -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
+               -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
+               -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
+cmake --build build --config Release -j 8 --target install
 
 popd
 ### Java generation ####
