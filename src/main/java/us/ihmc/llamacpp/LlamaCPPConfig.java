@@ -38,5 +38,11 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("ggml_backend_reg_t").pointerTypes("ggml_backend_reg"));
       infoMap.put(new Info("ggml_backend_sched_t").pointerTypes("ggml_backend_sched"));
       infoMap.put(new Info("ggml_threadpool_t").pointerTypes("ggml_threadpool"));
+      infoMap.put(new Info("ggml_gallocr_t").pointerTypes("ggml_gallocr"));
+      infoMap.put(new Info("ggml_opt_context_t").pointerTypes("ggml_opt_context"));
+      infoMap.put(new Info("ggml_opt_dataset_t").pointerTypes("ggml_opt_dataset"));
+      infoMap.put(new Info("ggml_opt_result_t").pointerTypes("ggml_opt_result"));
+
+      infoMap.put(new Info("struct ggml_backend_graph_copy").pointerTypes("ggml_backend_graph_copy").cppNames("struct ggml_backend_graph_copy"));
    }
 }
