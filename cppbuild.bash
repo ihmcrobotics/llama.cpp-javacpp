@@ -25,6 +25,8 @@ cmake -B build -DGGML_CUDA=ON \
                -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
 cmake --build build --config Release -j 8 --target install
 
+cp ggml/include/ggml-cpp.h $INSTALL_DIR/include/ggml-cpp.h
+
 popd
 ### Java generation ####
 cd cppbuild
