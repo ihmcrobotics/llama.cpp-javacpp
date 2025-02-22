@@ -1,13 +1,17 @@
 #!/bin/bash
+set -e -o xtrace
+
 # This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 pushd .
-mkdir cppbuild
+mkdir -p cppbuild
 cd cppbuild
 
 LLAMACPP_VERSION=b4743
 
 # Non-shallow clone required for llama.cpp build
-git -c advice.detachedHead=false clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
+if [ ! -d llama.cpp-$LLAMACPP_VERSION ]; then
+  git -c advice.detachedHead=false clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
+fi
 
 # Ubuntu 20.04 ships with cmake 3.16.3, where llama.cpp ggml-cuda requires at least 3.18
 # This patch file currently not working yet. nvcc error during build
