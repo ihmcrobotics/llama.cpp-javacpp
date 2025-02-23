@@ -3,7 +3,7 @@ set -e -o xtrace
 
 # Clean
 rm -rf cppbuild/us
-find src -type f -not \( -name "LlamaCPPConfig.java" -o -name "llamacpp.java" -o -name "LlamaCPPNativeLibrary.java" \) -delete
+find src/main/java/us/ihmc/llamacpp -maxdepth 1 -type f -not \( -name "LlamaCPPConfig.java" \) -delete
 
 # This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 pushd .
