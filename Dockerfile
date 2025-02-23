@@ -33,7 +33,7 @@ WORKDIR /tmp
 RUN curl -sL https://download.jetbrains.com/cpp/CLion-2024.3.3.tar.gz -o clion.tar.gz \
  && tar -xzf clion.tar.gz \
  && mv clion-2024.3.3/ /opt/clion \
- && ln -s /opt/clion/bin/clion.sh /usr/local/bin/clion
+ && ln -s /opt/clion/bin/clion /usr/local/bin/clion
 RUN mkdir -p /home/robotlab/.cache
 RUN chown -R robotlab:robotlab /home/robotlab/.cache
 
