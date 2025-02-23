@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e -o xtrace
 
+# Clean
+rm -rf cppbuild/us
+find src -type f -not \( -name "LlamaCPPConfig.java" -o -name "llamacpp.java" -o -name "LlamaCPPNativeLibrary.java" \) -delete
+
 # This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 pushd .
 mkdir -p cppbuild
@@ -29,11 +33,35 @@ cmake -B build -DGGML_CUDA=ON \
                -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
 cmake --build build --config Release -j 8 --target install
 
-cp ggml/include/ggml-cpp.h $INSTALL_DIR/include/ggml-cpp.h
+cp ggml/include/ggml-cpp.h $INSTALL_DIR/include/
+#cp ggml/src/ggml-backend-impl.h $INSTALL_DIR/include/
 
 popd
 ### Java generation ####
 cd cppbuild
+
+# Fix up header files
+sed -i '/typedef struct ggml_backend_buffer_type \* ggml_backend_buffer_type_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_backend_buffer \* ggml_backend_buffer_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_backend_event \* ggml_backend_event_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_backend \* ggml_backend_t;/d' include/ggml-backend.h
+sed -i '/typedef void \* ggml_backend_graph_plan_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_backend_reg \* ggml_backend_reg_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_backend_device \* ggml_backend_dev_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_backend_sched \* ggml_backend_sched_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_gallocr \* ggml_gallocr_t;/d' include/ggml-backend.h
+sed -i '/typedef struct ggml_threadpool \* ggml_threadpool_t;/d' include/ggml-backend.h
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_buffer_type_t /struct ggml_backend_buffer_type * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_buffer_t /struct ggml_backend_buffer * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_event_t /struct ggml_backend_event * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_t /struct ggml_backend * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_graph_plan_t /void * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_reg_t /struct ggml_backend_reg * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_dev_t /struct ggml_backend_device * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_sched_t /struct ggml_backend_sched * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_gallocr_t /struct ggml_gallocr * /g' {} \;
+find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_threadpool_t /struct ggml_threadpool * /g' {} \;
+
 cp -r ../src/main/java/* .
 
 # TODO: Use ihmc-2?
