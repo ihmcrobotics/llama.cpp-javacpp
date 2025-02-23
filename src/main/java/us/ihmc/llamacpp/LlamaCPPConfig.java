@@ -26,6 +26,8 @@ import org.bytedeco.javacpp.tools.InfoMapper;
 public class LlamaCPPConfig implements InfoMapper {
    @Override
    public void map(InfoMap infoMap) {
+//      infoMap.put(new Info().enumerate().friendly());
+
       // Skip problematic macros and attributes
       infoMap.put(new Info().cppNames("GGML_NORETURN").skip());
       infoMap.put(new Info().cppNames("GGML_RESTRICT").skip());
@@ -39,6 +41,8 @@ public class LlamaCPPConfig implements InfoMapper {
 
       // This makes sure to prefix "struct " in the generated .cpp
       infoMap.put(new Info().cppNames("struct ggml_backend_graph_copy").pointerTypes("ggml_backend_graph_copy"));
+
+      infoMap.put(new Info().cppNames("ggml_backend_dev_type").enumerate());
 
 //      String[] aliasedStructs = {"ggml_backend_buffer_type",
 //                                 "ggml_backend_buffer",
