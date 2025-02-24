@@ -2542,12 +2542,12 @@ public static final int GGML_N_TASKS_MAX = (-1);
 // #    endif
 // #else
 // #    define GGML_RESTRICT restrict
-// Targeting ../ggml_to_float_t.java
+// #endif
+// Targeting ../ggml_type_traits.java
 
 
-// Targeting ../ggml_from_float_t.java
 
-
+    public static native @Const ggml_type_traits ggml_get_type_traits(@Cast("ggml_type") int type);
 
     // ggml threadpool
     // TODO: currently, only a few functions are in the base ggml API, while the rest are in the CPU backend

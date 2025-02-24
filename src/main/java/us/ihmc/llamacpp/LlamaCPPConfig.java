@@ -43,7 +43,6 @@ public class LlamaCPPConfig implements InfoMapper {
 //      infoMap.put(new Info("GGML_ATTRIBUTE_FORMAT").cppText("#define GGML_ATTRIBUTE_FORMAT").cppTypes());
 //      infoMap.put(new Info("GGML_BACKEND_API").cppText("#define GGML_BACKEND_API extern").cppTypes());
       infoMap.put(new Info("GGML_NORETURN").skip());
-      infoMap.put(new Info("GGML_RESTRICT").skip());
       infoMap.put(new Info("llama_numa_init").skip());
       infoMap.put(new Info("llama_attach_threadpool").skip());
       infoMap.put(new Info("llama_log_set").skip());
@@ -61,11 +60,10 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("llama_pooling_type").skip());
       infoMap.put(new Info("llama_vocab_type").skip());
 
-//      infoMap.put(new Info("GGML_RESTRICT").cppText("#define GGML_RESTRICT restrict").cppTypes());
-      infoMap.put(new Info("void (*ggml_to_float_t)").skip());
-      infoMap.put(new Info("ggml_type_traits").skip());
-
       infoMap.put(new Info("GGML_RESTRICT").skip());
+      infoMap.put(new Info("ggml_to_float_t").skip());
+      infoMap.put(new Info("ggml_from_float_t").skip());
+
       infoMap.put(new Info("ggml_backend_buffer_t").pointerTypes("ggml_backend_buffer_type"));
       infoMap.put(new Info("ggml_backend_buffer_type_t").pointerTypes("ggml_backend_buffer_type"));
       infoMap.put(new Info("ggml_backend_dev_t").pointerTypes("ggml_backend_device"));
