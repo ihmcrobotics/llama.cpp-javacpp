@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e -o xtrace
 
 # Clean
 rm -rf cppbuild/us
@@ -28,10 +27,11 @@ cd llama.cpp-$LLAMACPP_VERSION
 # patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
 cmake -B build -DGGML_CUDA=ON \
+               -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
                -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
                -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
                -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
-cmake --build build --config Release -j 8 --target install
+cmake --build build --config Release -j $(nproc) --target install
 
 cp ggml/include/ggml-cpp.h $INSTALL_DIR/include/
 #cp ggml/src/ggml-backend-impl.h $INSTALL_DIR/include/
@@ -101,10 +101,24 @@ java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco
 ##### Copy shared libs to resources ####
 # Linux
 mkdir -p ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+if [ -f "lib/libggml.so" ]; then
+  cp lib/libggml.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+fi
+if [ -f "lib/libggml-base.so" ]; then
+  cp lib/libggml-base.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+fi
+if [ -f "lib/libggml-cpu.so" ]; then
+  cp lib/libggml-cpu.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+fi
+if [ -f "lib/libggml-cuda.so" ]; then
+  cp lib/libggml-cuda.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+fi
+if [ -f "lib/libllama.so" ]; then
+  cp lib/libllama.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+fi
+if [ -f "lib/libllama_shared.so" ]; then
+  cp lib/libllama_shared.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+fi
 if [ -f "javainstall/libjnillamacpp.so" ]; then
-  if [ "$LINUX_CROSS_COMPILE_ARM" == "1" ]; then
-    cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-arm64
-  else
-    cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
-  fi
+  cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
 fi
