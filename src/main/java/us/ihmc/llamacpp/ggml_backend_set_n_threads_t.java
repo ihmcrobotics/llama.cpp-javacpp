@@ -16,5 +16,5 @@ public class ggml_backend_set_n_threads_t extends FunctionPointer {
         public    ggml_backend_set_n_threads_t(Pointer p) { super(p); }
         protected ggml_backend_set_n_threads_t() { allocate(); }
         private native void allocate();
-        public native void call(ggml_backend backend, int n_threads);
+        public native void call(@ByVal ggml_backend backend, int n_threads);
     }

@@ -15,5 +15,5 @@ public class ggml_backend_get_features_t extends FunctionPointer {
         public    ggml_backend_get_features_t(Pointer p) { super(p); }
         protected ggml_backend_get_features_t() { allocate(); }
         private native void allocate();
-        public native ggml_backend_feature call(ggml_backend_reg reg);
+        public native ggml_backend_feature call(@ByVal ggml_backend_reg reg);
     }

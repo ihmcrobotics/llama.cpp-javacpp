@@ -31,7 +31,7 @@ public class ggml_backend_graph_copy extends Pointer {
             return new ggml_backend_graph_copy((Pointer)this).offsetAddress(i);
         }
     
-        public native ggml_backend_buffer buffer(); public native ggml_backend_graph_copy buffer(ggml_backend_buffer setter);
+        public native @ByRef ggml_backend_buffer_type buffer(); public native ggml_backend_graph_copy buffer(ggml_backend_buffer_type setter);
         public native ggml_context ctx_allocated(); public native ggml_backend_graph_copy ctx_allocated(ggml_context setter);
         public native ggml_context ctx_unallocated(); public native ggml_backend_graph_copy ctx_unallocated(ggml_context setter);
         public native ggml_cgraph graph(); public native ggml_backend_graph_copy graph(ggml_cgraph setter);

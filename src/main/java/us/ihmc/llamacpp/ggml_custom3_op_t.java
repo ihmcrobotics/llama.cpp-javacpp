@@ -8,13 +8,12 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-    // Set the abort callback for the backend
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_backend_set_abort_callback_t extends FunctionPointer {
+public class ggml_custom3_op_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_backend_set_abort_callback_t(Pointer p) { super(p); }
-        protected ggml_backend_set_abort_callback_t() { allocate(); }
+        public    ggml_custom3_op_t(Pointer p) { super(p); }
+        protected ggml_custom3_op_t() { allocate(); }
         private native void allocate();
-        public native void call(@ByVal ggml_backend backend, @ByVal ggml_abort_callback abort_callback, Pointer abort_callback_data);
+        public native void call(ggml_tensor dst, @Const ggml_tensor a, @Const ggml_tensor b, @Const ggml_tensor c, int ith, int nth, Pointer userdata);
     }

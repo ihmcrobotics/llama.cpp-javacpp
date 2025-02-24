@@ -8,13 +8,13 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-    // Set the abort callback for the backend
+    // Get additional buffer types provided by the device (returns a NULL-terminated array)
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_backend_set_abort_callback_t extends FunctionPointer {
+public class ggml_backend_dev_get_extra_bufts_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_backend_set_abort_callback_t(Pointer p) { super(p); }
-        protected ggml_backend_set_abort_callback_t() { allocate(); }
+        public    ggml_backend_dev_get_extra_bufts_t(Pointer p) { super(p); }
+        protected ggml_backend_dev_get_extra_bufts_t() { allocate(); }
         private native void allocate();
-        public native void call(@ByVal ggml_backend backend, @ByVal ggml_abort_callback abort_callback, Pointer abort_callback_data);
+        public native ggml_backend_buffer_type call(@ByVal ggml_backend_device device);
     }

@@ -8,12 +8,10 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-// #endif
-
     @Opaque @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_backend_buffer_type extends Pointer {
+public class ggml_backend_device extends Pointer {
         /** Empty constructor. Calls {@code super((Pointer)null)}. */
-        public ggml_backend_buffer_type() { super((Pointer)null); }
+        public ggml_backend_device() { super((Pointer)null); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public ggml_backend_buffer_type(Pointer p) { super(p); }
+        public ggml_backend_device(Pointer p) { super(p); }
     }

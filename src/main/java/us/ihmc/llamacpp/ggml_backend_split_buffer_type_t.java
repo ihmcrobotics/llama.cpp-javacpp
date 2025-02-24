@@ -19,5 +19,5 @@ public class ggml_backend_split_buffer_type_t extends FunctionPointer {
         public    ggml_backend_split_buffer_type_t(Pointer p) { super(p); }
         protected ggml_backend_split_buffer_type_t() { allocate(); }
         private native void allocate();
-        public native ggml_backend_buffer_type call(int main_device, @Const FloatPointer tensor_split);
+        public native @ByVal ggml_backend_buffer_type call(int main_device, @Const FloatPointer tensor_split);
     }

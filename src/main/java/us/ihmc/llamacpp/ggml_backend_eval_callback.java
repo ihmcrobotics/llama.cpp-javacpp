@@ -9,8 +9,6 @@ import org.bytedeco.javacpp.annotation.*;
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
 
-    // Copy a graph to a different backend
-
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
 public class ggml_backend_eval_callback extends FunctionPointer {
         static { Loader.load(); }

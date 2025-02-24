@@ -8,13 +8,14 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-    // Set the abort callback for the backend
+
+    // TODO these functions were sandwiched in the old optimization interface, is there a better place for them?
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_backend_set_abort_callback_t extends FunctionPointer {
+public class ggml_log_callback extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_backend_set_abort_callback_t(Pointer p) { super(p); }
-        protected ggml_backend_set_abort_callback_t() { allocate(); }
+        public    ggml_log_callback(Pointer p) { super(p); }
+        protected ggml_log_callback() { allocate(); }
         private native void allocate();
-        public native void call(@ByVal ggml_backend backend, @ByVal ggml_abort_callback abort_callback, Pointer abort_callback_data);
+        public native void call(@Cast("ggml_log_level") int level, @Cast("const char*") BytePointer text, Pointer user_data);
     }
