@@ -70,25 +70,25 @@ java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco
 
 ##### Copy shared libs to resources ####
 # Linux
-mkdir -p ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+mkdir -p ../src/main/resources/llamacpp/native/linux-x86_64
 if [ -f "lib/libggml.so" ]; then
-  cp lib/libggml.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp lib/libggml.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 if [ -f "lib/libggml-base.so" ]; then
-  cp lib/libggml-base.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp lib/libggml-base.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 if [ -f "lib/libggml-cpu.so" ]; then
-  cp lib/libggml-cpu.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp lib/libggml-cpu.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 if [ -f "lib/libggml-cuda.so" ]; then
-  cp lib/libggml-cuda.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp lib/libggml-cuda.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 if [ -f "lib/libllama.so" ]; then
-  cp lib/libllama.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp lib/libllama.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 if [ -f "lib/libllama_shared.so" ]; then
-  cp lib/libllama_shared.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp lib/libllama_shared.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 if [ -f "javainstall/libjnillamacpp.so" ]; then
-  cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+  cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi

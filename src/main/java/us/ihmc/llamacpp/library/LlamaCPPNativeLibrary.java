@@ -17,7 +17,7 @@ public class LlamaCPPNativeLibrary implements NativeLibraryDescription {
             throw new RuntimeException("Unsupported platform");
         }
 
-        return "llamacpp-javacpp.native." + archPackage;
+        return "llamacpp.native." + archPackage;
     }
 
     @Override
