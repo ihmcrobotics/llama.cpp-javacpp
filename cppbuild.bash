@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e -o xtrace
 
 # Clean
 rm -rf cppbuild/us
@@ -66,7 +67,34 @@ cp us/ihmc/llamacpp/*.java ../src/main/java/us/ihmc/llamacpp
 cp us/ihmc/llamacpp/global/*.java ../src/main/java/us/ihmc/llamacpp/global/
 
 #### JNI compilation ####
-java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/*.java us/ihmc/llamacpp/global/*.java -d javainstall
+java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" \
+     org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/*.java us/ihmc/llamacpp/global/*.java -d javainstall -nocompile
+
+prepend_struct() {
+    local word="$1"
+    local upper_word="${word^^}"  # Convert word to uppercase
+    sed -i "s/struct $word/__STRUCT_${upper_word}__/g; s/$word/struct $word/g; s/__STRUCT_${upper_word}__/struct $word/g" javainstall/jnillamacpp.cpp
+}
+
+prepend_struct ggml_backend_graph_copy
+prepend_struct ggml_backend_buffer_type
+prepend_struct ggml_backend_buffer
+prepend_struct ggml_backend_event
+prepend_struct ggml_backend
+prepend_struct ggml_backend_reg
+prepend_struct ggml_backend_device
+
+g++ -I/tmp/llama.cpp-javacpp/cppbuild/include \
+-I/usr/local/cuda-12.8/targets/x86_64-linux/include \
+-I/tmp/llama.cpp-javacpp/cppbuild/lib \
+-I/usr/lib/jvm/java-17-openjdk-amd64/include \
+-I/usr/lib/jvm/java-17-openjdk-amd64/include/linux \
+/tmp/llama.cpp-javacpp/cppbuild/javainstall/jnillamacpp.cpp \
+/tmp/llama.cpp-javacpp/cppbuild/javainstall/jnijavacpp.cpp \
+-march=x86-64 -m64 -O3 -s -Wl,-rpath,$ORIGIN/ -Wl,-z,noexecstack -Wl,-Bsymbolic -Wall -fPIC -pthread -shared -o libjnillamacpp.so \
+-L/tmp/llama.cpp-javacpp/cppbuild/include -Wl,-rpath,/tmp/llama.cpp-javacpp/cppbuild/include \
+-L/usr/local/cuda-12.8/targets/x86_64-linux/include -Wl,-rpath,/usr/local/cuda-12.8/targets/x86_64-linux/include \
+-L/tmp/llama.cpp-javacpp/cppbuild/lib -Wl,-rpath,/tmp/llama.cpp-javacpp/cppbuild/lib -lggml-cuda -lggml-cpu -lggml-base -lggml -lllama
 
 ##### Copy shared libs to resources ####
 # Linux
