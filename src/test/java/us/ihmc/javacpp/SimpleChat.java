@@ -1,15 +1,9 @@
 package us.ihmc.javacpp;
 
 import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.Pointer;
+import us.ihmc.llamacpp.*;
 import us.ihmc.llamacpp.library.LlamaCPPNativeLibrary;
-import us.ihmc.llamacpp.llama_batch;
-import us.ihmc.llamacpp.llama_context;
-import us.ihmc.llamacpp.llama_context_params;
-import us.ihmc.llamacpp.llama_chat_message;
-import us.ihmc.llamacpp.llama_model;
-import us.ihmc.llamacpp.llama_model_params;
-import us.ihmc.llamacpp.llama_sampler;
-import us.ihmc.llamacpp.llama_vocab;
 
 import java.nio.IntBuffer;
 import java.nio.file.Path;
@@ -19,12 +13,11 @@ import java.util.List;
 import java.util.Scanner;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
+import static us.ihmc.llamacpp.global.llamacpp.llama_log_set;
 
 // https://github.com/ggml-org/llama.cpp/blob/master/examples/simple-chat/simple-chat.cpp
-public class SimpleChat
-{
-   static
-   {
+public class SimpleChat {
+   static {
       LlamaCPPNativeLibrary.load();
    }
 
@@ -35,8 +28,18 @@ public class SimpleChat
    private final llama_vocab vocab;
    private final llama_sampler smpl;
 
-   public SimpleChat()
-   {
+   public SimpleChat() {
+      // only print errors
+      ggml_log_callback callback = new ggml_log_callback() {
+         @Override
+         public void call(int level, BytePointer text, Pointer user_data) {
+            if (level >= GGML_LOG_LEVEL_ERROR) {
+               System.err.printf("%s", text.getString());
+            }
+         }
+      };
+      llama_log_set(callback, null);
+
       ggml_backend_load_all();
 
       llama_model_params model_params = llama_model_default_params();
@@ -101,7 +104,7 @@ public class SimpleChat
          message.role(new BytePointer("assistant"));
          message.content(new BytePointer(response));
          messages.add(message);
-         prev_len = llama_chat_apply_template(tmpl, messages.get(0), messages.size(), false, (byte[]) null, 0);
+         prev_len = llama_chat_apply_template(tmpl, messages.get(0), messages.size(), false, (BytePointer) null, 0);
          if (prev_len < 0) {
             System.err.println("failed to apply the chat template");
             System.exit(1);
@@ -109,8 +112,7 @@ public class SimpleChat
       }
 
       // free resources
-      for (llama_chat_message message : messages)
-      {
+      for (llama_chat_message message : messages) {
          message.deallocate();
       }
       llama_sampler_free(smpl);
@@ -118,8 +120,7 @@ public class SimpleChat
       llama_model_free(model);
    }
 
-   private String generate(String prompt)
-   {
+   private String generate(String prompt) {
       String response = "";
 
       boolean is_first = llama_get_kv_cache_used_cells(ctx) == 0;
@@ -174,8 +175,7 @@ public class SimpleChat
       return response;
    }
 
-   public static void main(String[] args)
-   {
+   public static void main(String[] args) {
       new SimpleChat();
    }
 }
