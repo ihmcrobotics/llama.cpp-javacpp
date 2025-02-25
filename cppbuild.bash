@@ -78,6 +78,7 @@ prepend_missing() {
     sed -i "s/$prefix $word/__${upper_prefix}_${upper_word}__/g; s/$word/$prefix $word/g; s/__${upper_prefix}_${upper_word}__/$prefix $word/g" javainstall/jnillamacpp.cpp
 }
 
+# Add missing struct keywords
 prepend_missing struct ggml_backend_graph_copy
 prepend_missing struct ggml_backend_buffer_type
 prepend_missing struct ggml_backend_buffer
@@ -86,8 +87,103 @@ prepend_missing struct ggml_backend
 prepend_missing struct ggml_backend_reg
 prepend_missing struct ggml_backend_device
 
+# Replace struct with enum for enums
 sed -i "s/struct ggml_backend_dev_type/enum ggml_backend_dev_type/g" javainstall/jnillamacpp.cpp
 sed -i "s/struct ggml_backend_buffer_usage/enum ggml_backend_buffer_usage/g" javainstall/jnillamacpp.cpp
+
+remove_struct() {
+    local word="$1"
+    sed -i "s/struct $word/$word/g" javainstall/jnillamacpp.cpp
+}
+
+# Remove struct keywords where they don't belong
+remove_struct ggml_backend_tensor_copy
+remove_struct ggml_backend_guid
+remove_struct ggml_backend_get_default_buffer_type
+remove_struct ggml_backend_alloc_buffer
+remove_struct ggml_backend_get_alignment
+remove_struct ggml_backend_get_max_size
+remove_struct ggml_backend_tensor_set_async
+remove_struct ggml_backend_tensor_get_async
+remove_struct ggml_backend_tensor_set
+remove_struct ggml_backend_tensor_get
+remove_struct ggml_backend_tensor_memset
+remove_struct ggml_backend_tensor_alloc
+remove_struct ggml_backend_graph_plan_create
+remove_struct ggml_backend_graph_plan_free
+remove_struct ggml_backend_graph_plan_compute
+remove_struct ggml_backend_sched_set_eval_callback
+remove_struct ggml_backend_sched_graph_compute_async
+remove_struct ggml_backend_sched_graph_compute
+remove_struct ggml_backend_sched_alloc_graph
+remove_struct ggml_backend_sched_get_tensor_backend
+remove_struct ggml_backend_sched_set_tensor_backend
+remove_struct ggml_backend_sched_get_buffer_size
+remove_struct ggml_backend_sched_get_n_copies
+remove_struct ggml_backend_sched_get_n_splits
+remove_struct ggml_backend_sched_get_backend
+remove_struct ggml_backend_sched_get_n_backends
+remove_struct ggml_backend_sched_reserve
+remove_struct ggml_backend_sched_new
+remove_struct ggml_backend_load_all_from_path
+remove_struct ggml_backend_load_all
+remove_struct ggml_backend_load
+remove_struct ggml_backend_init_best
+remove_struct ggml_backend_init_by_type
+remove_struct ggml_backend_init_by_name
+remove_struct ggml_backend_dev_by_type
+remove_struct ggml_backend_dev_by_name
+remove_struct ggml_backend_dev_get
+remove_struct ggml_backend_dev_count
+remove_struct ggml_backend_reg_by_name
+remove_struct ggml_backend_reg_get
+remove_struct ggml_backend_reg_count
+remove_struct ggml_backend_reg_get_proc_address
+remove_struct ggml_backend_reg_dev_get
+remove_struct ggml_backend_reg_dev_count
+remove_struct ggml_backend_reg_name
+remove_struct ggml_backend_dev_offload_op
+remove_struct ggml_backend_dev_supports_buft
+remove_struct ggml_backend_dev_supports_op
+remove_struct ggml_backend_dev_buffer_from_host_ptr
+remove_struct ggml_backend_dev_host_buffer_type
+remove_struct ggml_backend_dev_buffer_type
+remove_struct ggml_backend_dev_init
+remove_struct ggml_backend_dev_backend_reg
+remove_struct ggml_backend_dev_get_props
+remove_struct ggml_backend_dev_memory
+remove_struct ggml_backend_dev_description
+remove_struct ggml_backend_dev_name
+remove_struct ggml_backend_event_wait
+remove_struct ggml_backend_event_record
+remove_struct ggml_backend_event
+remove_struct ggml_backend_device
+remove_struct ggml_backend_offload_op
+remove_struct ggml_backend_supports_buft
+remove_struct ggml_backend_supports_op
+remove_struct ggml_backend_graph_compute_async
+remove_struct ggml_backend_graph_compute
+remove_struct ggml_backend_compare_graph_backend
+
+remove_struct ggml_backend_buft_name
+remove_struct ggml_backend_buft_alloc_buffer
+remove_struct ggml_backend_buft_get_alignment
+remove_struct ggml_backend_buft_get_max_size
+remove_struct ggml_backend_buft_get_alloc_size
+remove_struct ggml_backend_buft_is_host
+remove_struct ggml_backend_buft_get_device
+
+remove_struct ggml_backend_buffer_name
+remove_struct ggml_backend_buffer_get_base
+remove_struct ggml_backend_buffer_get_size
+remove_struct ggml_backend_buffer_init_tensor
+remove_struct ggml_backend_buffer_get_alignment
+remove_struct ggml_backend_buffer_get_max_size
+remove_struct ggml_backend_buffer_get_alloc_size
+remove_struct ggml_backend_buffer_clear
+remove_struct ggml_backend_buffer_is_host
+remove_struct ggml_backend_buffer_set_usage
+remove_struct ggml_backend_buffer_get_type
 
 g++ -I/tmp/llama.cpp-javacpp/cppbuild/include \
 -I/usr/local/cuda-12.8/targets/x86_64-linux/include \
