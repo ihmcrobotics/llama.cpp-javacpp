@@ -63,6 +63,11 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("GGML_RESTRICT").skip());
       infoMap.put(new Info("ggml_to_float_t").skip());
       infoMap.put(new Info("ggml_from_float_t").skip());
+      infoMap.put(new Info("ggml_backend_dev_get_extra_bufts_t").skip());
+      infoMap.put(new Info("ggml_backend_get_features_t").skip());
+      infoMap.put(new Info("ggml_backend_set_abort_callback_t").skip());
+      infoMap.put(new Info("ggml_backend_set_n_threads_t").skip());
+      infoMap.put(new Info("ggml_backend_split_buffer_type_t").skip());
 
       infoMap.put(new Info("ggml_backend_buffer_t").pointerTypes("ggml_backend_buffer_type"));
       infoMap.put(new Info("ggml_backend_buffer_type_t").pointerTypes("ggml_backend_buffer_type"));

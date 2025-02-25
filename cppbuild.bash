@@ -70,19 +70,24 @@ cp us/ihmc/llamacpp/global/*.java ../src/main/java/us/ihmc/llamacpp/global/
 java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" \
      org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/*.java us/ihmc/llamacpp/global/*.java -d javainstall -nocompile
 
-prepend_struct() {
-    local word="$1"
-    local upper_word="${word^^}"  # Convert word to uppercase
-    sed -i "s/struct $word/__STRUCT_${upper_word}__/g; s/$word/struct $word/g; s/__STRUCT_${upper_word}__/struct $word/g" javainstall/jnillamacpp.cpp
+prepend_missing() {
+    local prefix="$1"
+    local upper_prefix="${prefix^^}"
+    local word="$2"
+    local upper_word="${word^^}"  # Convert to uppercase
+    sed -i "s/$prefix $word/__${upper_prefix}_${upper_word}__/g; s/$word/$prefix $word/g; s/__${upper_prefix}_${upper_word}__/$prefix $word/g" javainstall/jnillamacpp.cpp
 }
 
-prepend_struct ggml_backend_graph_copy
-prepend_struct ggml_backend_buffer_type
-prepend_struct ggml_backend_buffer
-prepend_struct ggml_backend_event
-prepend_struct ggml_backend
-prepend_struct ggml_backend_reg
-prepend_struct ggml_backend_device
+prepend_missing struct ggml_backend_graph_copy
+prepend_missing struct ggml_backend_buffer_type
+prepend_missing struct ggml_backend_buffer
+prepend_missing struct ggml_backend_event
+prepend_missing struct ggml_backend
+prepend_missing struct ggml_backend_reg
+prepend_missing struct ggml_backend_device
+
+sed -i "s/struct ggml_backend_dev_type/enum ggml_backend_dev_type/g" javainstall/jnillamacpp.cpp
+sed -i "s/struct ggml_backend_buffer_usage/enum ggml_backend_buffer_usage/g" javainstall/jnillamacpp.cpp
 
 g++ -I/tmp/llama.cpp-javacpp/cppbuild/include \
 -I/usr/local/cuda-12.8/targets/x86_64-linux/include \
