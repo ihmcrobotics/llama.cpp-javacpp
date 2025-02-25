@@ -42,7 +42,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-javacpp/
 cppbuild/
 
 hs_err*
