@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e -o xtrace
 
 # Clean
 rm -rf cppbuild/us
@@ -28,43 +27,18 @@ cd llama.cpp-$LLAMACPP_VERSION
 # patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
 
 cmake -B build -DGGML_CUDA=ON \
+               -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
                -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
                -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
                -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
-cmake --build build --config Release -j 8 --target install
-
-cp ggml/include/ggml-cpp.h $INSTALL_DIR/include/
-#cp ggml/src/ggml-backend-impl.h $INSTALL_DIR/include/
+cmake --build build --config Release -j $(nproc) --target install
 
 popd
 ### Java generation ####
 cd cppbuild
 
-# Fix up header files
-sed -i '/typedef struct ggml_backend_buffer_type \* ggml_backend_buffer_type_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_backend_buffer \* ggml_backend_buffer_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_backend_event \* ggml_backend_event_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_backend \* ggml_backend_t;/d' include/ggml-backend.h
-sed -i '/typedef void \* ggml_backend_graph_plan_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_backend_reg \* ggml_backend_reg_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_backend_device \* ggml_backend_dev_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_backend_sched \* ggml_backend_sched_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_gallocr \* ggml_gallocr_t;/d' include/ggml-backend.h
-sed -i '/typedef struct ggml_threadpool \* ggml_threadpool_t;/d' include/ggml-backend.h
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_buffer_type_t /struct ggml_backend_buffer_type * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_buffer_t /struct ggml_backend_buffer * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_event_t /struct ggml_backend_event * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_t /struct ggml_backend * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_graph_plan_t /void * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_reg_t /struct ggml_backend_reg * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_dev_t /struct ggml_backend_device * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_backend_sched_t /struct ggml_backend_sched * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_gallocr_t /struct ggml_gallocr * /g' {} \;
-find include -type f \( -name "*.c" -o -name "*.h" \) -exec sed -i 's/ggml_threadpool_t /struct ggml_threadpool * /g' {} \;
-
 cp -r ../src/main/java/* .
 
-# TODO: Use ihmc-2?
 JAVACPP_VERSION=1.5.11
 JAVACPP_CUDA_VERSION=12.6-9.5-1.5.11
 if [ ! -f javacpp.jar ]; then
@@ -88,10 +62,6 @@ esac
 
 java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/LlamaCPPConfig.java
 
-# Remove problematic occurrences of GGML_RESTRICT in java files
-find us/ihmc/llamacpp -type f -name "*.java" ! -name "LlamaCPPConfig.java" -exec sed -i 's/GGML_RESTRICT//g' {} \;
-find us/ihmc/llamacpp -type f -name "*.java" -exec sed -i 's/\/\*\([a-z]\)\*\//\1/g' {} \;
-
 cp us/ihmc/llamacpp/*.java ../src/main/java/us/ihmc/llamacpp
 cp us/ihmc/llamacpp/global/*.java ../src/main/java/us/ihmc/llamacpp/global/
 
@@ -100,11 +70,25 @@ java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco
 
 ##### Copy shared libs to resources ####
 # Linux
-mkdir -p ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
+mkdir -p ../src/main/resources/llamacpp/native/linux-x86_64
+if [ -f "lib/libggml.so" ]; then
+  cp lib/libggml.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
+if [ -f "lib/libggml-base.so" ]; then
+  cp lib/libggml-base.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
+if [ -f "lib/libggml-cpu.so" ]; then
+  cp lib/libggml-cpu.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
+if [ -f "lib/libggml-cuda.so" ]; then
+  cp lib/libggml-cuda.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
+if [ -f "lib/libllama.so" ]; then
+  cp lib/libllama.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
+if [ -f "lib/libllama_shared.so" ]; then
+  cp lib/libllama_shared.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
 if [ -f "javainstall/libjnillamacpp.so" ]; then
-  if [ "$LINUX_CROSS_COMPILE_ARM" == "1" ]; then
-    cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-arm64
-  else
-    cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp-javacpp/native/linux-x86_64
-  fi
+  cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
