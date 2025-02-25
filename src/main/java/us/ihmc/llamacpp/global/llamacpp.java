@@ -21,13 +21,15 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 // #ifdef GGML_BACKEND_SHARED
 // #    if defined(_WIN32) && !defined(__MINGW32__)
 // #        ifdef GGML_BACKEND_BUILD
-public static native @MemberGetter int GGML_BACKEND_API();
-public static final int GGML_BACKEND_API = GGML_BACKEND_API();
+// #            define GGML_BACKEND_API __declspec(dllexport) extern
 // #        else
+// #            define GGML_BACKEND_API __declspec(dllimport) extern
 // #        endif
 // #    else
+// #        define GGML_BACKEND_API __attribute__ ((visibility ("default"))) extern
 // #    endif
 // #else
+// #    define GGML_BACKEND_API extern
 // #endif
 
 // #ifdef  __cplusplus
@@ -49,22 +51,11 @@ public static final int GGML_BACKEND_API = GGML_BACKEND_API();
 // Targeting ../ggml_backend_reg.java
 
 
-// Targeting ../ggml_backend_device.java
-
-
 
 
     //
     // Backend buffer type
     //
-
-    public static native @Cast("const char*") BytePointer ggml_backend_buft_name(@ByVal ggml_backend_buffer_type buft);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_buft_alloc_buffer(@ByVal ggml_backend_buffer_type buft, @Cast("size_t") long size);
-    public static native @Cast("size_t") long ggml_backend_buft_get_alignment(@ByVal ggml_backend_buffer_type buft);
-    public static native @Cast("size_t") long ggml_backend_buft_get_max_size(@ByVal ggml_backend_buffer_type buft);
-    public static native @Cast("size_t") long ggml_backend_buft_get_alloc_size(@ByVal ggml_backend_buffer_type buft, ggml_tensor tensor);
-    public static native @Cast("bool") boolean ggml_backend_buft_is_host(@ByVal ggml_backend_buffer_type buft);
-    public static native @ByVal ggml_backend_device ggml_backend_buft_get_device(@ByVal ggml_backend_buffer_type buft);
 
     //
     // Backend buffer
@@ -76,21 +67,6 @@ public static final int GGML_BACKEND_API = GGML_BACKEND_API();
         GGML_BACKEND_BUFFER_USAGE_WEIGHTS = 1,
         GGML_BACKEND_BUFFER_USAGE_COMPUTE = 2;
 
-    public static native @Cast("const char*") BytePointer ggml_backend_buffer_name(@ByVal ggml_backend_buffer_type buffer);
-    public static native void ggml_backend_buffer_free(@ByVal ggml_backend_buffer_type buffer);
-    public static native Pointer ggml_backend_buffer_get_base(@ByVal ggml_backend_buffer_type buffer);
-    public static native @Cast("size_t") long ggml_backend_buffer_get_size(@ByVal ggml_backend_buffer_type buffer);
-    public static native void ggml_backend_buffer_init_tensor(@ByVal ggml_backend_buffer_type buffer, ggml_tensor tensor);
-    public static native @Cast("size_t") long ggml_backend_buffer_get_alignment(@ByVal ggml_backend_buffer_type buffer);
-    public static native @Cast("size_t") long ggml_backend_buffer_get_max_size(@ByVal ggml_backend_buffer_type buffer);
-    public static native @Cast("size_t") long ggml_backend_buffer_get_alloc_size(@ByVal ggml_backend_buffer_type buffer, ggml_tensor tensor);
-    public static native void ggml_backend_buffer_clear(@ByVal ggml_backend_buffer_type buffer, @Cast("uint8_t") byte value);
-    public static native @Cast("bool") boolean ggml_backend_buffer_is_host(@ByVal ggml_backend_buffer_type buffer);
-    public static native void ggml_backend_buffer_set_usage(@ByVal ggml_backend_buffer_type buffer, @Cast("ggml_backend_buffer_usage") int usage);
-    public static native @Cast("ggml_backend_buffer_usage") int ggml_backend_buffer_get_usage(@ByVal ggml_backend_buffer_type buffer);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_buffer_get_type(@ByVal ggml_backend_buffer_type buffer);
-    public static native void ggml_backend_buffer_reset(@ByVal ggml_backend_buffer_type buffer);
-
     // tensor copy between different backends
     public static native void ggml_backend_tensor_copy(ggml_tensor src, ggml_tensor dst);
 
@@ -98,115 +74,46 @@ public static final int GGML_BACKEND_API = GGML_BACKEND_API();
     // Backend (stream)
     //
 
-    public static native @Cast("ggml_guid_t") BytePointer ggml_backend_guid(@ByVal ggml_backend backend);
-    public static native @Cast("const char*") BytePointer ggml_backend_name(@ByVal ggml_backend backend);
-    public static native void ggml_backend_free(@ByVal ggml_backend backend);
-
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_get_default_buffer_type(@ByVal ggml_backend backend);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_alloc_buffer(@ByVal ggml_backend backend, @Cast("size_t") long size);
-    public static native @Cast("size_t") long ggml_backend_get_alignment(@ByVal ggml_backend backend);
-    public static native @Cast("size_t") long ggml_backend_get_max_size(@ByVal ggml_backend backend);
-
-    public static native void ggml_backend_tensor_set_async(@ByVal ggml_backend backend,       ggml_tensor tensor, @Const Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
-    public static native void ggml_backend_tensor_get_async(@ByVal ggml_backend backend, @Const ggml_tensor tensor,       Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
-
     // "offset" refers to the offset in tensor->data for setting/getting data
     public static native void ggml_backend_tensor_set(      ggml_tensor tensor, @Const Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
     public static native void ggml_backend_tensor_get(@Const ggml_tensor tensor,       Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
     public static native void ggml_backend_tensor_memset(   ggml_tensor tensor,     @Cast("uint8_t") byte value, @Cast("size_t") long offset, @Cast("size_t") long size);
 
-    public static native void ggml_backend_synchronize(@ByVal ggml_backend backend);
-
-    public static native ggml_backend_graph_plan_t ggml_backend_graph_plan_create(@ByVal ggml_backend backend, ggml_cgraph cgraph);
-    public static native void ggml_backend_graph_plan_free(@ByVal ggml_backend backend, ggml_backend_graph_plan_t plan);
-
-    public static native ggml_status ggml_backend_graph_plan_compute(@ByVal ggml_backend backend, ggml_backend_graph_plan_t plan);
-    public static native ggml_status ggml_backend_graph_compute(@ByVal ggml_backend backend, ggml_cgraph cgraph);
-    public static native ggml_status ggml_backend_graph_compute_async(@ByVal ggml_backend backend, ggml_cgraph cgraph);
-
     // NOTE: will be removed, use device version instead
-    public static native @Cast("bool") boolean ggml_backend_supports_op(@ByVal ggml_backend backend, @Const ggml_tensor op);
-    public static native @Cast("bool") boolean ggml_backend_supports_buft(@ByVal ggml_backend backend, @ByVal ggml_backend_buffer_type buft);
-    public static native @Cast("bool") boolean ggml_backend_offload_op(@ByVal ggml_backend backend, @Const ggml_tensor op);
 
     // asynchronous copy
     // the copy is performed after all the currently queued operations in backend_src
     // backend_dst will wait for the copy to complete before performing other operations
     // automatic fallback to sync copy if async is not supported
-    public static native void ggml_backend_tensor_copy_async(@ByVal ggml_backend backend_src, @ByVal ggml_backend backend_dst, ggml_tensor src, ggml_tensor dst);
-
-    public static native @ByVal ggml_backend_device ggml_backend_get_device(@ByVal ggml_backend backend);
 
     //
     // Events
     //
 
-    public static native @ByVal ggml_backend_event ggml_backend_event_new(@ByVal ggml_backend_device device);
-    public static native void ggml_backend_event_free(@ByVal ggml_backend_event event);
-    public static native void ggml_backend_event_record(@ByVal ggml_backend_event event, @ByVal ggml_backend backend);
-    public static native void ggml_backend_event_synchronize(@ByVal ggml_backend_event event);
-    public static native void ggml_backend_event_wait(@ByVal ggml_backend backend, @ByVal ggml_backend_event event);
-
     //
     // Backend device
     //
 
-    /** enum ggml_backend_dev_type */
-    public static final int
-        // CPU device using system memory
-        GGML_BACKEND_DEVICE_TYPE_CPU = 0,
-        // GPU device using dedicated memory
-        GGML_BACKEND_DEVICE_TYPE_GPU = 1,
-        // accelerator devices intended to be used together with the CPU backend (e.g. BLAS or AMX)
-        GGML_BACKEND_DEVICE_TYPE_ACCEL = 2;
+    
 // Targeting ../ggml_backend_dev_caps.java
 
 
 // Targeting ../ggml_backend_dev_props.java
 
 
-
-    public static native @Cast("const char*") BytePointer ggml_backend_dev_name(@ByVal ggml_backend_device device);
-    public static native @Cast("const char*") BytePointer ggml_backend_dev_description(@ByVal ggml_backend_device device);
-    public static native void ggml_backend_dev_memory(@ByVal ggml_backend_device device, @Cast("size_t*") SizeTPointer _free, @Cast("size_t*") SizeTPointer total);
-    public static native @Cast("ggml_backend_dev_type") int ggml_backend_dev_type(@ByVal ggml_backend_device device);
-    public static native void ggml_backend_dev_get_props(@ByVal ggml_backend_device device, ggml_backend_dev_props props);
-    public static native @ByVal ggml_backend_reg ggml_backend_dev_backend_reg(@ByVal ggml_backend_device device);
-    public static native @ByVal ggml_backend ggml_backend_dev_init(@ByVal ggml_backend_device device, @Cast("const char*") BytePointer params);
-    public static native @ByVal ggml_backend ggml_backend_dev_init(@ByVal ggml_backend_device device, String params);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_dev_buffer_type(@ByVal ggml_backend_device device);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_dev_host_buffer_type(@ByVal ggml_backend_device device);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_dev_buffer_from_host_ptr(@ByVal ggml_backend_device device, Pointer ptr, @Cast("size_t") long size, @Cast("size_t") long max_tensor_size);
-
-    public static native @Cast("bool") boolean ggml_backend_dev_supports_op(@ByVal ggml_backend_device device, @Const ggml_tensor op);
-    public static native @Cast("bool") boolean ggml_backend_dev_supports_buft(@ByVal ggml_backend_device device, @ByVal ggml_backend_buffer_type buft);
-    public static native @Cast("bool") boolean ggml_backend_dev_offload_op(@ByVal ggml_backend_device device, @Const ggml_tensor op);
+    
 
     //
     // Backend (reg)
     //
 
-    public static native @Cast("const char*") BytePointer ggml_backend_reg_name(@ByVal ggml_backend_reg reg);
-    public static native @Cast("size_t") long ggml_backend_reg_dev_count(@ByVal ggml_backend_reg reg);
-    public static native @ByVal ggml_backend_device ggml_backend_reg_dev_get(@ByVal ggml_backend_reg reg, @Cast("size_t") long index);
-    public static native Pointer ggml_backend_reg_get_proc_address(@ByVal ggml_backend_reg reg, @Cast("const char*") BytePointer name);
-    public static native Pointer ggml_backend_reg_get_proc_address(@ByVal ggml_backend_reg reg, String name);
-// Targeting ../ggml_backend_split_buffer_type_t.java
+    // Common functions that may be obtained using ggml_backend_reg_get_proc_address
 
-
-// Targeting ../ggml_backend_set_n_threads_t.java
-
-
-// Targeting ../ggml_backend_dev_get_extra_bufts_t.java
-
-
-// Targeting ../ggml_backend_set_abort_callback_t.java
-
-
+    // Split buffer type for tensor parallelism
+    // Set the number of threads for the backend
+    // Get additional buffer types provided by the device (returns a NULL-terminated array)
+    // Set the abort callback for the backend
 // Targeting ../ggml_backend_feature.java
-
-
-// Targeting ../ggml_backend_get_features_t.java
 
 
 
@@ -214,36 +121,19 @@ public static final int GGML_BACKEND_API = GGML_BACKEND_API();
     // Backend registry
     //
 
-    public static native void ggml_backend_device_register(@ByVal ggml_backend_device device);
-
     // Backend (reg) enumeration
     public static native @Cast("size_t") long ggml_backend_reg_count();
-    public static native @ByVal ggml_backend_reg ggml_backend_reg_get(@Cast("size_t") long index);
-    public static native @ByVal ggml_backend_reg ggml_backend_reg_by_name(@Cast("const char*") BytePointer name);
-    public static native @ByVal ggml_backend_reg ggml_backend_reg_by_name(String name);
 
     // Device enumeration
     public static native @Cast("size_t") long ggml_backend_dev_count();
-    public static native @ByVal ggml_backend_device ggml_backend_dev_get(@Cast("size_t") long index);
-    public static native @ByVal ggml_backend_device ggml_backend_dev_by_name(@Cast("const char*") BytePointer name);
-    public static native @ByVal ggml_backend_device ggml_backend_dev_by_name(String name);
-    public static native @ByVal ggml_backend_device ggml_backend_dev_by_type(@Cast("ggml_backend_dev_type") int type);
 
     // Direct backend (stream) initialization
     // = ggml_backend_dev_init(ggml_backend_dev_by_name(name), params)
-    public static native @ByVal ggml_backend ggml_backend_init_by_name(@Cast("const char*") BytePointer name, @Cast("const char*") BytePointer params);
-    public static native @ByVal ggml_backend ggml_backend_init_by_name(String name, String params);
     // = ggml_backend_dev_init(ggml_backend_dev_by_type(type), params)
-    public static native @ByVal ggml_backend ggml_backend_init_by_type(@Cast("ggml_backend_dev_type") int type, @Cast("const char*") BytePointer params);
-    public static native @ByVal ggml_backend ggml_backend_init_by_type(@Cast("ggml_backend_dev_type") int type, String params);
     // = ggml_backend_dev_init(ggml_backend_dev_by_type(GPU) OR ggml_backend_dev_by_type(CPU), NULL)
-    public static native @ByVal ggml_backend ggml_backend_init_best();
 
     // Load a backend from a dynamic library and register it
-    public static native @ByVal ggml_backend_reg ggml_backend_load(@Cast("const char*") BytePointer path);
-    public static native @ByVal ggml_backend_reg ggml_backend_load(String path);
     // Unload a backend if loaded dynamically and unregister it
-    public static native void ggml_backend_unload(@ByVal ggml_backend_reg reg);
     // Load all known backends from dynamic libraries
     public static native void ggml_backend_load_all();
     public static native void ggml_backend_load_all_from_path(@Cast("const char*") BytePointer dir_path);
@@ -256,58 +146,35 @@ public static final int GGML_BACKEND_API = GGML_BACKEND_API();
 
 
     // Initialize a backend scheduler, backends with low index are given priority over backends with high index
-    public static native @ByVal ggml_backend_sched ggml_backend_sched_new(ggml_backend backends, ggml_backend_buffer_type bufts, int n_backends, @Cast("size_t") long graph_size, @Cast("bool") boolean parallel);
-    public static native void ggml_backend_sched_free(@ByVal ggml_backend_sched sched);
 
-    // Initialize backend buffers from a measure graph
-    public static native @Cast("bool") boolean ggml_backend_sched_reserve(@ByVal ggml_backend_sched sched, ggml_cgraph measure_graph); // returns success
-
-    public static native int ggml_backend_sched_get_n_backends(@ByVal ggml_backend_sched sched);
-    public static native @ByVal ggml_backend ggml_backend_sched_get_backend(@ByVal ggml_backend_sched sched, int i);
+    // Initialize backend buffers from a measure graph // returns success
 
     // Get the number of splits of the last graph
-    public static native int ggml_backend_sched_get_n_splits(@ByVal ggml_backend_sched sched);
-    public static native int ggml_backend_sched_get_n_copies(@ByVal ggml_backend_sched sched);
 
-    public static native @Cast("size_t") long ggml_backend_sched_get_buffer_size(@ByVal ggml_backend_sched sched, @ByVal ggml_backend backend);
-
-    public static native void ggml_backend_sched_set_tensor_backend(@ByVal ggml_backend_sched sched, ggml_tensor node, @ByVal ggml_backend backend);
-    public static native @ByVal ggml_backend ggml_backend_sched_get_tensor_backend(@ByVal ggml_backend_sched sched, ggml_tensor node);
-
-    // Allocate and compute graph on the backend scheduler
-    public static native @Cast("bool") boolean ggml_backend_sched_alloc_graph(@ByVal ggml_backend_sched sched, ggml_cgraph graph); // returns success
-    public static native ggml_status ggml_backend_sched_graph_compute(@ByVal ggml_backend_sched sched, ggml_cgraph graph);
-    public static native ggml_status ggml_backend_sched_graph_compute_async(@ByVal ggml_backend_sched sched, ggml_cgraph graph);
-    public static native void ggml_backend_sched_synchronize(@ByVal ggml_backend_sched sched);
+    // Allocate and compute graph on the backend scheduler // returns success
 
     // Reset all assignments and allocators - must be called before changing the node backends or allocating a new graph.
     // This in effect deallocates all tensors that were previously allocated and leaves them with dangling pointers.
     // The correct way to use this API is to discard the deallocated tensors and create new ones.
-    public static native void ggml_backend_sched_reset(@ByVal ggml_backend_sched sched);
 
     // Set a callback to be called for each resulting node during graph compute
-    public static native void ggml_backend_sched_set_eval_callback(@ByVal ggml_backend_sched sched, ggml_backend_sched_eval_callback callback, Pointer user_data);
-// Targeting ../ggml_backend_graph_copy.java
 
-
+    //
+    // Utils
+    //
 
     // Copy a graph to a different backend
-    public static native @ByVal ggml_backend_graph_copy ggml_backend_graph_copy(@ByVal ggml_backend backend, ggml_cgraph graph);
-    public static native void ggml_backend_graph_copy_free(@ByVal ggml_backend_graph_copy copy);
+    
 // Targeting ../ggml_backend_eval_callback.java
 
 
 
     // Compare the output of two backends
-    public static native @Cast("bool") boolean ggml_backend_compare_graph_backend(@ByVal ggml_backend backend1, @ByVal ggml_backend backend2, ggml_cgraph graph, ggml_backend_eval_callback callback, Pointer user_data);
 
     // Tensor initialization
-    public static native void ggml_backend_tensor_alloc(@ByVal ggml_backend_buffer_type buffer, ggml_tensor tensor, Pointer addr);
     public static native void ggml_backend_view_init(ggml_tensor tensor);
 
     // CPU buffer types are always available
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_cpu_buffer_from_ptr(Pointer ptr, @Cast("size_t") long size);
-    public static native @ByVal ggml_backend_buffer_type ggml_backend_cpu_buffer_type();
 
 // #ifdef  __cplusplus
 // #endif
@@ -606,33 +473,38 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 //     const type prefix##3 = (pointer)->array[3];
 //     GGML_UNUSED(prefix##3);
 
-public static native @MemberGetter int GGML_TENSOR_UNARY_OP_LOCALS();
-public static final int GGML_TENSOR_UNARY_OP_LOCALS = GGML_TENSOR_UNARY_OP_LOCALS();
+// #define GGML_TENSOR_UNARY_OP_LOCALS
+//     GGML_TENSOR_LOCALS(int64_t, ne0, src0, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb0, src0, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne,  dst,  ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb,  dst,  nb)
 
-public static native @MemberGetter int GGML_TENSOR_BINARY_OP_LOCALS();
-public static final int GGML_TENSOR_BINARY_OP_LOCALS = GGML_TENSOR_BINARY_OP_LOCALS();
+// #define GGML_TENSOR_BINARY_OP_LOCALS
+//     GGML_TENSOR_LOCALS(int64_t, ne0, src0, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb0, src0, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne1, src1, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb1, src1, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne,  dst,  ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb,  dst,  nb)
 
-public static native @MemberGetter int GGML_TENSOR_BINARY_OP_LOCALS01();
-public static final int GGML_TENSOR_BINARY_OP_LOCALS01 = GGML_TENSOR_BINARY_OP_LOCALS01();
+// #define GGML_TENSOR_BINARY_OP_LOCALS01
+//     GGML_TENSOR_LOCALS(int64_t, ne0, src0, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb0, src0, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne1, src1, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb1, src1, nb)
 
 // #ifdef  __cplusplus
 // #endif
 
-    public enum ggml_status {
-        GGML_STATUS_ALLOC_FAILED(-2),
-        GGML_STATUS_FAILED(-1),
-        GGML_STATUS_SUCCESS(0),
-        GGML_STATUS_ABORTED(1);
-
-        public final int value;
-        private ggml_status(int v) { this.value = v; }
-        private ggml_status(ggml_status e) { this.value = e.value; }
-        public ggml_status intern() { for (ggml_status e : values()) if (e.value == value) return e; return this; }
-        @Override public String toString() { return intern().name(); }
-    }
+    /** enum ggml_status */
+    public static final int
+        GGML_STATUS_ALLOC_FAILED = -2,
+        GGML_STATUS_FAILED = -1,
+        GGML_STATUS_SUCCESS = 0,
+        GGML_STATUS_ABORTED = 1;
 
     // get ggml_status name string
-    public static native @Cast("const char*") BytePointer ggml_status_to_string(ggml_status status);
+    public static native @Cast("const char*") BytePointer ggml_status_to_string(@Cast("ggml_status") int status);
 
     // ieee 754-2008 half-precision float16
     // todo: make this not an integral type
@@ -905,7 +777,7 @@ public static final int GGML_TENSOR_BINARY_OP_LOCALS01 = GGML_TENSOR_BINARY_OP_L
 
     // GUID types
 
-    public static native @Cast("bool") boolean ggml_guid_matches(@Cast("ggml_guid_t") BytePointer guid_a, @Cast("ggml_guid_t") BytePointer guid_b);
+    public static native @Cast("bool") boolean ggml_guid_matches(@Cast("ggml_guid_t") byte guid_a, @Cast("ggml_guid_t") byte guid_b);
 
     // misc
 
@@ -2562,9 +2434,6 @@ public static final int GGML_N_TASKS_MAX = (-1);
         GGML_SCHED_PRIO_REALTIME = 3;
 // Targeting ../ggml_threadpool_params.java
 
-
-// Targeting ../ggml_threadpool.java
-
      // forward declaration, see ggml.c
 
     public static native @ByVal ggml_threadpool_params ggml_threadpool_params_default(int n_threads);
@@ -2572,6 +2441,86 @@ public static final int GGML_N_TASKS_MAX = (-1);
     public static native @Cast("bool") boolean ggml_threadpool_params_match(@Const ggml_threadpool_params p0, @Const ggml_threadpool_params p1);
 
 // #ifdef  __cplusplus
+// #endif
+
+
+// Parsed from ggml-alloc.h
+
+// #pragma once
+
+// #include "ggml.h"
+
+// #ifdef  __cplusplus
+// #endif
+// Targeting ../ggml_tallocr.java
+
+
+public static native void ggml_tallocr_alloc(ggml_tallocr talloc, ggml_tensor tensor);
+// Targeting ../ggml_gallocr.java
+
+
+
+// pre-allocate buffers from a measure graph - does not allocate or modify the graph
+// call with a worst-case graph to avoid buffer reallocations
+// not strictly required for single buffer usage: ggml_gallocr_alloc_graph will reallocate the buffers automatically if needed
+// returns false if the buffer allocation failed
+
+// automatic reallocation if the topology changes when using a single buffer
+// returns false if using multiple buffers and a re-allocation is needed (call ggml_gallocr_reserve_n first to set the node buffers)
+
+// Utils
+// Create a buffer and allocate all the tensors in a ggml_context
+
+// #ifdef  __cplusplus
+// #endif
+
+
+// Parsed from ggml-cpu.h
+
+// #pragma once
+
+// #include "ggml.h"
+// #include "ggml-backend.h"
+
+// #ifdef  __cplusplus
+// Targeting ../ggml_cplan.java
+
+
+
+    // numa strategies
+    /** enum ggml_numa_strategy */
+    public static final int
+        GGML_NUMA_STRATEGY_DISABLED   = 0,
+        GGML_NUMA_STRATEGY_DISTRIBUTE = 1,
+        GGML_NUMA_STRATEGY_ISOLATE    = 2,
+        GGML_NUMA_STRATEGY_NUMACTL    = 3,
+        GGML_NUMA_STRATEGY_MIRROR     = 4,
+        GGML_NUMA_STRATEGY_COUNT = 5; // call once for better performance on NUMA systems // true if init detected that system has >1 NUMA node
+
+    // ggml_graph_plan() has to be called before ggml_graph_compute()
+    // when plan.work_size > 0, caller must allocate memory for plan.work_data
+
+    // same as ggml_graph_compute() but the work data is allocated as a part of the context
+    // note: the drawback of this API is that you must have ensured that the context has enough memory for the work data
+
+    //
+    // system info
+    //
+
+    // x86
+    // ARM  // sve vector length in bytes
+    // other
+
+    // Internal types and functions exposed for tests and benchmarks
+// Targeting ../ggml_type_traits_cpu.java
+
+
+
+    //
+    // CPU backend
+    //
+
+// #ifdef __cplusplus
 // #endif
 
 

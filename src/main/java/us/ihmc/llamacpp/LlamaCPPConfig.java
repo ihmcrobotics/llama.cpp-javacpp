@@ -11,10 +11,10 @@ import org.bytedeco.javacpp.tools.InfoMapper;
             include = {
                  "ggml-backend.h",
                  "ggml.h",
-//                 "ggml-alloc.h",
+                 "ggml-alloc.h",
 //                 "ggml-cpp.h",
 
-//                 "ggml-cpu.h",
+                 "ggml-cpu.h",
 //                 "ggml-cuda.h",
 //                 "gguf.h",
                  "llama.h",
@@ -37,12 +37,6 @@ public class LlamaCPPConfig implements InfoMapper {
    @Override
    public void map(InfoMap infoMap) {
       infoMap.put(new Info("LLAMA_API").cppText("#define LLAMA_API").cppTypes());
-      infoMap.put(new Info("GGML_API").cppText("#define GGML_API extern").cppTypes());
-//      infoMap.put(new Info("GGML_DEPRECATED").cppText("#define GGML_DEPRECATED").cppTypes());
-
-//      infoMap.put(new Info("GGML_ATTRIBUTE_FORMAT").cppText("#define GGML_ATTRIBUTE_FORMAT").cppTypes());
-//      infoMap.put(new Info("GGML_BACKEND_API").cppText("#define GGML_BACKEND_API extern").cppTypes());
-      infoMap.put(new Info("GGML_NORETURN").skip());
       infoMap.put(new Info("llama_numa_init").skip());
       infoMap.put(new Info("llama_attach_threadpool").skip());
       infoMap.put(new Info("llama_log_set").skip());
@@ -60,22 +54,34 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("llama_pooling_type").skip());
       infoMap.put(new Info("llama_vocab_type").skip());
 
-      infoMap.put(new Info("GGML_RESTRICT").skip());
-      infoMap.put(new Info("ggml_to_float_t").skip());
+      infoMap.put(new Info("GGML_NORETURN").skip());
+      infoMap.put(new Info("GGML_BACKEND_API").skip());
+      infoMap.put(new Info("GGML_TENSOR_LOCALS_1").skip());
+      infoMap.put(new Info("GGML_TENSOR_LOCALS_2").skip());
+      infoMap.put(new Info("GGML_TENSOR_LOCALS_3").skip());
+      infoMap.put(new Info("GGML_TENSOR_LOCALS").skip());
+      infoMap.put(new Info("GGML_TENSOR_UNARY_OP_LOCALS").skip());
+      infoMap.put(new Info("GGML_TENSOR_BINARY_OP_LOCALS").skip());
+      infoMap.put(new Info("GGML_TENSOR_BINARY_OP_LOCALS01").skip());
+      infoMap.put(new Info("GGML_RESTRICT").cppTypes().annotations());
+      infoMap.put(new Info("GGML_API").cppTypes().annotations());
+
+      infoMap.put(new Info("ggml_backend_t").skip());
+      infoMap.put(new Info("ggml_backend_event_t").skip());
+      infoMap.put(new Info("ggml_backend_sched_t").skip());
+      infoMap.put(new Info("ggml_threadpool").skip());
+      infoMap.put(new Info("ggml_threadpool_t").skip());
+      infoMap.put(new Info("ggml_backend_buffer_t").skip());
       infoMap.put(new Info("ggml_from_float_t").skip());
+      infoMap.put(new Info("ggml_to_float_t").skip());
+      infoMap.put(new Info("ggml_vec_dot_t").skip());
+      infoMap.put(new Info("ggml_backend_dev_t").skip());
+      infoMap.put(new Info("ggml_backend_buffer_type_t").skip());
+      infoMap.put(new Info("ggml_backend_reg_t").skip());
+      infoMap.put(new Info("ggml_gallocr_t").skip());
+      infoMap.put(new Info("ggml_backend_graph_copy").skip());
+      infoMap.put(new Info("ggml_backend_device").skip());
+      infoMap.put(new Info("ggml_backend_dev_type").skip());
 
-      infoMap.put(new Info("ggml_backend_buffer_t").pointerTypes("ggml_backend_buffer_type"));
-      infoMap.put(new Info("ggml_backend_buffer_type_t").pointerTypes("ggml_backend_buffer_type"));
-      infoMap.put(new Info("ggml_backend_dev_t").pointerTypes("ggml_backend_device"));
-      infoMap.put(new Info("ggml_backend_t").pointerTypes("ggml_backend"));
-      infoMap.put(new Info("ggml_backend_sched_t").pointerTypes("ggml_backend_sched"));
-      infoMap.put(new Info("ggml_backend_reg_t").pointerTypes("ggml_backend_reg"));
-      infoMap.put(new Info("ggml_backend_event_t").pointerTypes("ggml_backend_event"));
-
-      // TODO:
-      infoMap.put(new Info("ggml_guid").cast().valueTypes("byte[]").pointerTypes("BytePointer"));
-      infoMap.put(new Info("ggml_guid_t").cast().valueTypes("BytePointer").pointerTypes("PointerPointer"));
-
-      infoMap.put(new Info("ggml_status").enumerate());
    }
 }

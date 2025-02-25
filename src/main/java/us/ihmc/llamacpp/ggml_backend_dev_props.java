@@ -32,6 +32,5 @@ public class ggml_backend_dev_props extends Pointer {
         public native @Cast("const char*") BytePointer description(); public native ggml_backend_dev_props description(BytePointer setter);
         public native @Cast("size_t") long memory_free(); public native ggml_backend_dev_props memory_free(long setter);
         public native @Cast("size_t") long memory_total(); public native ggml_backend_dev_props memory_total(long setter);
-        public native @Cast("ggml_backend_dev_type") int type(); public native ggml_backend_dev_props type(int setter);
         public native @ByRef ggml_backend_dev_caps caps(); public native ggml_backend_dev_props caps(ggml_backend_dev_caps setter);
     }

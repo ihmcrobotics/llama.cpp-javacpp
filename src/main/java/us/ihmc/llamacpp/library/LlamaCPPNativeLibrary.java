@@ -24,7 +24,7 @@ public class LlamaCPPNativeLibrary implements NativeLibraryDescription {
     public NativeLibraryWithDependencies getLibraryWithDependencies(OperatingSystem os, Architecture arch) {
         switch (os) {
             case LINUX64 -> {
-                return NativeLibraryWithDependencies.fromFilename("libjnillamacpp.so");
+                return NativeLibraryWithDependencies.fromFilename("libjnillamacpp.so", "libggml-base.so", "libggml-cpu.so", "libggml-cuda.so", "libggml.so", "libllama.so");
             }
             case WIN64, MACOSX64 -> throw new RuntimeException("Unsupported platform");
         }
