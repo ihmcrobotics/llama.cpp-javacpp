@@ -13,7 +13,7 @@ LLAMACPP_VERSION=b4743
 
 # Non-shallow clone required for llama.cpp build
 if [ ! -d llama.cpp-$LLAMACPP_VERSION ]; then
-  git -c advice.detachedHead=false clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
+  git -c advice.detachedHead=false clone -b workaround/simple-chat-api https://github.com/ihmcrobotics/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
 fi
 
 # Ubuntu 20.04 ships with cmake 3.16.3, where llama.cpp ggml-cuda requires at least 3.18
@@ -66,7 +66,7 @@ cp us/ihmc/llamacpp/*.java ../src/main/java/us/ihmc/llamacpp
 cp us/ihmc/llamacpp/global/*.java ../src/main/java/us/ihmc/llamacpp/global/
 
 #### JNI compilation ####
-java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/*.java us/ihmc/llamacpp/global/*.java -d javainstall
+java -cp "javacpp.jar"$CP_SEPARATOR"cuda-$JAVACPP_CUDA_VERSION.jar" org.bytedeco.javacpp.tools.Builder us/ihmc/llamacpp/*.java us/ihmc/llamacpp/global/*.java -d javainstall -nodelete
 
 ##### Copy shared libs to resources ####
 # Linux

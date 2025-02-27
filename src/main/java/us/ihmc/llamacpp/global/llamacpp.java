@@ -3718,7 +3718,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** Apply chat template. Inspired by hf apply_chat_template() on python.
      *  Both "model" and "custom_template" are optional, but at least one is required. "custom_template" has higher precedence than "model"
      *  NOTE: This function does not use a jinja parser. It only support a pre-defined list of template. See more: https://github.com/ggml-org/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template
-     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model’s default chat template will be used instead.
+     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model???s default chat template will be used instead.
      *  @param chat Pointer to a list of multiple llama_chat_message
      *  @param n_msg Number of llama_chat_message in this chat
      *  @param add_ass Whether to end the prompt with the token(s) that indicate the start of an assistant message.
@@ -3836,7 +3836,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** \details XTC sampler as described in https://github.com/oobabooga/text-generation-webui/pull/6335 */
     public static native llama_sampler llama_sampler_init_xtc(float p, float t,     @Cast("size_t") long min_keep, @Cast("uint32_t") int seed);
 
-    /** \details Top n sigma sampling as described in academic paper "Top-nσ: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
+    /** \details Top n sigma sampling as described in academic paper "Top-n??: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
     public static native llama_sampler llama_sampler_init_top_n_sigma(float n);
 
     /** \details Mirostat 1.0 algorithm described in the paper https://arxiv.org/abs/2007.14966. Uses tokens instead of words.
@@ -4051,7 +4051,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
     // Set callback for all future logging events.
     // If this is not called, or NULL is supplied, everything is output on stderr.
-    
+    public static native void llama_log_set(ggml_log_callback log_callback, Pointer user_data);
 // Targeting ../llama_perf_context_data.java
 
 
@@ -4067,6 +4067,29 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native @ByVal llama_perf_sampler_data llama_perf_sampler(@Const llama_sampler chain);
     public static native void llama_perf_sampler_print(@Const llama_sampler chain);
     public static native void llama_perf_sampler_reset(      llama_sampler chain);
+// Targeting ../llama_simple_chat.java
+
+
+
+    public static native void llama_simple_chat_set_log_level_to_error_only();
+
+    public static native llama_simple_chat llama_simple_chat_init(@Cast("const char*") BytePointer model_path,
+                                                      int n_gpu_layers,
+                                                      @Cast("uint32_t") int context_size,
+                                                      float min_p,
+                                                      @Cast("size_t") long min_keep,
+                                                      float temperature);
+    public static native llama_simple_chat llama_simple_chat_init(String model_path,
+                                                      int n_gpu_layers,
+                                                      @Cast("uint32_t") int context_size,
+                                                      float min_p,
+                                                      @Cast("size_t") long min_keep,
+                                                      float temperature);
+
+    public static native @Cast("const char*") BytePointer llama_simple_chat_prompt(llama_simple_chat chat, @Cast("const char*") BytePointer user_input);
+    public static native String llama_simple_chat_prompt(llama_simple_chat chat, String user_input);
+
+    public static native void llama_simple_chat_free(llama_simple_chat chat);
 
 // #ifdef __cplusplus
 // #endif

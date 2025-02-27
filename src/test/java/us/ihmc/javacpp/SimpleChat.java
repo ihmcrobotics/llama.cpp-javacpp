@@ -23,12 +23,31 @@ public class SimpleChat {
 
    public static final Path MODELS_DIRECTORY = Paths.get(System.getProperty("user.home")).resolve(".ihmc/llama-models");
    public static final Path MODEL_TO_USE = MODELS_DIRECTORY.resolve("Llama-3.2-1B-Instruct-Q8_0.gguf");
+//   public static final Path MODEL_TO_USE = MODELS_DIRECTORY.resolve("Llama-3.2-3B-Instruct-F16.gguf");
 
-   private final llama_context ctx;
-   private final llama_vocab vocab;
-   private final llama_sampler smpl;
+   private llama_context ctx;
+   private llama_vocab vocab;
+   private llama_sampler smpl;
 
    public SimpleChat() {
+      llama_simple_chat_set_log_level_to_error_only();
+
+      llama_simple_chat llama_simple_chat = llama_simple_chat_init(MODEL_TO_USE.toString(), 99, 2048, 0.05f, 1, 0.0f);
+
+      System.out.print("\033[32m> \033[0m");
+      String prompt = "What is 2 + 2?";
+      System.out.println(prompt);
+
+      System.out.print("\033[33m");
+      String response = llama_simple_chat_prompt(llama_simple_chat, prompt);
+      System.out.println(response);
+      System.out.print("\n\033[0m");
+
+      llama_simple_chat_free(llama_simple_chat);
+   }
+
+   /** FIXME: Not working **/
+   public void upstream_version() {
       // only print errors
       ggml_log_callback callback = new ggml_log_callback() {
          @Override
