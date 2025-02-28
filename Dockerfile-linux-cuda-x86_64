@@ -1,16 +1,17 @@
-FROM nvidia/cuda:12.8.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.1.0-devel-ubuntu20.04
 
-RUN apt-get --quiet 2 --yes update  \
- && apt-get --quiet 2 --yes install \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get --yes update \
+ && apt-get --yes install \
     git \
     wget \
     curl \
     unzip \
     cmake \
     build-essential \
-    openjdk-17-jdk \
-    > /dev/null \
- && rm -rf /var/lib/apt/lists/*
+    libssl-dev \
+    openjdk-17-jdk
 
 # Setup a robotlab user as the development user, to avoid using root.
 # Use the user and group ID of the builder so access is maintained.
@@ -28,8 +29,15 @@ RUN addgroup --gid $USER_GID robotlab \
 RUN mkdir -p /home/robotlab/.config
 RUN chown -R robotlab:robotlab /home/robotlab/.config
 
+# Install newer version of CMake for compatibility with llamacpp
+RUN wget -O /tmp/cmake.sh "https://cmake.org/files/v3.31/cmake-3.31.6-linux-x86_64.sh"
+RUN mkdir -p /opt/cmake && sh /tmp/cmake.sh --prefix=/opt/cmake --exclude-subdir
+RUN ln -sf /opt/cmake/bin/cmake /usr/local/bin/cmake
+RUN cmake --version
+
 WORKDIR /tmp
 
+# For debugging
 RUN curl -sL https://download.jetbrains.com/cpp/CLion-2024.3.3.tar.gz -o clion.tar.gz \
  && tar -xzf clion.tar.gz \
  && mv clion-2024.3.3/ /opt/clion \

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -o xtrace
 
-docker build --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g) . -t llama.cpp-javacpp
+docker build  -f Dockerfile-linux-cuda-x86_64 --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g) . -t llama.cpp-javacpp
 
 xhost +local:docker
 
