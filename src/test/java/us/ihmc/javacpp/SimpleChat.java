@@ -1,6 +1,7 @@
 package us.ihmc.javacpp;
 
 import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.Pointer;
 import us.ihmc.llamacpp.*;
 import us.ihmc.llamacpp.library.LlamaCPPNativeLibrary;
@@ -30,24 +31,6 @@ public class SimpleChat {
    private llama_sampler smpl;
 
    public SimpleChat() {
-      llama_simple_chat_set_log_level_to_error_only();
-
-      llama_simple_chat llama_simple_chat = llama_simple_chat_init(MODEL_TO_USE.toString(), 99, 2048, 0.05f, 1, 0.0f);
-
-      System.out.print("\033[32m> \033[0m");
-      String prompt = "What is 2 + 2?";
-      System.out.println(prompt);
-
-      System.out.print("\033[33m");
-      String response = llama_simple_chat_prompt(llama_simple_chat, prompt);
-      System.out.println(response);
-      System.out.print("\n\033[0m");
-
-      llama_simple_chat_free(llama_simple_chat);
-   }
-
-   /** FIXME: Not working **/
-   public void upstream_version() {
       // only print errors
       ggml_log_callback callback = new ggml_log_callback() {
          @Override
@@ -84,10 +67,19 @@ public class SimpleChat {
       int prev_len = 0;
 
       while (true) {
-         // get user input
          System.out.print("\033[32m> \033[0m");
-         Scanner scanner = new Scanner(System.in);
-         String user = scanner.nextLine();
+         String user;
+         if (messages.isEmpty())
+         {
+            user = "What is 2 + 2?";
+            System.out.println(user);
+         }
+         else
+         {
+            // get user input
+            Scanner scanner = new Scanner(System.in);
+            user = scanner.nextLine();
+         }
 
          if (user.isEmpty()) {
             break;
@@ -151,7 +143,12 @@ public class SimpleChat {
       }
 
       // prepare a batch for the prompt
-      llama_batch batch = llama_batch_get_one(prompt_tokens, prompt_tokens.length);
+      // FIXME: llama_batch_get_one does not pack token pointer correctly
+      // llama_batch batch = llama_batch_get_one(prompt_tokens, prompt_tokens.length);
+      llama_batch batch = new llama_batch();
+      batch.token(new IntPointer(prompt_tokens.length).put(prompt_tokens, 0, prompt_tokens.length));
+      batch.n_tokens(prompt_tokens.length);
+
       int new_token_id;
       while (true) {
          // check if we have enough space in the context to evaluate this batch
@@ -187,8 +184,9 @@ public class SimpleChat {
          response += piece;
 
          // prepare the next batch with the sampled token
-         int[] new_token_id_array = new int[] {new_token_id};
-         batch = llama_batch_get_one(new_token_id_array, 1);
+         // batch = llama_batch_get_one(new_token_id_array, 1); FIXME: Not working
+         batch.token().put(0, new_token_id);
+         batch.n_tokens(1);
       }
 
       return response;
