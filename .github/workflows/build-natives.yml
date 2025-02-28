@@ -10,22 +10,12 @@ permissions:
 
 jobs:
   build-linux-cuda-x86_64:
-    runs-on: [self-hosted, ihmc-runner-nvidia]
-    container:
-      image: nvidia/cuda:12.8.0-devel-ubuntu22.04
+    runs-on: [ubuntu-latest]
     steps:
-      - name: Install dependencies
-        run: |
-          apt-get update
-          apt-get install git wget curl cmake build-essential -y
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
       - name: Compile native library (x86_64)
         run: |
-          bash cppbuild.bash
+          bash cppbuild-docker-linux-cuda-x86_64.bash
       - name: Commit generated java and native libraries
         uses: EndBug/add-and-commit@v9
         with:
