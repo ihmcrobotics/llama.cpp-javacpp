@@ -9,18 +9,18 @@ import org.bytedeco.javacpp.tools.InfoMapper;
 @Properties(value = {
       @Platform(
             include = {
-                 "ggml-backend.h",
-                 "ggml.h",
-                 "ggml-alloc.h",
-                 "ggml-cpu.h",
-                 "llama.h",
+               "ggml-backend.h",
+               "ggml.h",
+               "ggml-alloc.h",
+               "ggml-cpu.h",
+               "llama.h",
             },
             link = {
-                  "llama",
-                  "ggml",
-                  "ggml-base",
-                  "ggml-cpu",
-                  "ggml-cuda"
+               "llama",
+               "ggml",
+               "ggml-base",
+               "ggml-cpu",
+               "ggml-cuda"
             },
             preload = "jnillamacpp"
       ),
