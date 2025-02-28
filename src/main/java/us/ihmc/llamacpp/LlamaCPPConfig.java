@@ -39,7 +39,6 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("LLAMA_API").cppText("#define LLAMA_API").cppTypes());
       infoMap.put(new Info("llama_numa_init").skip());
       infoMap.put(new Info("llama_attach_threadpool").skip());
-      infoMap.put(new Info("llama_log_set").skip());
       infoMap.put(new Info("LLAMA_ROPE_TYPE_NEOX").skip());
       infoMap.put(new Info("LLAMA_ROPE_TYPE_MROPE").skip());
       infoMap.put(new Info("LLAMA_ROPE_TYPE_VISION").skip());
@@ -53,6 +52,7 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("devices").skip());
       infoMap.put(new Info("llama_pooling_type").skip());
       infoMap.put(new Info("llama_vocab_type").skip());
+      infoMap.put(new Info("llama_token").pointerTypes("IntPointer"));
 
       infoMap.put(new Info("GGML_NORETURN").skip());
       infoMap.put(new Info("GGML_BACKEND_API").skip());
