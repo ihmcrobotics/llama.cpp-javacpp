@@ -29,7 +29,7 @@ public class llama_model_quantize_params extends Pointer {
         }
     
         public native int nthread(); public native llama_model_quantize_params nthread(int setter);                     // number of threads to use for quantizing, if <=0 will use std::thread::hardware_concurrency()
-        public native @Cast("llama_ftype") int ftype(); public native llama_model_quantize_params ftype(int setter);              // quantize to this llama_ftype   // output tensor type // token embeddings tensor type
+        public native llama_ftype ftype(); public native llama_model_quantize_params ftype(llama_ftype setter);              // quantize to this llama_ftype   // output tensor type // token embeddings tensor type
         public native @Cast("bool") boolean allow_requantize(); public native llama_model_quantize_params allow_requantize(boolean setter);               // allow quantizing non-f32/f16 tensors
         public native @Cast("bool") boolean quantize_output_tensor(); public native llama_model_quantize_params quantize_output_tensor(boolean setter);         // quantize output.weight
         public native @Cast("bool") boolean only_copy(); public native llama_model_quantize_params only_copy(boolean setter);                      // only copy tensors - ftype, allow_requantize and quantize_output_tensor are ignored

@@ -27,7 +27,7 @@ public class llama_model_kv_override extends Pointer {
             return new llama_model_kv_override((Pointer)this).offsetAddress(i);
         }
     
-        public native @Cast("llama_model_kv_override_type") int tag(); public native llama_model_kv_override tag(int setter);
+        public native llama_model_kv_override_type tag(); public native llama_model_kv_override tag(llama_model_kv_override_type setter);
 
         public native @Cast("char") byte key(int i); public native llama_model_kv_override key(int i, byte setter);
         @MemberGetter public native @Cast("char*") BytePointer key();

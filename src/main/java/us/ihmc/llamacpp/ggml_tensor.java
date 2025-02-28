@@ -28,7 +28,7 @@ public class ggml_tensor extends Pointer {
             return new ggml_tensor((Pointer)this).offsetAddress(i);
         }
     
-        public native @Cast("ggml_type") int type(); public native ggml_tensor type(int setter);
+        public native ggml_type type(); public native ggml_tensor type(ggml_type setter);
 
         public native ggml_backend_buffer buffer(); public native ggml_tensor buffer(ggml_backend_buffer setter);
 
@@ -41,7 +41,7 @@ public class ggml_tensor extends Pointer {
                                    // nb[i] = nb[i-1] * ne[i-1]
 
         // compute data
-        public native @Cast("ggml_op") int op(); public native ggml_tensor op(int setter);
+        public native ggml_op op(); public native ggml_tensor op(ggml_op setter);
 
         // op params - allocated as int32_t for alignment
         public native int op_params(int i); public native ggml_tensor op_params(int i, int setter);

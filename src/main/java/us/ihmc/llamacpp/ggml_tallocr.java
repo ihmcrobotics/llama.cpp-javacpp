@@ -28,6 +28,7 @@ public class ggml_tallocr extends Pointer {
         return new ggml_tallocr((Pointer)this).offsetAddress(i);
     }
 
+    public native ggml_backend_buffer buffer(); public native ggml_tallocr buffer(ggml_backend_buffer setter);
     public native Pointer base(); public native ggml_tallocr base(Pointer setter);
     public native @Cast("size_t") long alignment(); public native ggml_tallocr alignment(long setter);
     public native @Cast("size_t") long offset(); public native ggml_tallocr offset(long setter);

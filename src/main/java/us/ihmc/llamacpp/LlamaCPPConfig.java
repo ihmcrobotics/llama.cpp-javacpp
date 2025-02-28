@@ -12,17 +12,17 @@ import org.bytedeco.javacpp.tools.InfoMapper;
                  "ggml-backend.h",
                  "ggml.h",
                  "ggml-alloc.h",
-//                 "ggml-cpp.h",
-
                  "ggml-cpu.h",
-//                 "ggml-cuda.h",
-//                 "gguf.h",
                  "llama.h",
-//                 "llama-cpp.h"
             },
-            link = {"llama", "ggml", "ggml-base", "ggml-cpu", "ggml-cuda"},
-            preload = "jnillamacpp",
-            define = {"GGML_USE_CUDA", "GGML_USE_NUMA"}
+            link = {
+                  "llama",
+                  "ggml",
+                  "ggml-base",
+                  "ggml-cpu",
+                  "ggml-cuda"
+            },
+            preload = "jnillamacpp"
       ),
       @Platform(
             value = "linux",
@@ -36,6 +36,9 @@ import org.bytedeco.javacpp.tools.InfoMapper;
 public class LlamaCPPConfig implements InfoMapper {
    @Override
    public void map(InfoMap infoMap) {
+      infoMap.put(new Info().enumerate());
+
+      // llamacpp
       infoMap.put(new Info("LLAMA_API").cppText("#define LLAMA_API").cppTypes());
       infoMap.put(new Info("llama_numa_init").skip());
       infoMap.put(new Info("llama_attach_threadpool").skip());
@@ -52,8 +55,8 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("devices").skip());
       infoMap.put(new Info("llama_pooling_type").skip());
       infoMap.put(new Info("llama_vocab_type").skip());
-      infoMap.put(new Info("llama_token").pointerTypes("IntPointer"));
 
+      // ggml
       infoMap.put(new Info("GGML_NORETURN").skip());
       infoMap.put(new Info("GGML_BACKEND_API").skip());
       infoMap.put(new Info("GGML_TENSOR_LOCALS_1").skip());
@@ -66,22 +69,23 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("GGML_RESTRICT").cppTypes().annotations());
       infoMap.put(new Info("GGML_API").cppTypes().annotations());
 
-      infoMap.put(new Info("ggml_backend_t").skip());
-      infoMap.put(new Info("ggml_backend_event_t").skip());
-      infoMap.put(new Info("ggml_backend_sched_t").skip());
-      infoMap.put(new Info("ggml_threadpool").skip());
-      infoMap.put(new Info("ggml_threadpool_t").skip());
-      infoMap.put(new Info("ggml_backend_buffer_t").skip());
+      infoMap.put(new Info("ggml_backend_t").valueTypes("ggml_backend"));
+      infoMap.put(new Info("ggml_backend_event_t").valueTypes("ggml_backend_event"));
+      infoMap.put(new Info("ggml_backend_dev_t").valueTypes("ggml_backend_device"));
+      infoMap.put(new Info("ggml_backend_sched_t").valueTypes("ggml_backend_sched"));
+      infoMap.put(new Info("ggml_threadpool_t").valueTypes("ggml_threadpool"));
+      infoMap.put(new Info("ggml_backend_buffer_t").valueTypes("ggml_backend_buffer"));
+      infoMap.put(new Info("ggml_backend_buffer_type_t").skip()); // TODO:
+      infoMap.put(new Info("ggml_backend_reg_t").valueTypes("ggml_backend_reg"));
+      infoMap.put(new Info("ggml_gallocr_t").valueTypes("ggml_gallocr"));
+
+      // TODO:
+      infoMap.put(new Info("ggml_guid_t").skip());
       infoMap.put(new Info("ggml_from_float_t").skip());
       infoMap.put(new Info("ggml_to_float_t").skip());
       infoMap.put(new Info("ggml_vec_dot_t").skip());
-      infoMap.put(new Info("ggml_backend_dev_t").skip());
-      infoMap.put(new Info("ggml_backend_buffer_type_t").skip());
-      infoMap.put(new Info("ggml_backend_reg_t").skip());
-      infoMap.put(new Info("ggml_gallocr_t").skip());
+      infoMap.put(new Info("ggml_abort_callback").skip());
       infoMap.put(new Info("ggml_backend_graph_copy").skip());
-      infoMap.put(new Info("ggml_backend_device").skip());
       infoMap.put(new Info("ggml_backend_dev_type").skip());
-
    }
 }

@@ -27,6 +27,6 @@ public class ggml_type_traits_cpu extends Pointer {
             return new ggml_type_traits_cpu((Pointer)this).offsetAddress(i);
         }
     
-        public native @Cast("ggml_type") int vec_dot_type(); public native ggml_type_traits_cpu vec_dot_type(int setter);
+        public native ggml_type vec_dot_type(); public native ggml_type_traits_cpu vec_dot_type(ggml_type setter);
         public native @Cast("int64_t") long nrows(); public native ggml_type_traits_cpu nrows(long setter); // number of rows to process simultaneously
     }
