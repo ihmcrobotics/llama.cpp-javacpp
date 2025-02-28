@@ -24,13 +24,25 @@ RUN addgroup --gid $USER_GID robotlab \
  && chown -R robotlab /home/robotlab \
  && adduser robotlab sudo \
  && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# Make sure the .config folder exists and is owned by the robotlab user.
+# This is useful for later installed apps.
+RUN mkdir -p /home/robotlab/.config
+RUN chown -R robotlab:robotlab /home/robotlab/.config
 
-# Install CMake
+# Install newer version of CMake for compatibility with llamacpp
 RUN wget -O /tmp/cmake.sh "https://cmake.org/files/v3.31/cmake-3.31.6-linux-x86_64.sh"
 RUN mkdir -p /opt/cmake && sh /tmp/cmake.sh --prefix=/opt/cmake --exclude-subdir
 RUN ln -sf /opt/cmake/bin/cmake /usr/local/bin/cmake
 RUN cmake --version
 
 WORKDIR /tmp
+
+# For debugging
+RUN curl -sL https://download.jetbrains.com/cpp/CLion-2024.3.3.tar.gz -o clion.tar.gz \
+ && tar -xzf clion.tar.gz \
+ && mv clion-2024.3.3/ /opt/clion \
+ && ln -s /opt/clion/bin/clion /usr/local/bin/clion
+RUN mkdir -p /home/robotlab/.cache
+RUN chown -R robotlab:robotlab /home/robotlab/.cache
 
 USER robotlab
