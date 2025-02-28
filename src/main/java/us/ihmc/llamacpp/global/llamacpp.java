@@ -4051,7 +4051,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
     // Set callback for all future logging events.
     // If this is not called, or NULL is supplied, everything is output on stderr.
-    
+    public static native void llama_log_set(ggml_log_callback log_callback, Pointer user_data);
 // Targeting ../llama_perf_context_data.java
 
 

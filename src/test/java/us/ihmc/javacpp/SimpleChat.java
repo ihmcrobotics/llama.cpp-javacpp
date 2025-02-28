@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
-//import static us.ihmc.llamacpp.global.llamacpp.llama_log_set;
 
 // https://github.com/ggml-org/llama.cpp/blob/master/examples/simple-chat/simple-chat.cpp
 public class SimpleChat {
@@ -39,7 +38,7 @@ public class SimpleChat {
             }
          }
       };
-      //      llama_log_set(callback, null);
+      llama_log_set(callback, null);
 
       ggml_backend_load_all();
 
