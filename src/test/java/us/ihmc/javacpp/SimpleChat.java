@@ -3,7 +3,6 @@ package us.ihmc.javacpp;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.Pointer;
-import org.bytedeco.javacpp.PointerPointer;
 import us.ihmc.llamacpp.*;
 import us.ihmc.llamacpp.library.LlamaCPPNativeLibrary;
 
@@ -22,11 +21,13 @@ public class SimpleChat {
 
    public static final Path MODELS_DIRECTORY = Paths.get(System.getProperty("user.home")).resolve(".ihmc/llama-models");
    public static final Path MODEL_TO_USE = MODELS_DIRECTORY.resolve("Llama-3.2-1B-Instruct-Q8_0.gguf");
-   //   public static final Path MODEL_TO_USE = MODELS_DIRECTORY.resolve("Llama-3.2-3B-Instruct-F16.gguf");
 
    private llama_context ctx;
    private llama_vocab vocab;
    private llama_sampler smpl;
+
+   llama_chat_message messages = new llama_chat_message(100);
+   int n_messages = 0;
 
    public SimpleChat() {
       // only print errors
@@ -60,25 +61,13 @@ public class SimpleChat {
       llama_sampler_chain_add(smpl, llama_sampler_init_temp(0.8f));
       llama_sampler_chain_add(smpl, llama_sampler_init_dist(LLAMA_DEFAULT_SEED));
 
-      PointerPointer<llama_chat_message> messages = new PointerPointer<>(1000);
-      messages.limit(0);
       BytePointer formatted = new BytePointer(llama_n_ctx(ctx));
       int prev_len = 0;
-
       while (true) {
          System.out.print("\033[32m> \033[0m");
-         String user;
-         if (messages.position() == 0)
-         {
-            user = "What is 2 + 2?";
-            System.out.println(user);
-         }
-         else
-         {
-            // get user input
-            Scanner scanner = new Scanner(System.in);
-            user = scanner.nextLine();
-         }
+         // get user input
+         Scanner scanner = new Scanner(System.in);
+         String user = scanner.nextLine();
 
          if (user.isEmpty()) {
             break;
@@ -87,16 +76,11 @@ public class SimpleChat {
          String tmpl = llama_model_chat_template(model, (String) null);
 
          // add the user input to the message list and format it
-
-         llama_chat_message message = new llama_chat_message();
-         message.role(new BytePointer("user"));
-         message.content(new BytePointer(user));
-         messages.put(messages.limit(), message);
-         messages.limit(messages.limit() + 1);
-         int new_len = llama_chat_apply_template(tmpl, messages.get(llama_chat_message.class, 0), messages.limit(), true, formatted, (int) formatted.capacity());
+         push_back_message("user", user);
+         int new_len = llama_chat_apply_template(tmpl, messages, n_messages, true, formatted, (int) formatted.capacity());
          if (new_len > formatted.capacity()) {
             formatted = new BytePointer(new_len);
-            new_len = llama_chat_apply_template(tmpl, messages.get(llama_chat_message.class, 0), messages.limit(), true, formatted, (int) formatted.capacity());
+            new_len = llama_chat_apply_template(tmpl, messages, n_messages, true, formatted, (int) formatted.capacity());
          }
          if (new_len < 0) {
             System.err.println("failed to apply the chat template");
@@ -111,12 +95,8 @@ public class SimpleChat {
          System.out.print("\n\033[0m");
 
          // add the response to the messages
-         message = new llama_chat_message();
-         message.role(new BytePointer("assistant"));
-         message.content(new BytePointer(response));
-         messages.put(messages.limit(), message);
-         messages.limit(messages.limit() + 1);
-         prev_len = llama_chat_apply_template(tmpl, messages.get(llama_chat_message.class, 0), messages.limit(), false, (BytePointer) null, 0);
+         push_back_message("assistant", response);
+         prev_len = llama_chat_apply_template(tmpl, messages, n_messages, false, (BytePointer) null, 0);
          if (prev_len < 0) {
             System.err.println("failed to apply the chat template");
             System.exit(1);
@@ -124,9 +104,7 @@ public class SimpleChat {
       }
 
       // free resources
-      for (int i = 0; i < messages.limit(); i++) {
-         messages.get(llama_chat_message.class, i).deallocate();
-      }
+      messages.close();
       llama_sampler_free(smpl);
       llama_free(ctx);
       llama_model_free(model);
@@ -186,6 +164,22 @@ public class SimpleChat {
       }
 
       return response;
+   }
+
+   private void push_back_message(String role, String content) {
+      if (messages.capacity() == n_messages)
+      {
+         llama_chat_message messages_new = new llama_chat_message(n_messages * 2);
+         for (int i = 0; i < n_messages; i++)
+            Pointer.memcpy(messages_new, messages, n_messages);
+         messages.close();
+         messages = messages_new;
+      }
+
+      llama_chat_message message = messages.getPointer(n_messages);
+      message.role(new BytePointer(role));
+      message.content(new BytePointer(content));
+      return n_messages + 1;
    }
 
    public static void main(String[] args) {

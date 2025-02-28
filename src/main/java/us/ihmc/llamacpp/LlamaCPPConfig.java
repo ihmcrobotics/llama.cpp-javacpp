@@ -52,6 +52,7 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("devices").skip());
       infoMap.put(new Info("llama_pooling_type").skip());
       infoMap.put(new Info("llama_vocab_type").skip());
+      infoMap.put(new Info("llama_token").pointerTypes("IntPointer"));
 
       infoMap.put(new Info("GGML_NORETURN").skip());
       infoMap.put(new Info("GGML_BACKEND_API").skip());
