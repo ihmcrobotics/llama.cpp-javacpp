@@ -11,7 +11,7 @@ import us.ihmc.llamacpp.llama_vocab;
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
 // https://github.com/ggml-org/llama.cpp/blob/master/examples/simple-chat/simple-chat.cpp
-public class SimpleExample
+public class SimpleChat
 {
    public static void main(String[] args)
    {
