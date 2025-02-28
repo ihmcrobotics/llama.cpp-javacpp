@@ -123,7 +123,7 @@ public class SimpleChat {
 
       boolean is_first = llama_get_kv_cache_used_cells(ctx) == 0;
 
-      int n_prompt_tokens = -llama_tokenize(vocab, prompt, prompt.length(), new IntPointer(), 0, is_first, true);
+      int n_prompt_tokens = -llama_tokenize(vocab, prompt, prompt.length(), (IntPointer) null, 0, is_first, true);
       IntPointer prompt_tokens = new IntPointer(n_prompt_tokens);
       if (llama_tokenize(vocab, prompt, prompt.length(), prompt_tokens, n_prompt_tokens, is_first, true) < 0) {
          System.err.println("failed to tokenize the prompt");
@@ -184,7 +184,7 @@ public class SimpleChat {
          messages = messages_new;
       }
 
-      llama_chat_message message = messages.getPointer(n_messages);
+      llama_chat_message message = messages.getPointer(n_messages++);
       message.role(new BytePointer(role));
       message.content(new BytePointer(content));
    }
