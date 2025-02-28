@@ -30,7 +30,7 @@ public class llama_model_params extends Pointer {
         // NULL-terminated list of devices to use for offloading (if NULL, all available devices are used)
 
         public native int n_gpu_layers(); public native llama_model_params n_gpu_layers(int setter); // number of layers to store in VRAM
-        public native @Cast("llama_split_mode") int split_mode(); public native llama_model_params split_mode(int setter); // how to split the model across multiple GPUs
+        public native llama_split_mode split_mode(); public native llama_model_params split_mode(llama_split_mode setter); // how to split the model across multiple GPUs
 
         // the GPU that is used for the entire model when split_mode is LLAMA_SPLIT_MODE_NONE
         public native int main_gpu(); public native llama_model_params main_gpu(int setter);

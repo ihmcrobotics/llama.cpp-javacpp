@@ -8,16 +8,12 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-
-    // Abort callback
-    // If not NULL, called before ggml computation
-    // If it returns true, the computation is aborted
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_abort_callback extends FunctionPointer {
+public class ggml_backend_get_features_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_abort_callback(Pointer p) { super(p); }
-        protected ggml_abort_callback() { allocate(); }
+        public    ggml_backend_get_features_t(Pointer p) { super(p); }
+        protected ggml_backend_get_features_t() { allocate(); }
         private native void allocate();
-        public native @Cast("bool") boolean call(Pointer data);
+        public native ggml_backend_feature call(ggml_backend_reg reg);
     }

@@ -36,8 +36,8 @@ public class llama_context_params extends Pointer {
         public native int n_threads(); public native llama_context_params n_threads(int setter);         // number of threads to use for generation
         public native int n_threads_batch(); public native llama_context_params n_threads_batch(int setter);   // number of threads to use for batch processing
 
-        public native @Cast("llama_rope_scaling_type") int rope_scaling_type(); public native llama_context_params rope_scaling_type(int setter); // RoPE scaling type, from `enum llama_rope_scaling_type`      // whether to pool (sum) embedding results by sequence id
-        public native @Cast("llama_attention_type") int attention_type(); public native llama_context_params attention_type(int setter);    // attention type to use for embeddings
+        public native llama_rope_scaling_type rope_scaling_type(); public native llama_context_params rope_scaling_type(llama_rope_scaling_type setter); // RoPE scaling type, from `enum llama_rope_scaling_type`      // whether to pool (sum) embedding results by sequence id
+        public native llama_attention_type attention_type(); public native llama_context_params attention_type(llama_attention_type setter);    // attention type to use for embeddings
 
         // ref: https://github.com/ggml-org/llama.cpp/pull/2054
         public native float rope_freq_base(); public native llama_context_params rope_freq_base(float setter);   // RoPE base frequency, 0 = from model

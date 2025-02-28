@@ -3,15 +3,23 @@ package us.ihmc.javacpp;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.Pointer;
-import us.ihmc.llamacpp.*;
+import us.ihmc.llamacpp.ggml_log_callback;
 import us.ihmc.llamacpp.library.LlamaCPPNativeLibrary;
+import us.ihmc.llamacpp.llama_batch;
+import us.ihmc.llamacpp.llama_chat_message;
+import us.ihmc.llamacpp.llama_context;
+import us.ihmc.llamacpp.llama_context_params;
+import us.ihmc.llamacpp.llama_model;
+import us.ihmc.llamacpp.llama_model_params;
+import us.ihmc.llamacpp.llama_sampler;
+import us.ihmc.llamacpp.llama_vocab;
 
-import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
+import static us.ihmc.llamacpp.global.llamacpp.ggml_log_level.GGML_LOG_LEVEL_ERROR;
 
 // https://github.com/ggml-org/llama.cpp/blob/master/examples/simple-chat/simple-chat.cpp
 public class SimpleChat {
@@ -22,9 +30,9 @@ public class SimpleChat {
    public static final Path MODELS_DIRECTORY = Paths.get(System.getProperty("user.home")).resolve(".ihmc/llama-models");
    public static final Path MODEL_TO_USE = MODELS_DIRECTORY.resolve("Llama-3.2-1B-Instruct-Q8_0.gguf");
 
-   private llama_context ctx;
-   private llama_vocab vocab;
-   private llama_sampler smpl;
+   private final llama_context ctx;
+   private final llama_vocab vocab;
+   private final llama_sampler smpl;
 
    llama_chat_message messages = new llama_chat_message(100);
    int n_messages = 0;
@@ -33,8 +41,8 @@ public class SimpleChat {
       // only print errors
       ggml_log_callback callback = new ggml_log_callback() {
          @Override
-         public void call(int level, BytePointer text, Pointer user_data) {
-            if (level >= GGML_LOG_LEVEL_ERROR) {
+         public void call(ggml_log_level level, BytePointer text, Pointer user_data) {
+            if (level.value >= GGML_LOG_LEVEL_ERROR.value) {
                System.err.printf("%s", text.getString());
             }
          }
@@ -115,7 +123,7 @@ public class SimpleChat {
 
       boolean is_first = llama_get_kv_cache_used_cells(ctx) == 0;
 
-      int n_prompt_tokens = -llama_tokenize(vocab, prompt, prompt.length(), (IntBuffer) null, 0, is_first, true);
+      int n_prompt_tokens = -llama_tokenize(vocab, prompt, prompt.length(), new IntPointer(), 0, is_first, true);
       IntPointer prompt_tokens = new IntPointer(n_prompt_tokens);
       if (llama_tokenize(vocab, prompt, prompt.length(), prompt_tokens, n_prompt_tokens, is_first, true) < 0) {
          System.err.println("failed to tokenize the prompt");
@@ -166,10 +174,10 @@ public class SimpleChat {
       return response;
    }
 
-   private void push_back_message(String role, String content) {
+   private int push_back_message(String role, String content) {
       if (messages.capacity() == n_messages)
       {
-         llama_chat_message messages_new = new llama_chat_message(n_messages * 2);
+         llama_chat_message messages_new = new llama_chat_message(n_messages * 2L);
          for (int i = 0; i < n_messages; i++)
             Pointer.memcpy(messages_new, messages, n_messages);
          messages.close();

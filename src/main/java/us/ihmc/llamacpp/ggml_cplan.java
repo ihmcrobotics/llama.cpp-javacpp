@@ -34,6 +34,7 @@ public class ggml_cplan extends Pointer {
         public native @Cast("uint8_t*") BytePointer work_data(); public native ggml_cplan work_data(BytePointer setter); // work buffer, to be allocated by caller before calling to `ggml_graph_compute()`
 
         public native int n_threads(); public native ggml_cplan n_threads(int setter);
+        public native ggml_threadpool threadpool(); public native ggml_cplan threadpool(ggml_threadpool setter);
 
         // abort ggml_graph_compute when true
         public native Pointer abort_callback_data(); public native ggml_cplan abort_callback_data(Pointer setter);

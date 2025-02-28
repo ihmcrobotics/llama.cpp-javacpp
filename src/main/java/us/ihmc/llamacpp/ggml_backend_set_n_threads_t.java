@@ -8,14 +8,13 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-
-    // TODO these functions were sandwiched in the old optimization interface, is there a better place for them?
+    // Set the number of threads for the backend
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_log_callback extends FunctionPointer {
+public class ggml_backend_set_n_threads_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_log_callback(Pointer p) { super(p); }
-        protected ggml_log_callback() { allocate(); }
+        public    ggml_backend_set_n_threads_t(Pointer p) { super(p); }
+        protected ggml_backend_set_n_threads_t() { allocate(); }
         private native void allocate();
-        public native void call(ggml_log_level level, @Cast("const char*") BytePointer text, Pointer user_data);
+        public native void call(ggml_backend backend, int n_threads);
     }

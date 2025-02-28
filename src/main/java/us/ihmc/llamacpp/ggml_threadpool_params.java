@@ -32,7 +32,7 @@ public class ggml_threadpool_params extends Pointer {
         public native @Cast("bool") boolean cpumask(int i); public native ggml_threadpool_params cpumask(int i, boolean setter);
         @MemberGetter public native @Cast("bool*") BoolPointer cpumask(); // mask of cpu cores (all-zeros means use default affinity settings)
         public native int n_threads(); public native ggml_threadpool_params n_threads(int setter);                   // number of threads
-        public native @Cast("ggml_sched_priority") int prio(); public native ggml_threadpool_params prio(int setter);                   // thread priority
+        public native ggml_sched_priority prio(); public native ggml_threadpool_params prio(ggml_sched_priority setter);                   // thread priority
         public native @Cast("uint32_t") int poll(); public native ggml_threadpool_params poll(int setter);                        // polling level (0 - no polling, 100 - aggressive polling)
         public native @Cast("bool") boolean strict_cpu(); public native ggml_threadpool_params strict_cpu(boolean setter);                  // strict cpu placement
         public native @Cast("bool") boolean paused(); public native ggml_threadpool_params paused(boolean setter);                      // start in paused state
