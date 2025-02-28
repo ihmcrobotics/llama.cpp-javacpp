@@ -174,7 +174,7 @@ public class SimpleChat {
       return response;
    }
 
-   private int push_back_message(String role, String content) {
+   private void push_back_message(String role, String content) {
       if (messages.capacity() == n_messages)
       {
          llama_chat_message messages_new = new llama_chat_message(n_messages * 2L);
@@ -187,7 +187,6 @@ public class SimpleChat {
       llama_chat_message message = messages.getPointer(n_messages);
       message.role(new BytePointer(role));
       message.content(new BytePointer(content));
-      return n_messages + 1;
    }
 
    public static void main(String[] args) {
