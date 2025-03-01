@@ -8,6 +8,8 @@ import org.bytedeco.javacpp.tools.InfoMapper;
 
 @Properties(value = {
       @Platform(
+            includepath = "include",
+            linkpath = "lib",
             include = {
                "ggml-backend.h",
                "ggml.h",
@@ -26,8 +28,7 @@ import org.bytedeco.javacpp.tools.InfoMapper;
       ),
       @Platform(
             value = "linux",
-            includepath = {"include", "/usr/local/cuda/include", "lib"},
-            linkpath = {"include", "/usr/local/cuda/include", "lib"}
+            includepath = {"include", "/usr/local/cuda/include"}
       ),
 },
       target = "us.ihmc.llamacpp",

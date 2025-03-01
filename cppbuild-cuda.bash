@@ -1,10 +1,10 @@
 #!/bin/bash
+# This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 
 # Clean
-rm -rf cppbuild/us
-find src/main/java/us/ihmc/llamacpp -maxdepth 1 -type f -not \( -name "LlamaCPPConfig.java" \) -delete
+#rm -rf cppbuild/us
+#find src/main/java/us/ihmc/llamacpp -maxdepth 1 -type f -not \( -name "LlamaCPPConfig.java" \) -delete
 
-# This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 pushd .
 mkdir -p cppbuild
 cd cppbuild
@@ -16,22 +16,24 @@ if [ ! -d llama.cpp-$LLAMACPP_VERSION ]; then
   git -c advice.detachedHead=false clone -b $LLAMACPP_VERSION https://github.com/ggml-org/llama.cpp.git llama.cpp-$LLAMACPP_VERSION
 fi
 
-# Ubuntu 20.04 ships with cmake 3.16.3, where llama.cpp ggml-cuda requires at least 3.18
-# This patch file currently not working yet. nvcc error during build
-# cp ../patches/CMakeLists.txt.gguf-cuda.patch llama.cpp-$LLAMACPP_VERSION/CMakeLists.txt.gguf-cuda.patch
-
 INSTALL_DIR=$(pwd)
 
 cd llama.cpp-$LLAMACPP_VERSION
 
-# patch ggml/src/ggml-cuda/CMakeLists.txt CMakeLists.txt.gguf-cuda.patch
+if [ "$(uname)" == "Linux" ]; then
+  cmake -B build -DGGML_CUDA=ON \
+    -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+    -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
+    -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
+    -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
+else # Windows
+  cmake -B build -DGGML_CUDA=ON \
+    -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
+    -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
+    -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
+fi
 
-cmake -B build -DGGML_CUDA=ON \
-               -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
-               -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
-               -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
-               -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
-cmake --build build --config Release -j $(nproc) --target install
+cmake --build build --config Release -j 8 --target install
 
 popd
 ### Java generation ####
@@ -46,7 +48,7 @@ if [ ! -f javacpp.jar ]; then
   unzip -j javacpp-platform-$JAVACPP_VERSION-bin.zip
 fi
 if [ ! -f cuda-$JAVACPP_CUDA_VERSION.jar ]; then
-    curl -O https://repo.maven.apache.org/maven2/org/bytedeco/cuda/$JAVACPP_CUDA_VERSION/cuda-$JAVACPP_CUDA_VERSION.jar
+  curl -O https://repo.maven.apache.org/maven2/org/bytedeco/cuda/$JAVACPP_CUDA_VERSION/cuda-$JAVACPP_CUDA_VERSION.jar
 fi
 
 CP_SEPARATOR=":"
@@ -92,3 +94,5 @@ fi
 if [ -f "javainstall/libjnillamacpp.so" ]; then
   cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
+# Windows
+
