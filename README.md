@@ -3,7 +3,8 @@
 Java support for [llama.cpp](https://github.com/ggml-org/llama.cpp).
 
 Supported platforms:
-- Linux (Ubuntu 20.04+ or similar x86_64)
+- Linux with CUDA (Ubuntu 20.04+ or similar x86_64)
+- Windows with CUDA (Windows 10+ x86_64)
 
 Requires Java 17.
 ### Gradle
