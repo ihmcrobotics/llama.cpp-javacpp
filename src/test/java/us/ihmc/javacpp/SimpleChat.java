@@ -178,8 +178,7 @@ public class SimpleChat {
       if (messages.capacity() == n_messages)
       {
          llama_chat_message messages_new = new llama_chat_message(n_messages * 2L);
-         for (int i = 0; i < n_messages; i++)
-            Pointer.memcpy(messages_new, messages, n_messages);
+         Pointer.memcpy(messages_new, messages, n_messages);
          messages.close();
          messages = messages_new;
       }
