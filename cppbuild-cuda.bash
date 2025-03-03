@@ -2,8 +2,8 @@
 # This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 
 # Clean
-#rm -rf cppbuild/us
-#find src/main/java/us/ihmc/llamacpp -maxdepth 1 -type f -not \( -name "LlamaCPPConfig.java" \) -delete
+rm -rf cppbuild/us
+find src/main/java/us/ihmc/llamacpp -maxdepth 1 -type f -not \( -name "LlamaCPPConfig.java" \) -delete
 
 pushd .
 mkdir -p cppbuild
