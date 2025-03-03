@@ -24,35 +24,36 @@ jobs:
           author_email: rosie@ihmc.us
           message: 'Rebuild natives for Linux with CUDA (x86_64)'
           push: true
-  build-windows-cuda-x86_64:
-    runs-on: [windows-2019]
-    needs: [build-linux-cuda-x86_64]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Pull repo
-        run: |
-          git reset --hard
-          git pull
-      - uses: Jimver/cuda-toolkit@v0.2.21
-        id: cuda-toolkit
-        with:
-          cuda: '12.1.0'
-          method: 'network'
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          vsversion: 2019
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Compile native library
-        run: |
-          bash.exe cppbuild-cuda.bash
-      - name: Commit native libraries
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: '*.dll' # Only commit generated java from Linux
-          author_name: ihmc-rosie
-          author_email: rosie@ihmc.us
-          message: 'Rebuild natives for Windows with CUDA (x86_64)'
-          push: true
+# TODO: C1356: unable to find mspdbcore.dll
+#  build-windows-cuda-x86_64:
+#    runs-on: [windows-2019]
+#    needs: [build-linux-cuda-x86_64]
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Pull repo
+#        run: |
+#          git reset --hard
+#          git pull
+#      - uses: Jimver/cuda-toolkit@v0.2.21
+#        id: cuda-toolkit
+#        with:
+#          cuda: '12.1.0'
+#          method: 'network'
+#      - uses: ilammy/msvc-dev-cmd@v1
+#        with:
+#          vsversion: 2019
+#      - uses: actions/setup-java@v4
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#      - name: Compile native library
+#        run: |
+#          bash.exe cppbuild-cuda.bash
+#      - name: Commit native libraries
+#        uses: EndBug/add-and-commit@v9
+#        with:
+#          add: '*.dll' # Only commit generated java from Linux
+#          author_name: ihmc-rosie
+#          author_email: rosie@ihmc.us
+#          message: 'Rebuild natives for Windows with CUDA (x86_64)'
+#          push: true
