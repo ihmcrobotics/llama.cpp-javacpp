@@ -11,7 +11,8 @@ public class LlamaCPPNativeLibrary implements NativeLibraryDescription {
         if (arch == Architecture.x64) {
             archPackage = switch (os) {
                 case LINUX64 -> "linux-x86_64";
-                case WIN64, MACOSX64 -> throw new RuntimeException("Unsupported platform");
+                case WIN64 -> "windows-x86_64";
+                case MACOSX64 -> throw new RuntimeException("Unsupported platform");
             };
         } else if (arch == Architecture.arm64) {
             throw new RuntimeException("Unsupported platform");
@@ -26,7 +27,10 @@ public class LlamaCPPNativeLibrary implements NativeLibraryDescription {
             case LINUX64 -> {
                 return NativeLibraryWithDependencies.fromFilename("libjnillamacpp.so", "libggml-base.so", "libggml-cpu.so", "libggml-cuda.so", "libggml.so", "libllama.so");
             }
-            case WIN64, MACOSX64 -> throw new RuntimeException("Unsupported platform");
+            case WIN64 -> {
+                return NativeLibraryWithDependencies.fromFilename("jnillamacpp.dll", "ggml-base.dll", "ggml-cpu.dll", "ggml-cuda.dll", "ggml.dll", "llama.dll");
+            }
+            case MACOSX64 -> throw new RuntimeException("Unsupported platform");
         }
         return null;
     }

@@ -1,10 +1,10 @@
 #!/bin/bash
+# This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 
 # Clean
 rm -rf cppbuild/us
 find src/main/java/us/ihmc/llamacpp -maxdepth 1 -type f -not \( -name "LlamaCPPConfig.java" \) -delete
 
-# This build script is designed to work on Linux and Windows. For Windows, run from a bash shell launched with launchBashWindows.bat
 pushd .
 mkdir -p cppbuild
 cd cppbuild
@@ -20,12 +20,20 @@ INSTALL_DIR=$(pwd)
 
 cd llama.cpp-$LLAMACPP_VERSION
 
-cmake -B build -DGGML_CUDA=ON \
-               -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
-               -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
-               -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
-               -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
-cmake --build build --config Release -j $(nproc) --target install
+if [ "$(uname)" == "Linux" ]; then
+  cmake -B build -DGGML_CUDA=ON \
+    -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+    -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
+    -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
+    -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
+else # Windows
+  cmake -B build -DGGML_CUDA=ON \
+    -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
+    -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
+    -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
+fi
+
+cmake --build build --config Release -j 8 --target install
 
 popd
 ### Java generation ####
@@ -70,4 +78,27 @@ if [ -f "lib/libllama_shared.so" ]; then
 fi
 if [ -f "javainstall/libjnillamacpp.so" ]; then
   cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp/native/linux-x86_64
+fi
+# Windows
+mkdir -p ../src/main/resources/llamacpp/native/windows-x86_64
+if [ -f "bin/ggml.dll" ]; then
+  cp bin/ggml.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/ggml-base.dll" ]; then
+  cp bin/ggml-base.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/ggml-cpu.dll" ]; then
+  cp bin/ggml-cpu.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/ggml-cuda.dll" ]; then
+  cp bin/ggml-cuda.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/llama.dll" ]; then
+  cp bin/llama.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/llama_shared.dll" ]; then
+  cp bin/llama_shared.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "javainstall/jnillamacpp.dll" ]; then
+  cp javainstall/jnillamacpp.dll ../src/main/resources/llamacpp/native/windows-x86_64
 fi

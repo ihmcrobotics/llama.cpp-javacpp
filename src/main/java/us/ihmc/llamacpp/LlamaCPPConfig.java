@@ -8,6 +8,8 @@ import org.bytedeco.javacpp.tools.InfoMapper;
 
 @Properties(value = {
       @Platform(
+            includepath = "include",
+            linkpath = "lib",
             include = {
                "ggml-backend.h",
                "ggml.h",
@@ -26,8 +28,7 @@ import org.bytedeco.javacpp.tools.InfoMapper;
       ),
       @Platform(
             value = "linux",
-            includepath = {"include", "/usr/local/cuda/include", "lib"},
-            linkpath = {"include", "/usr/local/cuda/include", "lib"}
+            includepath = {"include", "/usr/local/cuda/include"}
       ),
 },
       target = "us.ihmc.llamacpp",
@@ -87,5 +88,9 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("ggml_abort_callback").skip());
       infoMap.put(new Info("ggml_backend_graph_copy").skip());
       infoMap.put(new Info("ggml_backend_dev_type").skip());
+
+      // TODO: Windows
+      infoMap.put(new Info("ggml_graph_export").skip());
+      infoMap.put(new Info("ggml_graph_import").skip());
    }
 }
