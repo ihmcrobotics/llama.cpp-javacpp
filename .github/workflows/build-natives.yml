@@ -47,7 +47,7 @@ jobs:
           java-version: '17'
       - name: Compile native library
         run: |
-          bash.exe cppbuild.bash
+          bash.exe cppbuild-cuda.bash
       - name: Commit native libraries
         uses: EndBug/add-and-commit@v9
         with:
