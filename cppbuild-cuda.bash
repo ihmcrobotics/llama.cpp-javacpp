@@ -95,4 +95,25 @@ if [ -f "javainstall/libjnillamacpp.so" ]; then
   cp javainstall/libjnillamacpp.so ../src/main/resources/llamacpp/native/linux-x86_64
 fi
 # Windows
-
+mkdir -p ../src/main/resources/llamacpp/native/windows-x86_64
+if [ -f "bin/ggml.dll" ]; then
+  cp bin/ggml.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/ggml-base.dll" ]; then
+  cp bin/ggml-base.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/ggml-cpu.dll" ]; then
+  cp bin/ggml-cpu.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/ggml-cuda.dll" ]; then
+  cp bin/ggml-cuda.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/llama.dll" ]; then
+  cp bin/llama.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "bin/llama_shared.dll" ]; then
+  cp bin/llama_shared.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi
+if [ -f "javainstall/jnillamacpp.dll" ]; then
+  cp javainstall/jnillamacpp.dll ../src/main/resources/llamacpp/native/windows-x86_64
+fi

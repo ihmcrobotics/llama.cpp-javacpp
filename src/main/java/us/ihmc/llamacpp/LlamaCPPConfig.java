@@ -88,5 +88,9 @@ public class LlamaCPPConfig implements InfoMapper {
       infoMap.put(new Info("ggml_abort_callback").skip());
       infoMap.put(new Info("ggml_backend_graph_copy").skip());
       infoMap.put(new Info("ggml_backend_dev_type").skip());
+
+      // TODO: Windows
+      infoMap.put(new Info("ggml_graph_export").skip());
+      infoMap.put(new Info("ggml_graph_import").skip());
    }
 }

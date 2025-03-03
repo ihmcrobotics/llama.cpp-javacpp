@@ -2625,11 +2625,8 @@ public static final int GGML_N_TASKS_MAX = (-1);
     public static native ggml_tensor ggml_graph_get_grad(@Const ggml_cgraph cgraph, @Const ggml_tensor node);
     public static native ggml_tensor ggml_graph_get_grad_acc(@Const ggml_cgraph cgraph, @Const ggml_tensor node);
 
-    public static native void ggml_graph_export(@Const ggml_cgraph cgraph, @Cast("const char*") BytePointer fname);
-    public static native void ggml_graph_export(@Const ggml_cgraph cgraph, String fname);
-    public static native ggml_cgraph ggml_graph_import(@Cast("const char*") BytePointer fname, @Cast("ggml_context**") PointerPointer ctx_data, @Cast("ggml_context**") PointerPointer ctx_eval);
-    public static native ggml_cgraph ggml_graph_import(@Cast("const char*") BytePointer fname, @ByPtrPtr ggml_context ctx_data, @ByPtrPtr ggml_context ctx_eval);
-    public static native ggml_cgraph ggml_graph_import(String fname, @ByPtrPtr ggml_context ctx_data, @ByPtrPtr ggml_context ctx_eval);
+    
+    
 
     // print info and performance information for the graph
     public static native void ggml_graph_print(@Const ggml_cgraph cgraph);
