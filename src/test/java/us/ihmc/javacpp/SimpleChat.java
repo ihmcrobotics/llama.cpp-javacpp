@@ -175,7 +175,7 @@ public class SimpleChat {
    }
 
    private void push_back_message(String role, String content) {
-      if (messages.capacity() == n_messages)
+      if (n_messages >= messages.capacity())
       {
          llama_chat_message messages_new = new llama_chat_message(n_messages * 2L);
          Pointer.memcpy(messages_new, messages, n_messages);
