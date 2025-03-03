@@ -33,25 +33,25 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 // #endif
 
 // #ifdef  __cplusplus
-// Targeting ..\ggml_backend_buffer_type.java
+// Targeting ../ggml_backend_buffer_type.java
 
 
-// Targeting ..\ggml_backend_buffer.java
+// Targeting ../ggml_backend_buffer.java
 
 
-// Targeting ..\ggml_backend_event.java
+// Targeting ../ggml_backend_event.java
 
 
-// Targeting ..\ggml_backend.java
+// Targeting ../ggml_backend.java
 
 
-// Targeting ..\ggml_backend_graph_plan_t.java
+// Targeting ../ggml_backend_graph_plan_t.java
 
 
-// Targeting ..\ggml_backend_reg.java
+// Targeting ../ggml_backend_reg.java
 
 
-// Targeting ..\ggml_backend_device.java
+// Targeting ../ggml_backend_device.java
 
 
 
@@ -147,10 +147,10 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     //
 
     
-// Targeting ..\ggml_backend_dev_caps.java
+// Targeting ../ggml_backend_dev_caps.java
 
 
-// Targeting ..\ggml_backend_dev_props.java
+// Targeting ../ggml_backend_dev_props.java
 
 
 
@@ -180,15 +180,15 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     // Common functions that may be obtained using ggml_backend_reg_get_proc_address
 
     // Split buffer type for tensor parallelism
-// Targeting ..\ggml_backend_set_n_threads_t.java
+// Targeting ../ggml_backend_set_n_threads_t.java
 
 
     // Get additional buffer types provided by the device (returns a NULL-terminated array)
     // Set the abort callback for the backend
-// Targeting ..\ggml_backend_feature.java
+// Targeting ../ggml_backend_feature.java
 
 
-// Targeting ..\ggml_backend_get_features_t.java
+// Targeting ../ggml_backend_get_features_t.java
 
 
 
@@ -227,10 +227,10 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native void ggml_backend_load_all();
     public static native void ggml_backend_load_all_from_path(@Cast("const char*") BytePointer dir_path);
     public static native void ggml_backend_load_all_from_path(String dir_path);
-// Targeting ..\ggml_backend_sched.java
+// Targeting ../ggml_backend_sched.java
 
 
-// Targeting ..\ggml_backend_sched_eval_callback.java
+// Targeting ../ggml_backend_sched_eval_callback.java
 
 
 
@@ -272,7 +272,7 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 
     // Copy a graph to a different backend
     
-// Targeting ..\ggml_backend_eval_callback.java
+// Targeting ../ggml_backend_eval_callback.java
 
 
 
@@ -633,7 +633,7 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     public static native void ggml_fp32_to_fp16_row(@Const FloatPointer arg0, @Cast("ggml_fp16_t*") ShortPointer arg1, @Cast("int64_t") long arg2);
     public static native void ggml_fp32_to_fp16_row(@Const FloatBuffer arg0, @Cast("ggml_fp16_t*") ShortBuffer arg1, @Cast("int64_t") long arg2);
     public static native void ggml_fp32_to_fp16_row(@Const float[] arg0, @Cast("ggml_fp16_t*") short[] arg1, @Cast("int64_t") long arg2);
-// Targeting ..\ggml_bf16_t.java
+// Targeting ../ggml_bf16_t.java
 
 
     public static native @ByVal ggml_bf16_t ggml_fp32_to_bf16(float arg0);
@@ -647,13 +647,13 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     public static native void ggml_fp32_to_bf16_row(@Const FloatPointer arg0, ggml_bf16_t arg1, @Cast("int64_t") long arg2);
     public static native void ggml_fp32_to_bf16_row(@Const FloatBuffer arg0, ggml_bf16_t arg1, @Cast("int64_t") long arg2);
     public static native void ggml_fp32_to_bf16_row(@Const float[] arg0, ggml_bf16_t arg1, @Cast("int64_t") long arg2);
-// Targeting ..\ggml_object.java
+// Targeting ../ggml_object.java
 
 
-// Targeting ..\ggml_context.java
+// Targeting ../ggml_context.java
 
 
-// Targeting ..\ggml_cgraph.java
+// Targeting ../ggml_cgraph.java
 
 
 
@@ -922,10 +922,10 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
         public ggml_tensor_flag intern() { for (ggml_tensor_flag e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
-// Targeting ..\ggml_init_params.java
+// Targeting ../ggml_init_params.java
 
 
-// Targeting ..\ggml_tensor.java
+// Targeting ../ggml_tensor.java
 
 
 
@@ -2433,19 +2433,19 @@ public static final int GGML_KQ_MASK_PAD = 64;
                 ggml_tensor g,
                 ggml_tensor state,
                 float scale);
-// Targeting ..\ggml_unary_op_f32_t.java
+// Targeting ../ggml_unary_op_f32_t.java
 
 
-// Targeting ..\ggml_binary_op_f32_t.java
+// Targeting ../ggml_binary_op_f32_t.java
 
 
-// Targeting ..\ggml_custom1_op_f32_t.java
+// Targeting ../ggml_custom1_op_f32_t.java
 
 
-// Targeting ..\ggml_custom2_op_f32_t.java
+// Targeting ../ggml_custom2_op_f32_t.java
 
 
-// Targeting ..\ggml_custom3_op_f32_t.java
+// Targeting ../ggml_custom3_op_f32_t.java
 
 
 
@@ -2506,13 +2506,13 @@ public static final int GGML_KQ_MASK_PAD = 64;
                 ggml_tensor b,
                 ggml_tensor c,
                        ggml_custom3_op_f32_t fun);
-// Targeting ..\ggml_custom1_op_t.java
+// Targeting ../ggml_custom1_op_t.java
 
 
-// Targeting ..\ggml_custom2_op_t.java
+// Targeting ../ggml_custom2_op_t.java
 
 
-// Targeting ..\ggml_custom3_op_t.java
+// Targeting ../ggml_custom3_op_t.java
 
 
 
@@ -2634,7 +2634,7 @@ public static final int GGML_N_TASKS_MAX = (-1);
     // dump the graph into a file using the dot format
     public static native void ggml_graph_dump_dot(@Const ggml_cgraph gb, @Const ggml_cgraph gf, @Cast("const char*") BytePointer filename);
     public static native void ggml_graph_dump_dot(@Const ggml_cgraph gb, @Const ggml_cgraph gf, String filename);
-// Targeting ..\ggml_log_callback.java
+// Targeting ../ggml_log_callback.java
 
 
 
@@ -2729,7 +2729,7 @@ public static final int GGML_N_TASKS_MAX = (-1);
 // #else
 // #    define GGML_RESTRICT restrict
 // #endif
-// Targeting ..\ggml_type_traits.java
+// Targeting ../ggml_type_traits.java
 
 
 
@@ -2753,10 +2753,10 @@ public static final int GGML_N_TASKS_MAX = (-1);
         public ggml_sched_priority intern() { for (ggml_sched_priority e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
-// Targeting ..\ggml_threadpool_params.java
+// Targeting ../ggml_threadpool_params.java
 
 
-// Targeting ..\ggml_threadpool.java
+// Targeting ../ggml_threadpool.java
 
      // forward declaration, see ggml.c
 
@@ -2776,13 +2776,13 @@ public static final int GGML_N_TASKS_MAX = (-1);
 
 // #ifdef  __cplusplus
 // #endif
-// Targeting ..\ggml_tallocr.java
+// Targeting ../ggml_tallocr.java
 
 
 
 public static native @ByVal ggml_tallocr ggml_tallocr_new(ggml_backend_buffer buffer);
 public static native void ggml_tallocr_alloc(ggml_tallocr talloc, ggml_tensor tensor);
-// Targeting ..\ggml_gallocr.java
+// Targeting ../ggml_gallocr.java
 
 
 public static native void ggml_gallocr_free(ggml_gallocr galloc);
@@ -2830,7 +2830,7 @@ public static native ggml_backend_buffer ggml_backend_alloc_ctx_tensors(ggml_con
 // #include "ggml-backend.h"
 
 // #ifdef  __cplusplus
-// Targeting ..\ggml_cplan.java
+// Targeting ../ggml_cplan.java
 
 
 
@@ -2865,7 +2865,7 @@ public static native ggml_backend_buffer ggml_backend_alloc_ctx_tensors(ggml_con
     // other
 
     // Internal types and functions exposed for tests and benchmarks
-// Targeting ..\ggml_type_traits_cpu.java
+// Targeting ../ggml_type_traits_cpu.java
 
 
 
@@ -2928,13 +2928,13 @@ public static final int LLAMA_STATE_SEQ_MAGIC =   LLAMA_FILE_MAGIC_GGSQ;
 public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
 // #ifdef __cplusplus
-// Targeting ..\llama_vocab.java
+// Targeting ../llama_vocab.java
 
 
-// Targeting ..\llama_model.java
+// Targeting ../llama_model.java
 
 
-// Targeting ..\llama_context.java
+// Targeting ../llama_context.java
 
 
 
@@ -3116,16 +3116,16 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
         public llama_split_mode intern() { for (llama_split_mode e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
-// Targeting ..\llama_token_data.java
+// Targeting ../llama_token_data.java
 
 
-// Targeting ..\llama_token_data_array.java
+// Targeting ../llama_token_data_array.java
 
 
-// Targeting ..\llama_progress_callback.java
+// Targeting ../llama_progress_callback.java
 
 
-// Targeting ..\llama_batch.java
+// Targeting ../llama_batch.java
 
 
 
@@ -3141,28 +3141,28 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
         public llama_model_kv_override_type intern() { for (llama_model_kv_override_type e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
-// Targeting ..\llama_model_kv_override.java
+// Targeting ../llama_model_kv_override.java
 
 
-// Targeting ..\llama_model_params.java
+// Targeting ../llama_model_params.java
 
 
-// Targeting ..\llama_context_params.java
+// Targeting ../llama_context_params.java
 
 
-// Targeting ..\llama_model_quantize_params.java
+// Targeting ../llama_model_quantize_params.java
 
 
-// Targeting ..\llama_logit_bias.java
+// Targeting ../llama_logit_bias.java
 
 
-// Targeting ..\llama_sampler_chain_params.java
+// Targeting ../llama_sampler_chain_params.java
 
 
-// Targeting ..\llama_chat_message.java
+// Targeting ../llama_chat_message.java
 
 
-// Targeting ..\llama_adapter_lora.java
+// Targeting ../llama_adapter_lora.java
 
 
 
@@ -3406,10 +3406,10 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                              int n_embd,
                              int il_start,
                              int il_end);
-// Targeting ..\llama_kv_cache_view_cell.java
+// Targeting ../llama_kv_cache_view_cell.java
 
 
-// Targeting ..\llama_kv_cache_view.java
+// Targeting ../llama_kv_cache_view.java
 
 
 
@@ -4125,7 +4125,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** Apply chat template. Inspired by hf apply_chat_template() on python.
      *  Both "model" and "custom_template" are optional, but at least one is required. "custom_template" has higher precedence than "model"
      *  NOTE: This function does not use a jinja parser. It only support a pre-defined list of template. See more: https://github.com/ggml-org/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template
-     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model’s default chat template will be used instead.
+     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model???s default chat template will be used instead.
      *  @param chat Pointer to a list of multiple llama_chat_message
      *  @param n_msg Number of llama_chat_message in this chat
      *  @param add_ass Whether to end the prompt with the token(s) that indicate the start of an assistant message.
@@ -4180,13 +4180,13 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native int llama_chat_builtin_templates(@Cast("const char**") @ByPtrPtr BytePointer output, @Cast("size_t") long len);
     public static native int llama_chat_builtin_templates(@Cast("const char**") @ByPtrPtr ByteBuffer output, @Cast("size_t") long len);
     public static native int llama_chat_builtin_templates(@Cast("const char**") @ByPtrPtr byte[] output, @Cast("size_t") long len);
-// Targeting ..\llama_sampler_context_t.java
+// Targeting ../llama_sampler_context_t.java
 
 
-// Targeting ..\llama_sampler_i.java
+// Targeting ../llama_sampler_i.java
 
 
-// Targeting ..\llama_sampler.java
+// Targeting ../llama_sampler.java
 
 
 
@@ -4243,7 +4243,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** \details XTC sampler as described in https://github.com/oobabooga/text-generation-webui/pull/6335 */
     public static native llama_sampler llama_sampler_init_xtc(float p, float t,     @Cast("size_t") long min_keep, @Cast("uint32_t") int seed);
 
-    /** \details Top n sigma sampling as described in academic paper "Top-nσ: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
+    /** \details Top n sigma sampling as described in academic paper "Top-n??: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
     public static native llama_sampler llama_sampler_init_top_n_sigma(float n);
 
     /** \details Mirostat 1.0 algorithm described in the paper https://arxiv.org/abs/2007.14966. Uses tokens instead of words.
@@ -4459,10 +4459,10 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // Set callback for all future logging events.
     // If this is not called, or NULL is supplied, everything is output on stderr.
     public static native void llama_log_set(ggml_log_callback log_callback, Pointer user_data);
-// Targeting ..\llama_perf_context_data.java
+// Targeting ../llama_perf_context_data.java
 
 
-// Targeting ..\llama_perf_sampler_data.java
+// Targeting ../llama_perf_sampler_data.java
 
 
 
