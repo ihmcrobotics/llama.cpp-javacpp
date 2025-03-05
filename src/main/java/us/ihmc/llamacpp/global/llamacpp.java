@@ -80,7 +80,7 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native void ggml_backend_buffer_free(ggml_backend_buffer buffer);
     public static native Pointer ggml_backend_buffer_get_base(ggml_backend_buffer buffer);
     public static native @Cast("size_t") long ggml_backend_buffer_get_size(ggml_backend_buffer buffer);
-    public static native void ggml_backend_buffer_init_tensor(ggml_backend_buffer buffer, ggml_tensor tensor);
+    public static native @ByVal ggml_status ggml_backend_buffer_init_tensor(ggml_backend_buffer buffer, ggml_tensor tensor);
     public static native @Cast("size_t") long ggml_backend_buffer_get_alignment(ggml_backend_buffer buffer);
     public static native @Cast("size_t") long ggml_backend_buffer_get_max_size(ggml_backend_buffer buffer);
     public static native @Cast("size_t") long ggml_backend_buffer_get_alloc_size(ggml_backend_buffer buffer, ggml_tensor tensor);
@@ -280,8 +280,8 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native @Cast("bool") boolean ggml_backend_compare_graph_backend(ggml_backend backend1, ggml_backend backend2, ggml_cgraph graph, ggml_backend_eval_callback callback, Pointer user_data);
 
     // Tensor initialization
-    public static native void ggml_backend_tensor_alloc(ggml_backend_buffer buffer, ggml_tensor tensor, Pointer addr);
-    public static native void ggml_backend_view_init(ggml_tensor tensor);
+    public static native @ByVal ggml_status ggml_backend_tensor_alloc(ggml_backend_buffer buffer, ggml_tensor tensor, Pointer addr);
+    public static native @ByVal ggml_status ggml_backend_view_init(ggml_tensor tensor);
 
     // CPU buffer types are always available
     public static native ggml_backend_buffer ggml_backend_cpu_buffer_from_ptr(Pointer ptr, @Cast("size_t") long size);
@@ -2727,7 +2727,11 @@ public static final int GGML_N_TASKS_MAX = (-1);
 // #        define GGML_RESTRICT
 // #    endif
 // #else
-// #    define GGML_RESTRICT restrict
+// #    if defined (_MSC_VER) && (__STDC_VERSION__ < 201112L)
+// #        define GGML_RESTRICT __restrict
+// #    else
+// #        define GGML_RESTRICT restrict
+// #    endif
 // #endif
 // Targeting ../ggml_type_traits.java
 
@@ -2781,7 +2785,7 @@ public static final int GGML_N_TASKS_MAX = (-1);
 
 
 public static native @ByVal ggml_tallocr ggml_tallocr_new(ggml_backend_buffer buffer);
-public static native void ggml_tallocr_alloc(ggml_tallocr talloc, ggml_tensor tensor);
+public static native ggml_status ggml_tallocr_alloc(ggml_tallocr talloc, ggml_tensor tensor);
 // Targeting ../ggml_gallocr.java
 
 
@@ -2970,7 +2974,8 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
         LLAMA_VOCAB_PRE_TYPE_EXAONE        (25),
         LLAMA_VOCAB_PRE_TYPE_CHAMELEON     (26),
         LLAMA_VOCAB_PRE_TYPE_MINERVA       (27),
-        LLAMA_VOCAB_PRE_TYPE_DEEPSEEK3_LLM (28);
+        LLAMA_VOCAB_PRE_TYPE_DEEPSEEK3_LLM (28),
+        LLAMA_VOCAB_PRE_TYPE_GPT4O         (29);
 
         public final int value;
         private llama_vocab_pre_type(int v) { this.value = v; }
@@ -3271,6 +3276,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native int llama_model_n_embd(@Const llama_model model);
     public static native int llama_model_n_layer(@Const llama_model model);
     public static native int llama_model_n_head(@Const llama_model model);
+    public static native int llama_model_n_head_kv(@Const llama_model model);
 
     // Get the model's RoPE frequency scaling factor
     public static native float llama_model_rope_freq_scale_train(@Const llama_model model);
@@ -4278,9 +4284,6 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                               String grammar_str,
                               String grammar_root);
 
-    /** \details Lazy grammar sampler, introduced in https://github.com/ggml-org/llama.cpp/pull/9639
-     *  @param trigger_words A list of words that will trigger the grammar sampler. This may be updated to a loose regex syntax (w/ ^) in a near future.
-     *  @param trigger_tokens A list of tokens that will trigger the grammar sampler. */
     public static native llama_sampler llama_sampler_init_grammar_lazy(
                 @Const llama_vocab vocab,
                               @Cast("const char*") BytePointer grammar_str,
@@ -4337,6 +4340,68 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                     @Cast("size_t") long num_trigger_words,
                        @Cast("const llama_token*") int[] trigger_tokens,
                                     @Cast("size_t") long num_trigger_tokens);
+
+
+    /** \details Lazy grammar sampler, introduced in https://github.com/ggml-org/llama.cpp/pull/9639
+     *  @param trigger_patterns A list of patterns that will trigger the grammar sampler. Pattern will be matched from the start of the generation output, and grammar sampler will be fed content starting from its first match group.
+     *  @param trigger_tokens A list of tokens that will trigger the grammar sampler. Grammar sampler will be fed content starting from the trigger token included. */
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          @Cast("const char*") BytePointer grammar_str,
+                          @Cast("const char*") BytePointer grammar_root,
+                         @Cast("const char**") PointerPointer trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") IntPointer trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          @Cast("const char*") BytePointer grammar_str,
+                          @Cast("const char*") BytePointer grammar_root,
+                         @Cast("const char**") @ByPtrPtr BytePointer trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") IntPointer trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          String grammar_str,
+                          String grammar_root,
+                         @Cast("const char**") @ByPtrPtr ByteBuffer trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") IntBuffer trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          @Cast("const char*") BytePointer grammar_str,
+                          @Cast("const char*") BytePointer grammar_root,
+                         @Cast("const char**") @ByPtrPtr byte[] trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") int[] trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          String grammar_str,
+                          String grammar_root,
+                         @Cast("const char**") @ByPtrPtr BytePointer trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") IntPointer trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          @Cast("const char*") BytePointer grammar_str,
+                          @Cast("const char*") BytePointer grammar_root,
+                         @Cast("const char**") @ByPtrPtr ByteBuffer trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") IntBuffer trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+    public static native llama_sampler llama_sampler_init_grammar_lazy_patterns(
+            @Const llama_vocab vocab,
+                          String grammar_str,
+                          String grammar_root,
+                         @Cast("const char**") @ByPtrPtr byte[] trigger_patterns,
+                                @Cast("size_t") long num_trigger_patterns,
+                   @Cast("const llama_token*") int[] trigger_tokens,
+                                @Cast("size_t") long num_trigger_tokens);
+
 
     /** NOTE: Avoid using on the full vocabulary as searching for repeated tokens can become slow. For example, apply top-k or top-p sampling first. */
     public static native llama_sampler llama_sampler_init_penalties(
