@@ -4131,7 +4131,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** Apply chat template. Inspired by hf apply_chat_template() on python.
      *  Both "model" and "custom_template" are optional, but at least one is required. "custom_template" has higher precedence than "model"
      *  NOTE: This function does not use a jinja parser. It only support a pre-defined list of template. See more: https://github.com/ggml-org/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template
-     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model’s default chat template will be used instead.
+     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model???s default chat template will be used instead.
      *  @param chat Pointer to a list of multiple llama_chat_message
      *  @param n_msg Number of llama_chat_message in this chat
      *  @param add_ass Whether to end the prompt with the token(s) that indicate the start of an assistant message.
@@ -4249,7 +4249,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** \details XTC sampler as described in https://github.com/oobabooga/text-generation-webui/pull/6335 */
     public static native llama_sampler llama_sampler_init_xtc(float p, float t,     @Cast("size_t") long min_keep, @Cast("uint32_t") int seed);
 
-    /** \details Top n sigma sampling as described in academic paper "Top-nσ: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
+    /** \details Top n sigma sampling as described in academic paper "Top-n??: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
     public static native llama_sampler llama_sampler_init_top_n_sigma(float n);
 
     /** \details Mirostat 1.0 algorithm described in the paper https://arxiv.org/abs/2007.14966. Uses tokens instead of words.
