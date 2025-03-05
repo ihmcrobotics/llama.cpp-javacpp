@@ -9,7 +9,7 @@ pushd .
 mkdir -p cppbuild
 cd cppbuild
 
-LLAMACPP_VERSION=b4743
+LLAMACPP_VERSION=b4829
 
 # Non-shallow clone required for llama.cpp build
 if [ ! -d llama.cpp-$LLAMACPP_VERSION ]; then
