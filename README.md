@@ -10,7 +10,7 @@ Requires Java 17.
 ### Gradle
 ```
 dependencies {
-  implementation("us.ihmc:llamacpp-javacpp:b4743")
+  implementation("us.ihmc:llamacpp-javacpp:b4829")
 }
 ```
 ### Maven
@@ -19,7 +19,7 @@ dependencies {
   <dependency>
     <groupId>us.ihmc</groupId>
     <artifactId>llamacpp-javacpp</artifactId>
-    <version>b4743</version>
+    <version>b4829</version>
   </dependency>
 </dependencies>
 ```
