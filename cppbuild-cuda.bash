@@ -9,7 +9,7 @@ pushd .
 mkdir -p cppbuild
 cd cppbuild
 
-LLAMACPP_VERSION=b4829
+LLAMACPP_VERSION=b9789
 
 # Non-shallow clone required for llama.cpp build
 if [ ! -d llama.cpp-$LLAMACPP_VERSION ]; then
@@ -20,20 +20,28 @@ INSTALL_DIR=$(pwd)
 
 cd llama.cpp-$LLAMACPP_VERSION
 
+# CMAKE_CUDA_ARCHITECTURES may be overridden in the environment. Default to "native" so we only
+# compile kernels for the GPU on this machine, which is dramatically faster than the full fat-binary
+# set. Override (e.g. CUDA_ARCHITECTURES="75;80;86;89;120") to produce more portable binaries.
+CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES:-native}
+
 if [ "$(uname)" == "Linux" ]; then
   cmake -B build -DGGML_CUDA=ON \
+    -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+    -DCMAKE_CUDA_ARCHITECTURES="$CUDA_ARCHITECTURES" \
     -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
     -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
     -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
 else # Windows
   cmake -B build -DGGML_CUDA=ON \
+    -DCMAKE_CUDA_ARCHITECTURES="$CUDA_ARCHITECTURES" \
     -DCMAKE_INSTALL_INCLUDEDIR=$INSTALL_DIR/include \
     -DCMAKE_INSTALL_LIBDIR=$INSTALL_DIR/lib \
     -DCMAKE_INSTALL_BINDIR=$INSTALL_DIR/bin
 fi
 
-cmake --build build --config Release -j 8 --target install
+cmake --build build --config Release -j "$(nproc)" --target install
 
 popd
 ### Java generation ####

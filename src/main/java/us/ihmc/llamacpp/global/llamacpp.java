@@ -60,6 +60,14 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     // Backend buffer type
     //
 
+    public static native @Cast("const char*") BytePointer ggml_backend_buft_name(ggml_backend_buffer_type buft);
+    public static native ggml_backend_buffer ggml_backend_buft_alloc_buffer(ggml_backend_buffer_type buft, @Cast("size_t") long size);
+    public static native @Cast("size_t") long ggml_backend_buft_get_alignment(ggml_backend_buffer_type buft);
+    public static native @Cast("size_t") long ggml_backend_buft_get_max_size(ggml_backend_buffer_type buft);
+    public static native @Cast("size_t") long ggml_backend_buft_get_alloc_size(ggml_backend_buffer_type buft, @Const ggml_tensor tensor);
+    public static native @Cast("bool") boolean ggml_backend_buft_is_host(ggml_backend_buffer_type buft);
+    public static native ggml_backend_device ggml_backend_buft_get_device(ggml_backend_buffer_type buft);
+
     //
     // Backend buffer
     //
@@ -83,33 +91,40 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native @ByVal ggml_status ggml_backend_buffer_init_tensor(ggml_backend_buffer buffer, ggml_tensor tensor);
     public static native @Cast("size_t") long ggml_backend_buffer_get_alignment(ggml_backend_buffer buffer);
     public static native @Cast("size_t") long ggml_backend_buffer_get_max_size(ggml_backend_buffer buffer);
-    public static native @Cast("size_t") long ggml_backend_buffer_get_alloc_size(ggml_backend_buffer buffer, ggml_tensor tensor);
+    public static native @Cast("size_t") long ggml_backend_buffer_get_alloc_size(ggml_backend_buffer buffer, @Const ggml_tensor tensor);
     public static native void ggml_backend_buffer_clear(ggml_backend_buffer buffer, @Cast("uint8_t") byte value);
     public static native @Cast("bool") boolean ggml_backend_buffer_is_host(ggml_backend_buffer buffer);
     public static native void ggml_backend_buffer_set_usage(ggml_backend_buffer buffer, ggml_backend_buffer_usage usage);
     public static native void ggml_backend_buffer_set_usage(ggml_backend_buffer buffer, @Cast("ggml_backend_buffer_usage") int usage);
     public static native ggml_backend_buffer_usage ggml_backend_buffer_get_usage(ggml_backend_buffer buffer);
+    public static native ggml_backend_buffer_type ggml_backend_buffer_get_type(ggml_backend_buffer buffer);
     public static native void ggml_backend_buffer_reset(ggml_backend_buffer buffer);
 
     // tensor copy between different backends
-    public static native void ggml_backend_tensor_copy(ggml_tensor src, ggml_tensor dst);
+    public static native void ggml_backend_tensor_copy(@Const ggml_tensor src, ggml_tensor dst);
 
     //
     // Backend (stream)
     //
     public static native @Cast("const char*") BytePointer ggml_backend_name(ggml_backend backend);
     public static native void ggml_backend_free(ggml_backend backend);
+
+    public static native ggml_backend_buffer_type ggml_backend_get_default_buffer_type(ggml_backend backend);
     public static native ggml_backend_buffer ggml_backend_alloc_buffer(ggml_backend backend, @Cast("size_t") long size);
     public static native @Cast("size_t") long ggml_backend_get_alignment(ggml_backend backend);
     public static native @Cast("size_t") long ggml_backend_get_max_size(ggml_backend backend);
 
     public static native void ggml_backend_tensor_set_async(ggml_backend backend,       ggml_tensor tensor, @Const Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
     public static native void ggml_backend_tensor_get_async(ggml_backend backend, @Const ggml_tensor tensor,       Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
+    public static native void ggml_backend_tensor_set_2d_async(ggml_backend backend,       ggml_tensor tensor, @Const Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size, @Cast("size_t") long n_copies, @Cast("size_t") long stride_tensor, @Cast("size_t") long stride_data);
+    public static native void ggml_backend_tensor_get_2d_async(ggml_backend backend, @Const ggml_tensor tensor,       Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size, @Cast("size_t") long n_copies, @Cast("size_t") long stride_tensor, @Cast("size_t") long stride_data);
 
     // "offset" refers to the offset in tensor->data for setting/getting data
     public static native void ggml_backend_tensor_set(      ggml_tensor tensor, @Const Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
     public static native void ggml_backend_tensor_get(@Const ggml_tensor tensor,       Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size);
-    public static native void ggml_backend_tensor_memset(   ggml_tensor tensor,     @Cast("uint8_t") byte value, @Cast("size_t") long offset, @Cast("size_t") long size);
+    public static native void ggml_backend_tensor_set_2d(      ggml_tensor tensor, @Const Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size, @Cast("size_t") long n_copies, @Cast("size_t") long stride_tensor, @Cast("size_t") long stride_data);
+    public static native void ggml_backend_tensor_get_2d(@Const ggml_tensor tensor,       Pointer data, @Cast("size_t") long offset, @Cast("size_t") long size, @Cast("size_t") long n_copies, @Cast("size_t") long stride_tensor, @Cast("size_t") long stride_data);
+    public static native void ggml_backend_tensor_memset(      ggml_tensor tensor,     @Cast("uint8_t") byte value, @Cast("size_t") long offset, @Cast("size_t") long size);
 
     public static native void ggml_backend_synchronize(ggml_backend backend);
 
@@ -122,13 +137,14 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 
     // NOTE: will be removed, use device version instead
     public static native @Cast("bool") boolean ggml_backend_supports_op(ggml_backend backend, @Const ggml_tensor op);
+    public static native @Cast("bool") boolean ggml_backend_supports_buft(ggml_backend backend, ggml_backend_buffer_type buft);
     public static native @Cast("bool") boolean ggml_backend_offload_op(ggml_backend backend, @Const ggml_tensor op);
 
     // asynchronous copy
     // the copy is performed after all the currently queued operations in backend_src
     // backend_dst will wait for the copy to complete before performing other operations
     // automatic fallback to sync copy if async is not supported
-    public static native void ggml_backend_tensor_copy_async(ggml_backend backend_src, ggml_backend backend_dst, ggml_tensor src, ggml_tensor dst);
+    public static native void ggml_backend_tensor_copy_async(ggml_backend backend_src, ggml_backend backend_dst, @Const ggml_tensor src, ggml_tensor dst);
 
     public static native ggml_backend_device ggml_backend_get_device(ggml_backend backend);
 
@@ -162,9 +178,12 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native ggml_backend_reg ggml_backend_dev_backend_reg(ggml_backend_device device);
     public static native ggml_backend ggml_backend_dev_init(ggml_backend_device device, @Cast("const char*") BytePointer params);
     public static native ggml_backend ggml_backend_dev_init(ggml_backend_device device, String params);
+    public static native ggml_backend_buffer_type ggml_backend_dev_buffer_type(ggml_backend_device device);
+    public static native ggml_backend_buffer_type ggml_backend_dev_host_buffer_type(ggml_backend_device device);
     public static native ggml_backend_buffer ggml_backend_dev_buffer_from_host_ptr(ggml_backend_device device, Pointer ptr, @Cast("size_t") long size, @Cast("size_t") long max_tensor_size);
 
     public static native @Cast("bool") boolean ggml_backend_dev_supports_op(ggml_backend_device device, @Const ggml_tensor op);
+    public static native @Cast("bool") boolean ggml_backend_dev_supports_buft(ggml_backend_device device, ggml_backend_buffer_type buft);
     public static native @Cast("bool") boolean ggml_backend_dev_offload_op(ggml_backend_device device, @Const ggml_tensor op);
 
     //
@@ -176,14 +195,24 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native ggml_backend_device ggml_backend_reg_dev_get(ggml_backend_reg reg, @Cast("size_t") long index);
     public static native Pointer ggml_backend_reg_get_proc_address(ggml_backend_reg reg, @Cast("const char*") BytePointer name);
     public static native Pointer ggml_backend_reg_get_proc_address(ggml_backend_reg reg, String name);
+// Targeting ../ggml_backend_comm_init_t.java
 
-    // Common functions that may be obtained using ggml_backend_reg_get_proc_address
 
-    // Split buffer type for tensor parallelism
+// Targeting ../ggml_backend_comm_free_t.java
+
+
+// Targeting ../ggml_backend_comm_allreduce_tensor_t.java
+
+
+// Targeting ../ggml_backend_split_buffer_type_t.java
+
+
 // Targeting ../ggml_backend_set_n_threads_t.java
 
 
-    // Get additional buffer types provided by the device (returns a NULL-terminated array)
+// Targeting ../ggml_backend_dev_get_extra_bufts_t.java
+
+
     // Set the abort callback for the backend
 // Targeting ../ggml_backend_feature.java
 
@@ -195,6 +224,8 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     //
     // Backend registry
     //
+
+    public static native void ggml_backend_register(ggml_backend_reg reg);
 
     public static native void ggml_backend_device_register(ggml_backend_device device);
 
@@ -235,9 +266,11 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 
 
     // Initialize a backend scheduler, backends with low index are given priority over backends with high index
+    
     public static native void ggml_backend_sched_free(ggml_backend_sched sched);
 
     // Initialize backend buffers from a measure graph
+    public static native void ggml_backend_sched_reserve_size(ggml_backend_sched sched, ggml_cgraph measure_graph, @Cast("size_t*") SizeTPointer sizes);
     public static native @Cast("bool") boolean ggml_backend_sched_reserve(ggml_backend_sched sched, ggml_cgraph measure_graph); // returns success
 
     public static native int ggml_backend_sched_get_n_backends(ggml_backend_sched sched);
@@ -247,10 +280,14 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native int ggml_backend_sched_get_n_splits(ggml_backend_sched sched);
     public static native int ggml_backend_sched_get_n_copies(ggml_backend_sched sched);
 
+    public static native ggml_backend_buffer_type ggml_backend_sched_get_buffer_type(ggml_backend_sched sched, ggml_backend backend);
     public static native @Cast("size_t") long ggml_backend_sched_get_buffer_size(ggml_backend_sched sched, ggml_backend backend);
 
     public static native void ggml_backend_sched_set_tensor_backend(ggml_backend_sched sched, ggml_tensor node, ggml_backend backend);
     public static native ggml_backend ggml_backend_sched_get_tensor_backend(ggml_backend_sched sched, ggml_tensor node);
+
+    // Split graph without allocating it
+    public static native void ggml_backend_sched_split_graph(ggml_backend_sched sched, ggml_cgraph graph);
 
     // Allocate and compute graph on the backend scheduler
     public static native @Cast("bool") boolean ggml_backend_sched_alloc_graph(ggml_backend_sched sched, ggml_cgraph graph); // returns success
@@ -267,6 +304,46 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
     public static native void ggml_backend_sched_set_eval_callback(ggml_backend_sched sched, ggml_backend_sched_eval_callback callback, Pointer user_data);
 
     //
+    // Meta backend
+    //
+
+public static final int GGML_BACKEND_META_MAX_DEVICES = 16;
+
+    public enum ggml_backend_meta_split_axis {
+        // tensor split by tensor dimensions:
+        GGML_BACKEND_SPLIT_AXIS_0(0),
+        GGML_BACKEND_SPLIT_AXIS_1(1),
+        GGML_BACKEND_SPLIT_AXIS_2(2),
+        GGML_BACKEND_SPLIT_AXIS_3(3),
+
+        GGML_BACKEND_SPLIT_AXIS_MIRRORED(10), // all values on all backends
+        GGML_BACKEND_SPLIT_AXIS_PARTIAL (11), // each backend has a partial sum
+
+        // for internal bookkeeping only:
+        GGML_BACKEND_SPLIT_AXIS_NONE   (98),
+        GGML_BACKEND_SPLIT_AXIS_UNKNOWN(99);
+
+        public final int value;
+        private ggml_backend_meta_split_axis(int v) { this.value = v; }
+        private ggml_backend_meta_split_axis(ggml_backend_meta_split_axis e) { this.value = e.value; }
+        public ggml_backend_meta_split_axis intern() { for (ggml_backend_meta_split_axis e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+    public static native @Cast("const char*") BytePointer ggml_backend_meta_split_axis_name(ggml_backend_meta_split_axis split_axis);
+    public static native String ggml_backend_meta_split_axis_name(@Cast("ggml_backend_meta_split_axis") int split_axis);
+// Targeting ../ggml_backend_meta_split_state.java
+
+
+// Targeting ../ggml_backend_meta_get_split_state_t.java
+
+
+
+    // create a new meta device from "simple" devices, meta buffer type/buffer/backend is then derived from this:
+    // TODO: this looks a bit strange - a backend API creates a device. I think we should try
+    //       express this as a backend registry functionality instead
+    
+
+    //
     // Utils
     //
 
@@ -277,7 +354,8 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 
 
     // Compare the output of two backends
-    public static native @Cast("bool") boolean ggml_backend_compare_graph_backend(ggml_backend backend1, ggml_backend backend2, ggml_cgraph graph, ggml_backend_eval_callback callback, Pointer user_data);
+    public static native @Cast("bool") boolean ggml_backend_compare_graph_backend(ggml_backend backend1, ggml_backend backend2, ggml_cgraph graph, ggml_backend_eval_callback callback, Pointer user_data, @Cast("const ggml_tensor*const*") PointerPointer test_nodes, @Cast("size_t") long num_test_nodes);
+    public static native @Cast("bool") boolean ggml_backend_compare_graph_backend(ggml_backend backend1, ggml_backend backend2, ggml_cgraph graph, ggml_backend_eval_callback callback, Pointer user_data, @Const @ByPtrPtr ggml_tensor test_nodes, @Cast("size_t") long num_test_nodes);
 
     // Tensor initialization
     public static native @ByVal ggml_status ggml_backend_tensor_alloc(ggml_backend_buffer buffer, ggml_tensor tensor, Pointer addr);
@@ -285,6 +363,7 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 
     // CPU buffer types are always available
     public static native ggml_backend_buffer ggml_backend_cpu_buffer_from_ptr(Pointer ptr, @Cast("size_t") long size);
+    public static native ggml_backend_buffer_type ggml_backend_cpu_buffer_type();
 
 // #ifdef  __cplusplus
 // #endif
@@ -300,7 +379,7 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 // This documentation is still a work in progress.
 // If you wish some specific topics to be covered, feel free to drop a comment:
 //
-//   https://github.com/ggerganov/whisper.cpp/issues/40
+//   https://github.com/ggml-org/whisper.cpp/issues/40
 //
 // ## Overview
 //
@@ -498,6 +577,10 @@ public class llamacpp extends us.ihmc.llamacpp.LlamaCPPConfig {
 // #    define GGML_ATTRIBUTE_FORMAT(...) __attribute__((format(printf, __VA_ARGS__)))
 // #endif
 
+// #if defined(_WIN32) && !defined(_WIN32_WINNT)
+public static final int _WIN32_WINNT = 0x0A00;
+// #endif
+
 // #include <stdbool.h>
 // #include <stddef.h>
 // #include <stdint.h>
@@ -524,17 +607,31 @@ public static final int GGML_DEFAULT_GRAPH_SIZE = 2048;
 
 // #if UINTPTR_MAX == 0xFFFFFFFF
     public static final int GGML_MEM_ALIGN = 4;
+// #elif defined(__EMSCRIPTEN__)
+// emscripten uses max_align_t == 8, so we need GGML_MEM_ALIGN == 8 for 64-bit wasm.
+// (for 32-bit wasm, the first conditional is true and GGML_MEM_ALIGN stays 4.)
+// ref: https://github.com/ggml-org/llama.cpp/pull/18628
 // #else
 // #endif
 
 public static final int GGML_EXIT_SUCCESS = 0;
 public static final int GGML_EXIT_ABORTED = 1;
 
+// TODO: convert to enum https://github.com/ggml-org/llama.cpp/pull/16187#discussion_r2388538726
+public static final int GGML_ROPE_TYPE_NORMAL = 0;
 public static final int GGML_ROPE_TYPE_NEOX =   2;
 public static final int GGML_ROPE_TYPE_MROPE =  8;
 public static final int GGML_ROPE_TYPE_VISION = 24;
+public static final int GGML_ROPE_TYPE_IMROPE = 40; // binary: 101000
+
+public static final int GGML_MROPE_SECTIONS =   4;
 
 // #define GGML_UNUSED(x) (void)(x)
+// #ifdef __CUDACC__
+// #define GGML_UNUSED_VARS(...) ggml_unused_vars_impl(__VA_ARGS__)
+// #else
+// #define GGML_UNUSED_VARS(...) do { (void)sizeof((__VA_ARGS__, 0)); } while(0)
+// #endif // __CUDACC__
 
 // #define GGML_PAD(x, n) (((x) + (n) - 1) & ~((n) - 1))
 
@@ -568,19 +665,19 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 //    GGML_TENSOR_LOCALS(size_t,  nb1, src1, nb);
 //
 // #define GGML_TENSOR_LOCALS_1(type, prefix, pointer, array)
-//     const type prefix##0 = (pointer)->array[0];
+//     const type prefix##0 = (pointer) ? (pointer)->array[0] : 0;
 //     GGML_UNUSED(prefix##0);
 // #define GGML_TENSOR_LOCALS_2(type, prefix, pointer, array)
 //     GGML_TENSOR_LOCALS_1    (type, prefix, pointer, array)
-//     const type prefix##1 = (pointer)->array[1];
+//     const type prefix##1 = (pointer) ? (pointer)->array[1] : 0;
 //     GGML_UNUSED(prefix##1);
 // #define GGML_TENSOR_LOCALS_3(type, prefix, pointer, array)
 //     GGML_TENSOR_LOCALS_2    (type, prefix, pointer, array)
-//     const type prefix##2 = (pointer)->array[2];
+//     const type prefix##2 = (pointer) ? (pointer)->array[2] : 0;
 //     GGML_UNUSED(prefix##2);
 // #define GGML_TENSOR_LOCALS(type, prefix, pointer, array)
 //     GGML_TENSOR_LOCALS_3  (type, prefix, pointer, array)
-//     const type prefix##3 = (pointer)->array[3];
+//     const type prefix##3 = (pointer) ? (pointer)->array[3] : 0;
 //     GGML_UNUSED(prefix##3);
 
 // #define GGML_TENSOR_UNARY_OP_LOCALS
@@ -597,6 +694,16 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 //     GGML_TENSOR_LOCALS(int64_t, ne,  dst,  ne)
 //     GGML_TENSOR_LOCALS(size_t,  nb,  dst,  nb)
 
+// #define GGML_TENSOR_TERNARY_OP_LOCALS
+//     GGML_TENSOR_LOCALS(int64_t, ne0, src0, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb0, src0, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne1, src1, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb1, src1, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne2, src2, ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb2, src2, nb)
+//     GGML_TENSOR_LOCALS(int64_t, ne,  dst,  ne)
+//     GGML_TENSOR_LOCALS(size_t,  nb,  dst,  nb)
+
 // #define GGML_TENSOR_BINARY_OP_LOCALS01
 //     GGML_TENSOR_LOCALS(int64_t, ne0, src0, ne)
 //     GGML_TENSOR_LOCALS(size_t,  nb0, src0, nb)
@@ -604,7 +711,13 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 //     GGML_TENSOR_LOCALS(size_t,  nb1, src1, nb)
 
 // #ifdef  __cplusplus
-// #endif
+// Targeting ../ggml_abort_callback_t.java
+
+
+
+    // Set the abort callback (passing null will restore original abort functionality: printing a message to stdout)
+    // Returns the old callback for chaining
+    public static native ggml_abort_callback_t ggml_set_abort_callback(ggml_abort_callback_t callback);
 
     public enum ggml_status {
         GGML_STATUS_ALLOC_FAILED(-2),
@@ -698,7 +811,10 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
         // GGML_TYPE_IQ4_NL_4_4 = 36,
         // GGML_TYPE_IQ4_NL_4_8 = 37,
         // GGML_TYPE_IQ4_NL_8_8 = 38,
-        GGML_TYPE_COUNT  (39);
+        GGML_TYPE_MXFP4  (39), // MXFP4 (1 block)
+        GGML_TYPE_NVFP4  (40), // NVFP4 (4 blocks, E4M3 scale)
+        GGML_TYPE_Q1_0   (41),
+        GGML_TYPE_COUNT  (42);
 
         public final int value;
         private ggml_type(int v) { this.value = v; }
@@ -709,13 +825,25 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 
     // precision
     public enum ggml_prec {
-        GGML_PREC_DEFAULT(0),
-        GGML_PREC_F32(1);
+        GGML_PREC_DEFAULT(0), // stored as ggml_tensor.op_params, 0 by default
+        GGML_PREC_F32    (10);
 
         public final int value;
         private ggml_prec(int v) { this.value = v; }
         private ggml_prec(ggml_prec e) { this.value = e.value; }
         public ggml_prec intern() { for (ggml_prec e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    // op hint
+    public enum ggml_op_hint {
+        GGML_HINT_NONE            (0),
+        GGML_HINT_SRC0_IS_HADAMARD(1);
+
+        public final int value;
+        private ggml_op_hint(int v) { this.value = v; }
+        private ggml_op_hint(ggml_op_hint e) { this.value = e.value; }
+        public ggml_op_hint intern() { for (ggml_op_hint e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
 
@@ -744,7 +872,10 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
         GGML_FTYPE_MOSTLY_IQ2_S  (21), // except 1d tensors
         GGML_FTYPE_MOSTLY_IQ4_XS (22), // except 1d tensors
         GGML_FTYPE_MOSTLY_IQ1_M  (23), // except 1d tensors
-        GGML_FTYPE_MOSTLY_BF16   (24);// except 1d tensors
+        GGML_FTYPE_MOSTLY_BF16   (24), // except 1d tensors
+        GGML_FTYPE_MOSTLY_MXFP4  (25), // except 1d tensors
+        GGML_FTYPE_MOSTLY_NVFP4  (26), // except 1d tensors
+        GGML_FTYPE_MOSTLY_Q1_0   (27);// except 1d tensors
 
         public final int value;
         private ggml_ftype(int v) { this.value = v; }
@@ -759,96 +890,110 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 
         GGML_OP_DUP(1),
         GGML_OP_ADD(2),
-        GGML_OP_ADD1(3),
-        GGML_OP_ACC(4),
-        GGML_OP_SUB(5),
-        GGML_OP_MUL(6),
-        GGML_OP_DIV(7),
-        GGML_OP_SQR(8),
-        GGML_OP_SQRT(9),
-        GGML_OP_LOG(10),
-        GGML_OP_SIN(11),
-        GGML_OP_COS(12),
-        GGML_OP_SUM(13),
-        GGML_OP_SUM_ROWS(14),
-        GGML_OP_MEAN(15),
-        GGML_OP_ARGMAX(16),
-        GGML_OP_COUNT_EQUAL(17),
-        GGML_OP_REPEAT(18),
-        GGML_OP_REPEAT_BACK(19),
-        GGML_OP_CONCAT(20),
-        GGML_OP_SILU_BACK(21),
-        GGML_OP_NORM(22), // normalize
-        GGML_OP_RMS_NORM(23),
-        GGML_OP_RMS_NORM_BACK(24),
-        GGML_OP_GROUP_NORM(25),
+        GGML_OP_ADD_ID(3),
+        GGML_OP_ADD1(4),
+        GGML_OP_ACC(5),
+        GGML_OP_SUB(6),
+        GGML_OP_MUL(7),
+        GGML_OP_DIV(8),
+        GGML_OP_SQR(9),
+        GGML_OP_SQRT(10),
+        GGML_OP_LOG(11),
+        GGML_OP_SIN(12),
+        GGML_OP_COS(13),
+        GGML_OP_SUM(14),
+        GGML_OP_SUM_ROWS(15),
+        GGML_OP_CUMSUM(16),
+        GGML_OP_MEAN(17),
+        GGML_OP_ARGMAX(18),
+        GGML_OP_COUNT_EQUAL(19),
+        GGML_OP_REPEAT(20),
+        GGML_OP_REPEAT_BACK(21),
+        GGML_OP_CONCAT(22),
+        GGML_OP_SILU_BACK(23),
+        GGML_OP_NORM(24), // normalize
+        GGML_OP_RMS_NORM(25),
+        GGML_OP_RMS_NORM_BACK(26),
+        GGML_OP_GROUP_NORM(27),
+        GGML_OP_L2_NORM(28),
 
-        GGML_OP_MUL_MAT(26),
-        GGML_OP_MUL_MAT_ID(27),
-        GGML_OP_OUT_PROD(28),
+        GGML_OP_MUL_MAT(29),
+        GGML_OP_MUL_MAT_ID(30),
+        GGML_OP_OUT_PROD(31),
 
-        GGML_OP_SCALE(29),
-        GGML_OP_SET(30),
-        GGML_OP_CPY(31),
-        GGML_OP_CONT(32),
-        GGML_OP_RESHAPE(33),
-        GGML_OP_VIEW(34),
-        GGML_OP_PERMUTE(35),
-        GGML_OP_TRANSPOSE(36),
-        GGML_OP_GET_ROWS(37),
-        GGML_OP_GET_ROWS_BACK(38),
-        GGML_OP_DIAG(39),
-        GGML_OP_DIAG_MASK_INF(40),
-        GGML_OP_DIAG_MASK_ZERO(41),
-        GGML_OP_SOFT_MAX(42),
-        GGML_OP_SOFT_MAX_BACK(43),
-        GGML_OP_ROPE(44),
-        GGML_OP_ROPE_BACK(45),
-        GGML_OP_CLAMP(46),
-        GGML_OP_CONV_TRANSPOSE_1D(47),
-        GGML_OP_IM2COL(48),
-        GGML_OP_IM2COL_BACK(49),
-        GGML_OP_CONV_TRANSPOSE_2D(50),
-        GGML_OP_POOL_1D(51),
-        GGML_OP_POOL_2D(52),
-        GGML_OP_POOL_2D_BACK(53),
-        GGML_OP_UPSCALE(54), // nearest interpolate
-        GGML_OP_PAD(55),
-        GGML_OP_PAD_REFLECT_1D(56),
-        GGML_OP_ARANGE(57),
-        GGML_OP_TIMESTEP_EMBEDDING(58),
-        GGML_OP_ARGSORT(59),
-        GGML_OP_LEAKY_RELU(60),
+        GGML_OP_SCALE(32),
+        GGML_OP_SET(33),
+        GGML_OP_CPY(34),
+        GGML_OP_CONT(35),
+        GGML_OP_RESHAPE(36),
+        GGML_OP_VIEW(37),
+        GGML_OP_PERMUTE(38),
+        GGML_OP_TRANSPOSE(39),
+        GGML_OP_GET_ROWS(40),
+        GGML_OP_GET_ROWS_BACK(41),
+        GGML_OP_SET_ROWS(42),
+        GGML_OP_DIAG(43),
+        GGML_OP_DIAG_MASK_INF(44),
+        GGML_OP_DIAG_MASK_ZERO(45),
+        GGML_OP_SOFT_MAX(46),
+        GGML_OP_SOFT_MAX_BACK(47),
+        GGML_OP_ROPE(48),
+        GGML_OP_ROPE_BACK(49),
+        GGML_OP_CLAMP(50),
+        GGML_OP_CONV_TRANSPOSE_1D(51),
+        GGML_OP_IM2COL(52),
+        GGML_OP_IM2COL_BACK(53),
+        GGML_OP_IM2COL_3D(54),
+        GGML_OP_COL2IM_1D(55),
+        GGML_OP_CONV_2D(56),
+        GGML_OP_CONV_3D(57),
+        GGML_OP_CONV_2D_DW(58),
+        GGML_OP_CONV_TRANSPOSE_2D(59),
+        GGML_OP_POOL_1D(60),
+        GGML_OP_POOL_2D(61),
+        GGML_OP_POOL_2D_BACK(62),
+        GGML_OP_UPSCALE(63),
+        GGML_OP_PAD(64),
+        GGML_OP_PAD_REFLECT_1D(65),
+        GGML_OP_ROLL(66),
+        GGML_OP_ARANGE(67),
+        GGML_OP_TIMESTEP_EMBEDDING(68),
+        GGML_OP_ARGSORT(69),
+        GGML_OP_TOP_K(70),
+        GGML_OP_LEAKY_RELU(71),
+        GGML_OP_TRI(72),
+        GGML_OP_FILL(73),
 
-        GGML_OP_FLASH_ATTN_EXT(61),
-        GGML_OP_FLASH_ATTN_BACK(62),
-        GGML_OP_SSM_CONV(63),
-        GGML_OP_SSM_SCAN(64),
-        GGML_OP_WIN_PART(65),
-        GGML_OP_WIN_UNPART(66),
-        GGML_OP_GET_REL_POS(67),
-        GGML_OP_ADD_REL_POS(68),
-        GGML_OP_RWKV_WKV6(69),
-        GGML_OP_GATED_LINEAR_ATTN(70),
+        GGML_OP_FLASH_ATTN_EXT(74),
+        GGML_OP_FLASH_ATTN_BACK(75),
+        GGML_OP_SSM_CONV(76),
+        GGML_OP_SSM_SCAN(77),
+        GGML_OP_WIN_PART(78),
+        GGML_OP_WIN_UNPART(79),
+        GGML_OP_GET_REL_POS(80),
+        GGML_OP_ADD_REL_POS(81),
+        GGML_OP_RWKV_WKV6(82),
+        GGML_OP_GATED_LINEAR_ATTN(83),
+        GGML_OP_RWKV_WKV7(84),
+        GGML_OP_SOLVE_TRI(85),
+        GGML_OP_GATED_DELTA_NET(86),
 
-        GGML_OP_UNARY(71),
+        GGML_OP_UNARY(87),
 
-        GGML_OP_MAP_UNARY(72),
-        GGML_OP_MAP_BINARY(73),
+        GGML_OP_MAP_CUSTOM1(88),
+        GGML_OP_MAP_CUSTOM2(89),
+        GGML_OP_MAP_CUSTOM3(90),
 
-        GGML_OP_MAP_CUSTOM1_F32(74),
-        GGML_OP_MAP_CUSTOM2_F32(75),
-        GGML_OP_MAP_CUSTOM3_F32(76),
+        GGML_OP_CUSTOM(91),
 
-        GGML_OP_MAP_CUSTOM1(77),
-        GGML_OP_MAP_CUSTOM2(78),
-        GGML_OP_MAP_CUSTOM3(79),
+        GGML_OP_CROSS_ENTROPY_LOSS(92),
+        GGML_OP_CROSS_ENTROPY_LOSS_BACK(93),
+        GGML_OP_OPT_STEP_ADAMW(94),
+        GGML_OP_OPT_STEP_SGD(95),
 
-        GGML_OP_CROSS_ENTROPY_LOSS(80),
-        GGML_OP_CROSS_ENTROPY_LOSS_BACK(81),
-        GGML_OP_OPT_STEP_ADAMW(82),
+        GGML_OP_GLU(96),
 
-        GGML_OP_COUNT(83);
+        GGML_OP_COUNT(97);
 
         public final int value;
         private ggml_op(int v) { this.value = v; }
@@ -872,13 +1017,38 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
         GGML_UNARY_OP_HARDSWISH(11),
         GGML_UNARY_OP_HARDSIGMOID(12),
         GGML_UNARY_OP_EXP(13),
+        GGML_UNARY_OP_EXPM1(14),
+        GGML_UNARY_OP_SOFTPLUS(15),
+        GGML_UNARY_OP_GELU_ERF(16),
+        GGML_UNARY_OP_XIELU(17),
+        GGML_UNARY_OP_FLOOR(18),
+        GGML_UNARY_OP_CEIL(19),
+        GGML_UNARY_OP_ROUND(20),
+        GGML_UNARY_OP_TRUNC(21),
 
-        GGML_UNARY_OP_COUNT(14);
+        GGML_UNARY_OP_COUNT(22);
 
         public final int value;
         private ggml_unary_op(int v) { this.value = v; }
         private ggml_unary_op(ggml_unary_op e) { this.value = e.value; }
         public ggml_unary_op intern() { for (ggml_unary_op e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    public enum ggml_glu_op {
+        GGML_GLU_OP_REGLU(0),
+        GGML_GLU_OP_GEGLU(1),
+        GGML_GLU_OP_SWIGLU(2),
+        GGML_GLU_OP_SWIGLU_OAI(3),
+        GGML_GLU_OP_GEGLU_ERF(4),
+        GGML_GLU_OP_GEGLU_QUICK(5),
+
+        GGML_GLU_OP_COUNT(6);
+
+        public final int value;
+        private ggml_glu_op(int v) { this.value = v; }
+        private ggml_glu_op(ggml_glu_op e) { this.value = e.value; }
+        public ggml_glu_op intern() { for (ggml_glu_op e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
 
@@ -911,15 +1081,29 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 
     // this tensor...
     public enum ggml_tensor_flag {
-        GGML_TENSOR_FLAG_INPUT (1), // ...is an input for the GGML compute graph
-        GGML_TENSOR_FLAG_OUTPUT(2), // ...is an output for the GGML compute graph
-        GGML_TENSOR_FLAG_PARAM (4), // ...contains trainable parameters
-        GGML_TENSOR_FLAG_LOSS  (8);// ...defines loss for numerical optimization (multiple loss tensors add up)
+        GGML_TENSOR_FLAG_INPUT  (1), // ...is an input for the GGML compute graph
+        GGML_TENSOR_FLAG_OUTPUT (2), // ...is an output for the GGML compute graph
+        GGML_TENSOR_FLAG_PARAM  (4), // ...contains trainable parameters
+        GGML_TENSOR_FLAG_LOSS   (8), // ...defines loss for numerical optimization (multiple loss tensors add up)
+        GGML_TENSOR_FLAG_COMPUTE(16);// ...must be computed
 
         public final int value;
         private ggml_tensor_flag(int v) { this.value = v; }
         private ggml_tensor_flag(ggml_tensor_flag e) { this.value = e.value; }
         public ggml_tensor_flag intern() { for (ggml_tensor_flag e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    public enum ggml_tri_type {
+        GGML_TRI_TYPE_UPPER_DIAG(0),
+        GGML_TRI_TYPE_UPPER     (1),
+        GGML_TRI_TYPE_LOWER_DIAG(2),
+        GGML_TRI_TYPE_LOWER     (3);
+
+        public final int value;
+        private ggml_tri_type(int v) { this.value = v; }
+        private ggml_tri_type(ggml_tri_type e) { this.value = e.value; }
+        public ggml_tri_type intern() { for (ggml_tri_type e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
 // Targeting ../ggml_init_params.java
@@ -944,6 +1128,9 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     // GUID types
 
     // misc
+
+    public static native @Cast("const char*") BytePointer ggml_version();
+    public static native @Cast("const char*") BytePointer ggml_commit();
 
     public static native void ggml_time_init(); // call this once at the beginning of the program
     public static native @Cast("int64_t") long ggml_time_ms();
@@ -982,6 +1169,8 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
 
     public static native @Cast("const char*") BytePointer ggml_unary_op_name(ggml_unary_op op);
     public static native String ggml_unary_op_name(@Cast("ggml_unary_op") int op);
+    public static native @Cast("const char*") BytePointer ggml_glu_op_name(ggml_glu_op op);
+    public static native String ggml_glu_op_name(@Cast("ggml_glu_op") int op);
     public static native @Cast("const char*") BytePointer ggml_op_desc(@Const ggml_tensor t); // unary or op name
 
     public static native @Cast("size_t") long ggml_element_size(@Const ggml_tensor tensor);
@@ -996,16 +1185,27 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     public static native @Cast("bool") boolean ggml_is_transposed(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_permuted(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_empty(@Const ggml_tensor tensor);
+    public static native @Cast("bool") boolean ggml_is_view(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_scalar(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_vector(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_matrix(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_3d(@Const ggml_tensor tensor);
     public static native int ggml_n_dims(@Const ggml_tensor tensor); // returns 1 for scalars
 
+    // returns whether the tensor elements can be iterated over with a flattened index (no gaps, no permutation)
     public static native @Cast("bool") boolean ggml_is_contiguous(@Const ggml_tensor tensor);
     public static native @Cast("bool") boolean ggml_is_contiguous_0(@Const ggml_tensor tensor); // same as ggml_is_contiguous()
     public static native @Cast("bool") boolean ggml_is_contiguous_1(@Const ggml_tensor tensor); // contiguous for dims >= 1
     public static native @Cast("bool") boolean ggml_is_contiguous_2(@Const ggml_tensor tensor); // contiguous for dims >= 2
+
+    // returns whether the tensor elements are allocated as one contiguous block of memory (no gaps, but permutation ok)
+    public static native @Cast("bool") boolean ggml_is_contiguously_allocated(@Const ggml_tensor tensor);
+
+    // true for tensor that is stored in memory as CxWxHxN and has been permuted to WxHxCxN
+    public static native @Cast("bool") boolean ggml_is_contiguous_channels(@Const ggml_tensor tensor);
+
+    // true if the elements in dimension 0 are contiguous, or there is just 1 block of elements
+    public static native @Cast("bool") boolean ggml_is_contiguous_rows(@Const ggml_tensor tensor);
 
     public static native @Cast("bool") boolean ggml_are_same_shape(@Const ggml_tensor t0, @Const ggml_tensor t1);
     public static native @Cast("bool") boolean ggml_are_same_stride(@Const ggml_tensor t0, @Const ggml_tensor t1);
@@ -1129,6 +1329,7 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     public static native void ggml_unravel_index(@Const ggml_tensor tensor, @Cast("int64_t") long i, @Cast("int64_t*") long[] i0, @Cast("int64_t*") long[] i1, @Cast("int64_t*") long[] i2, @Cast("int64_t*") long[] i3);
 
     public static native ggml_unary_op ggml_get_unary_op(@Const ggml_tensor tensor);
+    public static native ggml_glu_op ggml_get_glu_op(@Const ggml_tensor tensor);
 
     public static native Pointer ggml_get_data(@Const ggml_tensor tensor);
     public static native FloatPointer ggml_get_data_f32(@Const ggml_tensor tensor);
@@ -1142,7 +1343,7 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     // Tensor flags
     public static native void ggml_set_input(ggml_tensor tensor);
     public static native void ggml_set_output(ggml_tensor tensor);
-    public static native void ggml_set_param(ggml_context ctx, ggml_tensor tensor);
+    public static native void ggml_set_param(ggml_tensor tensor);
     public static native void ggml_set_loss(ggml_tensor tensor);
 
     //
@@ -1178,6 +1379,13 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor a,
                 ggml_tensor b,
                 @Cast("ggml_type") int type);
+
+    // dst[i0, i1, i2] = a[i0, i1, i2] + b[i0, ids[i1, i2]]
+    public static native ggml_tensor ggml_add_id(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                ggml_tensor ids);
 
     public static native ggml_tensor ggml_add1(
                 ggml_context ctx,
@@ -1264,6 +1472,22 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a);
 
+    public static native ggml_tensor ggml_expm1(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_expm1_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_softplus(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_softplus_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
     public static native ggml_tensor ggml_sin(
                 ggml_context ctx,
                 ggml_tensor a);
@@ -1290,6 +1514,10 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a);
 
+    public static native ggml_tensor ggml_cumsum(
+            ggml_context ctx,
+            ggml_tensor a);
+
     // mean along rows
     public static native ggml_tensor ggml_mean(
                 ggml_context ctx,
@@ -1313,11 +1541,20 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor a,
                 ggml_tensor b);
 
+    // repeat a to the specified shape
+    public static native ggml_tensor ggml_repeat_4d(
+                ggml_context ctx,
+                ggml_tensor a,
+                           @Cast("int64_t") long ne0,
+                           @Cast("int64_t") long ne1,
+                           @Cast("int64_t") long ne2,
+                           @Cast("int64_t") long ne3);
+
     // sums repetitions in a into shape of b
     public static native ggml_tensor ggml_repeat_back(
                 ggml_context ctx,
                 ggml_tensor a,
-                ggml_tensor b);
+                ggml_tensor b); // sum up values that are adjacent in dims > 0 instead of repeated with same stride
 
     // concat a and b along dim
     // used in stable-diffusion
@@ -1403,6 +1640,16 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a);
 
+    // GELU using erf (error function) when possible
+    // some backends may fallback to approximation based on Abramowitz and Stegun formula
+    public static native ggml_tensor ggml_gelu_erf(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_gelu_erf_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
     public static native ggml_tensor ggml_gelu_quick(
                 ggml_context ctx,
                 ggml_tensor a);
@@ -1419,8 +1666,8 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a);
 
-    // a - x
-    // b - dy
+    // a - dy
+    // b - x
     public static native ggml_tensor ggml_silu_back(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -1443,6 +1690,158 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     public static native ggml_tensor ggml_exp_inplace(
                 ggml_context ctx,
                 ggml_tensor a);
+
+    public static native ggml_tensor ggml_floor(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_floor_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_ceil(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_ceil_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_round(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_round_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
+     /**
+     * Truncates the fractional part of each element in the tensor (towards zero).
+     * For example: trunc(3.7) = 3.0, trunc(-2.9) = -2.0
+     * Similar to std::trunc in C/C++.
+     */
+
+    public static native ggml_tensor ggml_trunc(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_trunc_inplace(
+                ggml_context ctx,
+                ggml_tensor a);
+
+
+
+    // xIELU activation function
+    // x = x * (c_a(alpha_n) + c_b(alpha_p, beta) * sigmoid(beta * x)) + eps * (x > 0)
+    // where c_a = softplus and c_b(a, b) = softplus(a) + b are constraining functions
+    // that constrain the positive and negative source alpha values respectively
+    public static native ggml_tensor ggml_xielu(
+                ggml_context ctx,
+                ggml_tensor a,
+                float alpha_n,
+                float alpha_p,
+                float beta,
+                float eps);
+
+    // gated linear unit ops
+    // A: n columns, r rows,
+    // result is n / 2 columns, r rows,
+    // expects gate in second half of row, unless swapped is true
+    public static native ggml_tensor ggml_glu(
+                ggml_context ctx,
+                 ggml_tensor a,
+                 ggml_glu_op op,
+                 @Cast("bool") boolean swapped);
+    public static native ggml_tensor ggml_glu(
+                ggml_context ctx,
+                 ggml_tensor a,
+                 @Cast("ggml_glu_op") int op,
+                 @Cast("bool") boolean swapped);
+
+    public static native ggml_tensor ggml_reglu(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_reglu_swapped(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_geglu(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_geglu_swapped(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_swiglu(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_swiglu_swapped(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_geglu_erf(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_geglu_erf_swapped(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_geglu_quick(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    public static native ggml_tensor ggml_geglu_quick_swapped(
+                ggml_context ctx,
+                ggml_tensor a);
+
+    // A: n columns, r rows,
+    // B: n columns, r rows,
+    public static native ggml_tensor ggml_glu_split(
+                ggml_context ctx,
+                 ggml_tensor a,
+                 ggml_tensor b,
+                 ggml_glu_op op);
+    public static native ggml_tensor ggml_glu_split(
+                ggml_context ctx,
+                 ggml_tensor a,
+                 ggml_tensor b,
+                 @Cast("ggml_glu_op") int op);
+
+    public static native ggml_tensor ggml_reglu_split(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b);
+
+    public static native ggml_tensor ggml_geglu_split(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b);
+
+    public static native ggml_tensor ggml_swiglu_split(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b);
+
+    public static native ggml_tensor ggml_geglu_erf_split(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b);
+
+    public static native ggml_tensor ggml_geglu_quick_split(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b);
+
+    public static native ggml_tensor ggml_swiglu_oai(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                float alpha,
+                float _limit);
 
     // normalize along rows
     public static native ggml_tensor ggml_norm(
@@ -1479,6 +1878,18 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 int n_groups,
                 float eps);
 
+    // l2 normalize along rows
+    // used in rwkv v7
+    public static native ggml_tensor ggml_l2_norm(
+                ggml_context ctx,
+                ggml_tensor a,
+                float eps);
+
+    public static native ggml_tensor ggml_l2_norm_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                float eps);
+
     // a - x
     // b - dy
     public static native ggml_tensor ggml_rms_norm_back(
@@ -1503,6 +1914,14 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
     public static native void ggml_mul_mat_set_prec(
                 ggml_tensor a,
                 @Cast("ggml_prec") int prec);
+
+    // change the hint of a matrix multiplication
+    public static native void ggml_mul_mat_set_hint(
+                ggml_tensor a,
+                ggml_op_hint hint);
+    public static native void ggml_mul_mat_set_hint(
+                ggml_tensor a,
+                @Cast("ggml_op_hint") int hint);
 
     // indirect matrix multiplication
     public static native ggml_tensor ggml_mul_mat_id(
@@ -1533,6 +1952,19 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a,
                 float s);
+
+    // x = s * a + b
+    public static native ggml_tensor ggml_scale_bias(
+            ggml_context ctx,
+            ggml_tensor a,
+            float s,
+            float b);
+
+    public static native ggml_tensor ggml_scale_bias_inplace(
+            ggml_context ctx,
+            ggml_tensor a,
+            float s,
+            float b);
 
     // b -> view(a,offset,nb1,nb2,3), return modified a
     public static native ggml_tensor ggml_set(
@@ -1588,6 +2020,7 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor a,
                 ggml_tensor b);
 
+    // note: casting from f32 to i32 will discard the fractional part
     public static native ggml_tensor ggml_cast(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -1716,7 +2149,11 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a);
 
-    // supports 3D: a->ne[2] == b->ne[1]
+    // supports 4D a:
+    // a     [n_embd, ne1, ne2, ne3]
+    // b I32 [n_rows, ne2, ne3, 1]
+    //
+    // return [n_embd, n_rows, ne2, ne3]
     public static native ggml_tensor ggml_get_rows(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -1727,6 +2164,23 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor a,
                 ggml_tensor b,
                 ggml_tensor c); // data for ggml_get_rows, only used for its shape
+
+    // a TD  [n_embd, ne1,    ne2,    ne3]
+    // b TS  [n_embd, n_rows, ne02,   ne03] | ne02 == ne2, ne03 == ne3
+    // c I64 [n_rows, ne11,   ne12,   1]    | c[i] in [0, ne1)
+    //
+    // undefined behavior if destination rows overlap
+    //
+    // broadcast:
+    //   ne2 % ne11 == 0
+    //   ne3 % ne12 == 0
+    //
+    // return view(a)
+    public static native ggml_tensor ggml_set_rows(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                ggml_tensor c); // row indices
 
     public static native ggml_tensor ggml_diag(
             ggml_context ctx,
@@ -1765,8 +2219,14 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_context ctx,
                 ggml_tensor a);
 
+    // a    [ne0, ne01, ne02, ne03]
+    // mask [ne0, ne11, ne12, ne13] | ne11 >= ne01, F16 or F32, optional
+    //
+    // broadcast:
+    //   ne02 % ne12 == 0
+    //   ne03 % ne13 == 0
+    //
     // fused soft_max(a*scale + mask*(ALiBi slope))
-    // mask is optional
     // max_bias = 0.0f for no ALiBi
     public static native ggml_tensor ggml_soft_max_ext(
                 ggml_context ctx,
@@ -1774,6 +2234,17 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor mask,
                 float scale,
                 float max_bias);
+
+    public static native ggml_tensor ggml_soft_max_ext_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor mask,
+                float scale,
+                float max_bias);
+
+    public static native void ggml_soft_max_add_sinks(
+                ggml_tensor a,
+                ggml_tensor sinks);
 
     public static native ggml_tensor ggml_soft_max_ext_back(
                 ggml_context ctx,
@@ -1810,8 +2281,32 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 int n_dims,
                 int mode);
 
-    // custom RoPE
+    // RoPE operations with extended options
+    // a is the input tensor to apply RoPE to, shape [n_embd, n_head, n_token]
+    // b is an int32 vector with size n_token
     // c is freq factors (e.g. phi3-128k), (optional)
+    // mode can be GGML_ROPE_TYPE_NORMAL or NEOX; for MROPE and VISION mode, use ggml_rope_multi
+    //
+    // pseudo-code for computing theta:
+    //   for i in [0, n_dims/2):
+    //     theta[i] = b[i] * powf(freq_base, -2.0 * i / n_dims);
+    //     theta[i] = theta[i] / c[i];  # if c is provided, divide theta by c
+    //     theta[i] = rope_yarn(theta[i], ...);  # note: theta = theta * freq_scale is applied here
+    //
+    // other params are used by YaRN RoPE scaling, these default values will disable YaRN:
+    //   freq_scale  = 1.0f
+    //   ext_factor  = 0.0f
+    //   attn_factor = 1.0f
+    //   beta_fast   = 0.0f
+    //   beta_slow   = 0.0f
+    //
+    // example:
+    //   (marking: c = cos, s = sin, 0 = unrotated)
+    //   given a single head with size = 8 --> [00000000]
+    //   GGML_ROPE_TYPE_NORMAL  n_dims = 4 --> [cscs0000]
+    //   GGML_ROPE_TYPE_NORMAL  n_dims = 8 --> [cscscscs]
+    //   GGML_ROPE_TYPE_NEOX    n_dims = 4 --> [ccss0000]
+    //   GGML_ROPE_TYPE_NEOX    n_dims = 8 --> [ccccssss]
     public static native ggml_tensor ggml_rope_ext(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -1827,6 +2322,36 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 float beta_fast,
                 float beta_slow);
 
+    // multi-dimensional RoPE, for Qwen-VL and similar vision models
+    // mode can be either VISION, MROPE, IMROPE, cannot be combined with NORMAL or NEOX
+    // sections specify how many dimensions to rotate in each section:
+    //   section length is equivalent to number of cos/sin pairs, NOT the number of dims
+    //   (i.e. sum of 4 sections are expected to be n_dims/2)
+    //   last sections can be 0, means ignored
+    // all other options are identical to ggml_rope_ext
+    //
+    // important note:
+    //   - NEOX ordering is automatically applied and cannot be disabled for MROPE and VISION
+    //     if you need normal ordering, there are 2 methods:
+    //     (1) split the tensor manually using ggml_view
+    //     (2) permute the weight upon conversion
+    //   - for VISION, n_dims must be head_size/2
+    //
+    // example M-RoPE:
+    //  given sections = [t=4, y=2, x=2, 0]
+    //  given a single head with size = 18 --> [000000000000000000]
+    //  GGML_ROPE_TYPE_MROPE   n_dims = 16 --> [ttttyyxxttttyyxx00] (cos/sin are applied in NEOX ordering)
+    //  GGML_ROPE_TYPE_IMROPE  n_dims = 16 --> [ttyxttyxttyxttyx00] (interleaved M-RoPE, still NEOX ordering)
+    //  note: the theta for each dim is computed the same way as ggml_rope_ext, no matter the section
+    //        in other words, idx used for theta: [0123456789... until n_dims/2], not reset for each section
+    //
+    // example vision RoPE:
+    //  given sections = [y=4, x=4, 0, 0] (last 2 sections are ignored)
+    //  given a single head with size = 8 --> [00000000]
+    //  GGML_ROPE_TYPE_VISION  n_dims = 4 --> [yyyyxxxx]
+    //  other values of n_dims are untested and is undefined behavior
+    //  note: unlike MROPE, the theta for each dim is computed differently for each section
+    //        in other words, idx used for theta: [0123] for y section, then [0123] for x section
     public static native ggml_tensor ggml_rope_multi(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -1880,6 +2405,52 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor b,
                 ggml_tensor c,
                 int n_dims,
+                int mode,
+                int n_ctx_orig,
+                float freq_base,
+                float freq_scale,
+                float ext_factor,
+                float attn_factor,
+                float beta_fast,
+                float beta_slow);
+
+    public static native ggml_tensor ggml_rope_multi_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                ggml_tensor c,
+                int n_dims,
+                IntPointer sections,
+                int mode,
+                int n_ctx_orig,
+                float freq_base,
+                float freq_scale,
+                float ext_factor,
+                float attn_factor,
+                float beta_fast,
+                float beta_slow);
+    public static native ggml_tensor ggml_rope_multi_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                ggml_tensor c,
+                int n_dims,
+                IntBuffer sections,
+                int mode,
+                int n_ctx_orig,
+                float freq_base,
+                float freq_scale,
+                float ext_factor,
+                float attn_factor,
+                float beta_fast,
+                float beta_slow);
+    public static native ggml_tensor ggml_rope_multi_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                ggml_tensor c,
+                int n_dims,
+                int[] sections,
                 int mode,
                 int n_ctx_orig,
                 float freq_base,
@@ -2061,6 +2632,16 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
             int d1,
             @Cast("bool") boolean is_2D);
 
+    // col2im_1d: scatter-add GEMM columns back to 1D signal
+    // a: [K*OC, T_in]  (columns from matmul, K = a->ne[0]/OC)
+    // result: [T_out, OC]  where T_out = (T_in - 1)*s0 + K - 2*p0
+    public static native ggml_tensor ggml_col2im_1d(
+            ggml_context ctx,
+            ggml_tensor a,
+            int s0,
+            int oc,
+            int p0); // padding to crop from both sides
+
     public static native ggml_tensor ggml_conv_1d(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -2114,6 +2695,56 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 int d0,
                 int d1); // dilation dimension 1
 
+    public static native ggml_tensor ggml_im2col_3d(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                @Cast("int64_t") long IC,
+                int s0,
+                int s1,
+                int s2,
+                int p0,
+                int p1,
+                int p2,
+                int d0,
+                int d1,
+                int d2,
+                ggml_type dst_type);
+    public static native ggml_tensor ggml_im2col_3d(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                @Cast("int64_t") long IC,
+                int s0,
+                int s1,
+                int s2,
+                int p0,
+                int p1,
+                int p2,
+                int d0,
+                int d1,
+                int d2,
+                @Cast("ggml_type") int dst_type);
+
+    // a: [OC*IC, KD, KH, KW]
+    // b: [N*IC, ID, IH, IW]
+    // result: [N*OC, OD, OH, OW]
+    public static native ggml_tensor ggml_conv_3d(
+                    ggml_context ctx,
+                    ggml_tensor a,
+                    ggml_tensor b,
+                    @Cast("int64_t") long IC,
+                    int s0,
+                    int s1,
+                    int s2,
+                    int p0,
+                    int p1,
+                    int p2,
+                    int d0,
+                    int d1,
+                    int d2
+            );
+
     // kernel size is a->ne[0] x a->ne[1]
     // stride is equal to kernel size
     // padding is zero
@@ -2140,7 +2771,7 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor a,
                 ggml_tensor b);
 
-    // depthwise
+    // depthwise (via im2col and mul_mat)
     public static native ggml_tensor ggml_conv_2d_dw(
                 ggml_context ctx,
                 ggml_tensor a,
@@ -2152,11 +2783,55 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 int d0,
                 int d1); // dilation dimension 1
 
+    // Depthwise 2D convolution
+    // may be faster than ggml_conv_2d_dw, but not available in all backends
+    // a:   KW    KH    1    C    convolution kernel
+    // b:   W     H     C    N    input data
+    // res: W_out H_out C    N
+    public static native ggml_tensor ggml_conv_2d_dw_direct(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                int stride0,
+                int stride1,
+                int pad0,
+                int pad1,
+                int dilation0,
+                int dilation1);
+
     public static native ggml_tensor ggml_conv_transpose_2d_p0(
                 ggml_context ctx,
                 ggml_tensor a,
                 ggml_tensor b,
                 int stride);
+
+    public static native ggml_tensor ggml_conv_2d_direct(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                int s0,
+                int s1,
+                int p0,
+                int p1,
+                int d0,
+                int d1); // dilation dimension 1
+
+    public static native ggml_tensor ggml_conv_3d_direct(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tensor b,
+                int s0,
+                int s1,
+                int s2,
+                int p0,
+                int p1,
+                int p2,
+                int d0,
+                int d1,
+                int d2,
+                int n_channels,
+                int n_batch,
+                int n_channels_out);
 
     public enum ggml_op_pool {
         GGML_OP_POOL_MAX(0),
@@ -2231,24 +2906,73 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 float p0,
                 float p1);
 
-    // nearest interpolate
+    public enum ggml_scale_mode {
+        GGML_SCALE_MODE_NEAREST (0),
+        GGML_SCALE_MODE_BILINEAR(1),
+        GGML_SCALE_MODE_BICUBIC (2),
+
+        GGML_SCALE_MODE_COUNT(3);
+
+        public final int value;
+        private ggml_scale_mode(int v) { this.value = v; }
+        private ggml_scale_mode(ggml_scale_mode e) { this.value = e.value; }
+        public ggml_scale_mode intern() { for (ggml_scale_mode e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    public enum ggml_scale_flag {
+        GGML_SCALE_FLAG_ALIGN_CORNERS((1 << 8)),
+        GGML_SCALE_FLAG_ANTIALIAS    ((1 << 9));
+
+        public final int value;
+        private ggml_scale_flag(int v) { this.value = v; }
+        private ggml_scale_flag(ggml_scale_flag e) { this.value = e.value; }
+        public ggml_scale_flag intern() { for (ggml_scale_flag e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    // interpolate
     // multiplies ne0 and ne1 by scale factor
-    // used in stable-diffusion
     public static native ggml_tensor ggml_upscale(
                 ggml_context ctx,
                 ggml_tensor a,
-                int scale_factor);
+                int scale_factor,
+                ggml_scale_mode mode);
+    public static native ggml_tensor ggml_upscale(
+                ggml_context ctx,
+                ggml_tensor a,
+                int scale_factor,
+                @Cast("ggml_scale_mode") int mode);
 
-    // nearest interpolate
-    // nearest interpolate to specified dimensions
-    // used in tortoise.cpp
+    // interpolate
+    // interpolate scale to specified dimensions
     public static native ggml_tensor ggml_upscale_ext(
                 ggml_context ctx,
                 ggml_tensor a,
                 int ne0,
                 int ne1,
                 int ne2,
-                int ne3);
+                int ne3,
+                ggml_scale_mode mode);
+    public static native ggml_tensor ggml_upscale_ext(
+                ggml_context ctx,
+                ggml_tensor a,
+                int ne0,
+                int ne1,
+                int ne2,
+                int ne3,
+                @Cast("ggml_scale_mode") int mode);
+
+    // Up- or downsamples the input to the specified size.
+    // 2D scale modes (eg. bilinear) are applied to the first two dimensions.
+    public static native ggml_tensor ggml_interpolate(
+                ggml_context ctx,
+                ggml_tensor a,
+                @Cast("int64_t") long ne0,
+                @Cast("int64_t") long ne1,
+                @Cast("int64_t") long ne2,
+                @Cast("int64_t") long ne3,
+                @Cast("uint32_t") int mode); // ggml_scale_mode [ | ggml_scale_flag...]
 
     // pad each dimension with zeros: [x, ..., x] -> [x, ..., x, 0, ..., 0]
     public static native ggml_tensor ggml_pad(
@@ -2259,12 +2983,79 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 int p2,
                 int p3);
 
+    // pad each dimension with values on the other side of the torus (looping around)
+    public static native ggml_tensor ggml_pad_circular(
+                ggml_context ctx,
+                ggml_tensor a,
+                int p0,
+                int p1,
+                int p2,
+                int p3);
+
+    public static native ggml_tensor ggml_pad_ext(
+                ggml_context ctx,
+                ggml_tensor a,
+                int lp0,
+                int rp0,
+                int lp1,
+                int rp1,
+                int lp2,
+                int rp2,
+                int lp3,
+                int rp3
+                );
+
+    // pad each dimension with values on the other side of the torus (looping around)
+    public static native ggml_tensor ggml_pad_ext_circular(
+                ggml_context ctx,
+                ggml_tensor a,
+                int lp0,
+                int rp0,
+                int lp1,
+                int rp1,
+                int lp2,
+                int rp2,
+                int lp3,
+                int rp3);
+
     // pad each dimension with reflection: [a, b, c, d] -> [b, a, b, c, d, c]
     public static native ggml_tensor ggml_pad_reflect_1d(
                 ggml_context ctx,
                 ggml_tensor a,
                 int p0,
                 int p1);
+
+    // Move tensor elements by an offset given for each dimension. Elements that
+    // are shifted beyond the last position are wrapped around to the beginning.
+    public static native ggml_tensor ggml_roll(
+                ggml_context ctx,
+                ggml_tensor a,
+                int shift0,
+                int shift1,
+                int shift2,
+                int shift3);
+
+    // Convert matrix into a triangular one (upper, strict upper, lower or strict lower) by writing
+    // zeroes everywhere outside the masked area
+    public static native ggml_tensor ggml_tri(
+                ggml_context ctx,
+                ggml_tensor a,
+                ggml_tri_type type);
+    public static native ggml_tensor ggml_tri(
+                ggml_context ctx,
+                ggml_tensor a,
+                @Cast("ggml_tri_type") int type);
+
+    // Fill tensor a with constant c
+    public static native ggml_tensor ggml_fill(
+                ggml_context ctx,
+                ggml_tensor a,
+                float c);
+
+    public static native ggml_tensor ggml_fill_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                float c);
 
     // Ref: https://github.com/CompVis/stable-diffusion/blob/main/ldm/modules/diffusionmodules/util.py#L151
     // timesteps: [N,]
@@ -2296,25 +3087,36 @@ public static final int GGML_ROPE_TYPE_VISION = 24;
                 ggml_tensor a,
                 @Cast("ggml_sort_order") int order);
 
+    // similar to ggml_top_k but implemented as `argsort` + `view`
+    public static native ggml_tensor ggml_argsort_top_k(
+                ggml_context ctx,
+                ggml_tensor a,
+                int k);
+
+    // top k elements per row
+    // note: the resulting top k indices are in no particular order
+    public static native ggml_tensor ggml_top_k(
+                ggml_context ctx,
+                ggml_tensor a,
+                int k);
+
     public static native ggml_tensor ggml_arange(
                 ggml_context ctx,
                 float start,
                 float stop,
                 float step);
 
-    // top k elements per row
-    public static native ggml_tensor ggml_top_k(
-                ggml_context ctx,
-                ggml_tensor a,
-                int k);
-
-public static final int GGML_KQ_MASK_PAD = 64;
-
-    // q:    [n_embd, n_batch,     n_head,    1]
-    // k:    [n_embd, n_kv,        n_head_kv, 1]
-    // v:    [n_embd, n_kv,        n_head_kv, 1] !! not transposed !!
-    // mask: [n_kv,   n_batch_pad, 1,         1] !! n_batch_pad = GGML_PAD(n_batch, GGML_KQ_MASK_PAD) !!
-    // res:  [n_embd, n_head,      n_batch,   1] !! permuted !!
+    // q:    [n_embd_k, n_batch, n_head,    ne3 ]
+    // k:    [n_embd_k, n_kv,    n_head_kv, ne3 ]
+    // v:    [n_embd_v, n_kv,    n_head_kv, ne3 ] !! not transposed !!
+    // mask: [n_kv,     n_batch, ne32,      ne33]
+    // res:  [n_embd_v, n_head,  n_batch,   ne3 ] !! permuted !!
+    //
+    // broadcast:
+    //   n_head % n_head_kv == 0
+    //   n_head % ne32      == 0
+    //   ne3    % ne33      == 0
+    //
     public static native ggml_tensor ggml_flash_attn_ext(
                 ggml_context ctx,
                 ggml_tensor q,
@@ -2334,6 +3136,10 @@ public static final int GGML_KQ_MASK_PAD = 64;
 
     public static native ggml_prec ggml_flash_attn_ext_get_prec(
                 @Const ggml_tensor a);
+
+    public static native void ggml_flash_attn_ext_add_sinks(
+                ggml_tensor a,
+                ggml_tensor sinks);
 
     // TODO: needs to be adapted to ggml_flash_attn_ext
     public static native ggml_tensor ggml_flash_attn_back(
@@ -2356,7 +3162,8 @@ public static final int GGML_KQ_MASK_PAD = 64;
                 ggml_tensor dt,
                 ggml_tensor A,
                 ggml_tensor B,
-                ggml_tensor C);
+                ggml_tensor C,
+                ggml_tensor ids);
 
     // partition into non-overlapping windows with padding if needed
     // example:
@@ -2433,79 +3240,60 @@ public static final int GGML_KQ_MASK_PAD = 64;
                 ggml_tensor g,
                 ggml_tensor state,
                 float scale);
-// Targeting ../ggml_unary_op_f32_t.java
 
-
-// Targeting ../ggml_binary_op_f32_t.java
-
-
-// Targeting ../ggml_custom1_op_f32_t.java
-
-
-// Targeting ../ggml_custom2_op_f32_t.java
-
-
-// Targeting ../ggml_custom3_op_f32_t.java
-
-
-
-    public static native ggml_tensor ggml_map_unary_f32(
+    public static native ggml_tensor ggml_rwkv_wkv7(
                 ggml_context ctx,
-                ggml_tensor a,
-                       ggml_unary_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_unary_inplace_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                       ggml_unary_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_binary_f32(
-                ggml_context ctx,
+                ggml_tensor r,
+                ggml_tensor w,
+                ggml_tensor k,
+                ggml_tensor v,
                 ggml_tensor a,
                 ggml_tensor b,
-                       ggml_binary_op_f32_t fun);
+                ggml_tensor state);
 
-    public static native ggml_tensor ggml_map_binary_inplace_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                ggml_tensor b,
-                       ggml_binary_op_f32_t fun);
+    /* Solves a specific equation of the form Ax=B, where A is a triangular matrix
+    *  without zeroes on the diagonal (i.e. invertible).
+    *  B can have any number of columns, but must have the same number of rows as A
+    *  If A is [n, n] and B is [n, m], then the result will be [n, m] as well
+    *  Has O(n^3) complexity (unlike most matrix ops out there), so use on cases
+    *  where n > 100 sparingly, pre-chunk if necessary.
+    *
+    *  If left = false, solves xA=B instead
+    *  If lower = false, assumes upper triangular instead
+    *  If uni = true, assumes diagonal of A to be all ones (will override actual values)
+    *
+    *  TODO: currently only lower, right, non-unitriangular variant is implemented
+    */
+    public static native ggml_tensor ggml_solve_tri(
+            ggml_context ctx,
+            ggml_tensor a,
+            ggml_tensor b,
+            @Cast("bool") boolean left,
+            @Cast("bool") boolean lower,
+            @Cast("bool") boolean uni);
 
-    public static native ggml_tensor ggml_map_custom1_f32(
+    // TODO: add ggml_gated_delta_net_set_bcast() to be able to configure Q, K broadcast type: tiled vs interleaved [TAG_GGML_GDN_BCAST]
+    // ref: https://github.com/ggml-org/llama.cpp/pull/19468#discussion_r2786394306
+    //
+    // tensor shapes (S_k == S_v, H_v % H_k == 0):
+    //   q, k  : [S_k, H_k, n_tokens, n_seqs]
+    //   v     : [S_v, H_v, n_tokens, n_seqs]
+    //   g     : [1, H_v, n_tokens, n_seqs] (scalar gate) or [S_v, H_v, n_tokens, n_seqs] (KDA)
+    //   beta  : [1, H_v, n_tokens, n_seqs]
+    //   state : [S_v, S_v, H_v, n_seqs] -- initial recurrent state s0
+    //
+    // the output packs the attention scores [S_v, H_v, n_tokens, n_seqs] followed by K state
+    // snapshots, most-recent first (slot 0 = final state, slot s = state s tokens back). K == 1
+    // keeps only the final state; when n_tokens < K only slots 0..n_tokens-1 are written.
+    public static native ggml_tensor ggml_gated_delta_net(
                 ggml_context ctx,
-                ggml_tensor a,
-                       ggml_custom1_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_custom1_inplace_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                       ggml_custom1_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_custom2_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                ggml_tensor b,
-                       ggml_custom2_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_custom2_inplace_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                ggml_tensor b,
-                       ggml_custom2_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_custom3_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                ggml_tensor b,
-                ggml_tensor c,
-                       ggml_custom3_op_f32_t fun);
-
-    public static native ggml_tensor ggml_map_custom3_inplace_f32(
-                ggml_context ctx,
-                ggml_tensor a,
-                ggml_tensor b,
-                ggml_tensor c,
-                       ggml_custom3_op_f32_t fun);
+                ggml_tensor q,
+                ggml_tensor k,
+                ggml_tensor v,
+                ggml_tensor g,
+                ggml_tensor beta,
+                ggml_tensor state,
+                @Cast("int64_t") long K);
 // Targeting ../ggml_custom1_op_t.java
 
 
@@ -2566,6 +3354,63 @@ public static final int GGML_N_TASKS_MAX = (-1);
                 ggml_custom3_op_t fun,
                 int n_tasks,
                 Pointer userdata);
+// Targeting ../ggml_custom_op_t.java
+
+
+
+    public static native ggml_tensor ggml_custom_4d(
+                ggml_context ctx,
+                ggml_type type,
+                @Cast("int64_t") long ne0,
+                @Cast("int64_t") long ne1,
+                @Cast("int64_t") long ne2,
+                @Cast("int64_t") long ne3,
+                @Cast("ggml_tensor**") PointerPointer args,
+                int n_args,
+                ggml_custom_op_t fun,
+                int n_tasks,
+                Pointer userdata);
+    public static native ggml_tensor ggml_custom_4d(
+                ggml_context ctx,
+                ggml_type type,
+                @Cast("int64_t") long ne0,
+                @Cast("int64_t") long ne1,
+                @Cast("int64_t") long ne2,
+                @Cast("int64_t") long ne3,
+                @ByPtrPtr ggml_tensor args,
+                int n_args,
+                ggml_custom_op_t fun,
+                int n_tasks,
+                Pointer userdata);
+    public static native ggml_tensor ggml_custom_4d(
+                ggml_context ctx,
+                @Cast("ggml_type") int type,
+                @Cast("int64_t") long ne0,
+                @Cast("int64_t") long ne1,
+                @Cast("int64_t") long ne2,
+                @Cast("int64_t") long ne3,
+                @ByPtrPtr ggml_tensor args,
+                int n_args,
+                ggml_custom_op_t fun,
+                int n_tasks,
+                Pointer userdata);
+
+    public static native ggml_tensor ggml_custom_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                @Cast("ggml_tensor**") PointerPointer args,
+                int n_args,
+                ggml_custom_op_t fun,
+                int n_tasks,
+                Pointer userdata);
+    public static native ggml_tensor ggml_custom_inplace(
+                ggml_context ctx,
+                ggml_tensor a,
+                @ByPtrPtr ggml_tensor args,
+                int n_args,
+                ggml_custom_op_t fun,
+                int n_tasks,
+                Pointer userdata);
 
     // loss function
 
@@ -2589,23 +3434,69 @@ public static final int GGML_N_TASKS_MAX = (-1);
                 ggml_tensor grad,
                 ggml_tensor m,
                 ggml_tensor v,
-                ggml_tensor adamw_params); // parameters such a the learning rate
+                ggml_tensor adamw_params); // parameters such as the learning rate
 
-    //
-    // automatic differentiation
-    //
+    // stochastic gradient descent step (with weight decay)
+    public static native ggml_tensor ggml_opt_step_sgd(
+            ggml_context ctx,
+            ggml_tensor a,
+            ggml_tensor grad,
+            ggml_tensor sgd_params); // alpha, weight decay
 
-    public static native void ggml_build_forward_expand(ggml_cgraph cgraph, ggml_tensor tensor);
+    // build forward multiple tensors and select one of them for computing
+    // this is useful for creating graphs that have constant topology but compute different things based on the input
+    // ref: https://github.com/ggml-org/llama.cpp/pull/18550
+    //
+    // nodes:
+    //   | - build forward into the graph but do not compute
+    //   c - build forward into the graph and compute
+    //
+    //    |  |  ...  c  ...  |
+    //    |  |  ...  c  ...  |
+    //    |  |  ...  c  ...  |
+    //   [0  1  ... idx ...  n-1]        <-- ggml_build_forward_select(..., n, idx)
+    //               c
+    //               c
+    //
+    // example:
+    //   struct ggml_tensor * curs[3];
+    //
+    //   curs[0]  = compute0(...);
+    //   curs[1]  = compute1(...);
+    //   curs[2]  = compute2(...);
+    //
+    //   int idx = select_branch(some_input);
+    //
+    //   struct ggml_tensor * out = ggml_build_forward_select(cgraph, curs, 3, idx);
+    //
+    public static native ggml_tensor ggml_build_forward_select(
+                ggml_cgraph cgraph,
+                @Cast("ggml_tensor**") PointerPointer tensors,
+                int n_tensors,
+                int idx);
+    public static native ggml_tensor ggml_build_forward_select(
+                ggml_cgraph cgraph,
+                @ByPtrPtr ggml_tensor tensors,
+                int n_tensors,
+                int idx);
+
+    public static native void ggml_build_forward_expand(
+                ggml_cgraph cgraph,
+                ggml_tensor tensor);
+
     public static native void ggml_build_backward_expand(
-            ggml_context ctx_static,
-            ggml_context ctx_compute,
+            ggml_context ctx,
             ggml_cgraph cgraph,
-            @Cast("bool") boolean accumulate); // whether or not gradients should be accumulated, requires static allocation of tensors in ctx_static
+            @Cast("ggml_tensor**") PointerPointer grad_accs);
+    public static native void ggml_build_backward_expand(
+            ggml_context ctx,
+            ggml_cgraph cgraph,
+            @ByPtrPtr ggml_tensor grad_accs);
 
     // graph allocation in a context
     public static native ggml_cgraph ggml_new_graph(ggml_context ctx); // size = GGML_DEFAULT_GRAPH_SIZE, grads = false
     public static native ggml_cgraph ggml_new_graph_custom(ggml_context ctx, @Cast("size_t") long size, @Cast("bool") boolean grads);
-    public static native ggml_cgraph ggml_graph_dup(ggml_context ctx, ggml_cgraph cgraph);
+    public static native ggml_cgraph ggml_graph_dup(ggml_context ctx, ggml_cgraph cgraph, @Cast("bool") boolean force_grads);
     public static native void ggml_graph_cpy(ggml_cgraph src, ggml_cgraph dst);
     public static native void ggml_graph_reset(ggml_cgraph cgraph); // set regular grads + optimizer momenta to 0, set loss grad to 1
     public static native void ggml_graph_clear(ggml_cgraph cgraph);
@@ -2625,21 +3516,20 @@ public static final int GGML_N_TASKS_MAX = (-1);
     public static native ggml_tensor ggml_graph_get_grad(@Const ggml_cgraph cgraph, @Const ggml_tensor node);
     public static native ggml_tensor ggml_graph_get_grad_acc(@Const ggml_cgraph cgraph, @Const ggml_tensor node);
 
-    
-    
-
     // print info and performance information for the graph
     public static native void ggml_graph_print(@Const ggml_cgraph cgraph);
 
     // dump the graph into a file using the dot format
-    public static native void ggml_graph_dump_dot(@Const ggml_cgraph gb, @Const ggml_cgraph gf, @Cast("const char*") BytePointer filename);
-    public static native void ggml_graph_dump_dot(@Const ggml_cgraph gb, @Const ggml_cgraph gf, String filename);
+    public static native void ggml_graph_dump_dot(@Const ggml_cgraph gb, @Const ggml_cgraph cgraph, @Cast("const char*") BytePointer filename);
+    public static native void ggml_graph_dump_dot(@Const ggml_cgraph gb, @Const ggml_cgraph cgraph, String filename);
 // Targeting ../ggml_log_callback.java
 
 
 
     // Set callback for all future logging events.
     // If this is not called, or NULL is supplied, everything is output on stderr.
+    public static native void ggml_log_get(@ByPtrPtr ggml_log_callback log_callback, @Cast("void**") PointerPointer user_data);
+    public static native void ggml_log_get(@ByPtrPtr ggml_log_callback log_callback, @Cast("void**") @ByPtrPtr Pointer user_data);
     public static native void ggml_log_set(ggml_log_callback log_callback, Pointer user_data);
 
     public static native ggml_tensor ggml_set_zero(ggml_tensor tensor);
@@ -2746,6 +3636,7 @@ public static final int GGML_N_TASKS_MAX = (-1);
 
     // scheduling priorities
     public enum ggml_sched_priority {
+        GGML_SCHED_PRIO_LOW(-1),
         GGML_SCHED_PRIO_NORMAL(0),
         GGML_SCHED_PRIO_MEDIUM(1),
         GGML_SCHED_PRIO_HIGH(2),
@@ -2789,13 +3680,35 @@ public static native ggml_status ggml_tallocr_alloc(ggml_tallocr talloc, ggml_te
 // Targeting ../ggml_gallocr.java
 
 
+
+public static native ggml_gallocr ggml_gallocr_new(ggml_backend_buffer_type buft);
+
 public static native void ggml_gallocr_free(ggml_gallocr galloc);
 
 // pre-allocate buffers from a measure graph - does not allocate or modify the graph
 // call with a worst-case graph to avoid buffer reallocations
 // not strictly required for single buffer usage: ggml_gallocr_alloc_graph will reallocate the buffers automatically if needed
 // returns false if the buffer allocation failed
+// ggml_gallocr_resrve_n_size writes the buffer sizes per galloc buffer that would be allocated by ggml_gallocr_reserve_n to sizes
 public static native @Cast("bool") boolean ggml_gallocr_reserve(ggml_gallocr galloc, ggml_cgraph graph);
+public static native void ggml_gallocr_reserve_n_size(
+    ggml_gallocr galloc,
+    ggml_cgraph graph,
+    @Const IntPointer node_buffer_ids,
+    @Const IntPointer leaf_buffer_ids,
+    @Cast("size_t*") SizeTPointer sizes);
+public static native void ggml_gallocr_reserve_n_size(
+    ggml_gallocr galloc,
+    ggml_cgraph graph,
+    @Const IntBuffer node_buffer_ids,
+    @Const IntBuffer leaf_buffer_ids,
+    @Cast("size_t*") SizeTPointer sizes);
+public static native void ggml_gallocr_reserve_n_size(
+    ggml_gallocr galloc,
+    ggml_cgraph graph,
+    @Const int[] node_buffer_ids,
+    @Const int[] leaf_buffer_ids,
+    @Cast("size_t*") SizeTPointer sizes);
 public static native @Cast("bool") boolean ggml_gallocr_reserve_n(
     ggml_gallocr galloc,
     ggml_cgraph graph,
@@ -2820,6 +3733,10 @@ public static native @Cast("size_t") long ggml_gallocr_get_buffer_size(ggml_gall
 
 // Utils
 // Create a buffer and allocate all the tensors in a ggml_context
+// ggml_backend_alloc_ctx_tensors_from_buft_size returns the size of the buffer that would be allocated by ggml_backend_alloc_ctx_tensors_from_buft
+// ggml_backend_alloc_ctx_tensors_from_buft returns NULL on failure or if all tensors in ctx are already allocated or zero-sized
+public static native @Cast("size_t") long ggml_backend_alloc_ctx_tensors_from_buft_size(ggml_context ctx, ggml_backend_buffer_type buft);
+public static native ggml_backend_buffer ggml_backend_alloc_ctx_tensors_from_buft(ggml_context ctx, ggml_backend_buffer_type buft);
 public static native ggml_backend_buffer ggml_backend_alloc_ctx_tensors(ggml_context ctx, ggml_backend backend);
 
 // #ifdef  __cplusplus
@@ -2866,7 +3783,7 @@ public static native ggml_backend_buffer ggml_backend_alloc_ctx_tensors(ggml_con
 
     // x86
     // ARM  // sve vector length in bytes
-    // other
+    // other  // risc-v vector length in bytes
 
     // Internal types and functions exposed for tests and benchmarks
 // Targeting ../ggml_type_traits_cpu.java
@@ -2889,6 +3806,8 @@ public static native ggml_backend_buffer ggml_backend_alloc_ctx_tensors(ggml_con
 // #include "ggml.h"
 // #include "ggml-cpu.h"
 // #include "ggml-backend.h"
+// #include "ggml-opt.h"
+// #include "gguf.h"
 
 // #include <stddef.h>
 // #include <stdint.h>
@@ -2941,48 +3860,11 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 // Targeting ../llama_context.java
 
 
+// Targeting ../llama_memory_i.java
+
+
 
     
-
-    // pre-tokenization types
-    public enum llama_vocab_pre_type {
-        LLAMA_VOCAB_PRE_TYPE_DEFAULT       (0),
-        LLAMA_VOCAB_PRE_TYPE_LLAMA3        (1),
-        LLAMA_VOCAB_PRE_TYPE_DEEPSEEK_LLM  (2),
-        LLAMA_VOCAB_PRE_TYPE_DEEPSEEK_CODER(3),
-        LLAMA_VOCAB_PRE_TYPE_FALCON        (4),
-        LLAMA_VOCAB_PRE_TYPE_MPT           (5),
-        LLAMA_VOCAB_PRE_TYPE_STARCODER     (6),
-        LLAMA_VOCAB_PRE_TYPE_GPT2          (7),
-        LLAMA_VOCAB_PRE_TYPE_REFACT        (8),
-        LLAMA_VOCAB_PRE_TYPE_COMMAND_R     (9),
-        LLAMA_VOCAB_PRE_TYPE_STABLELM2     (10),
-        LLAMA_VOCAB_PRE_TYPE_QWEN2         (11),
-        LLAMA_VOCAB_PRE_TYPE_OLMO          (12),
-        LLAMA_VOCAB_PRE_TYPE_DBRX          (13),
-        LLAMA_VOCAB_PRE_TYPE_SMAUG         (14),
-        LLAMA_VOCAB_PRE_TYPE_PORO          (15),
-        LLAMA_VOCAB_PRE_TYPE_CHATGLM3      (16),
-        LLAMA_VOCAB_PRE_TYPE_CHATGLM4      (17),
-        LLAMA_VOCAB_PRE_TYPE_VIKING        (18),
-        LLAMA_VOCAB_PRE_TYPE_JAIS          (19),
-        LLAMA_VOCAB_PRE_TYPE_TEKKEN        (20),
-        LLAMA_VOCAB_PRE_TYPE_SMOLLM        (21),
-        LLAMA_VOCAB_PRE_TYPE_CODESHELL     (22),
-        LLAMA_VOCAB_PRE_TYPE_BLOOM         (23),
-        LLAMA_VOCAB_PRE_TYPE_GPT3_FINNISH  (24),
-        LLAMA_VOCAB_PRE_TYPE_EXAONE        (25),
-        LLAMA_VOCAB_PRE_TYPE_CHAMELEON     (26),
-        LLAMA_VOCAB_PRE_TYPE_MINERVA       (27),
-        LLAMA_VOCAB_PRE_TYPE_DEEPSEEK3_LLM (28),
-        LLAMA_VOCAB_PRE_TYPE_GPT4O         (29);
-
-        public final int value;
-        private llama_vocab_pre_type(int v) { this.value = v; }
-        private llama_vocab_pre_type(llama_vocab_pre_type e) { this.value = e.value; }
-        public llama_vocab_pre_type intern() { for (llama_vocab_pre_type e : values()) if (e.value == value) return e; return this; }
-        @Override public String toString() { return intern().name(); }
-    }
 
     public enum llama_rope_type {
         LLAMA_ROPE_TYPE_NONE  (-1),
@@ -3071,6 +3953,9 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
         //LLAMA_FTYPE_MOSTLY_Q4_0_8_8      = 35, // removed from gguf files, use Q4_0 and runtime repack
         LLAMA_FTYPE_MOSTLY_TQ1_0        (36), // except 1d tensors
         LLAMA_FTYPE_MOSTLY_TQ2_0        (37), // except 1d tensors
+        LLAMA_FTYPE_MOSTLY_MXFP4_MOE    (38), // except 1d tensors
+        LLAMA_FTYPE_MOSTLY_NVFP4        (39), // except 1d tensors
+        LLAMA_FTYPE_MOSTLY_Q1_0         (40), // except 1d tensors
 
         LLAMA_FTYPE_GUESSED(1024);// not specified in the model file
 
@@ -3110,15 +3995,42 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
         @Override public String toString() { return intern().name(); }
     }
 
+    public enum llama_flash_attn_type {
+        LLAMA_FLASH_ATTN_TYPE_AUTO    (-1),
+        LLAMA_FLASH_ATTN_TYPE_DISABLED(0),
+        LLAMA_FLASH_ATTN_TYPE_ENABLED (1);
+
+        public final int value;
+        private llama_flash_attn_type(int v) { this.value = v; }
+        private llama_flash_attn_type(llama_flash_attn_type e) { this.value = e.value; }
+        public llama_flash_attn_type intern() { for (llama_flash_attn_type e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    public static native @Cast("const char*") BytePointer llama_flash_attn_type_name(llama_flash_attn_type flash_attn_type);
+    public static native String llama_flash_attn_type_name(@Cast("llama_flash_attn_type") int flash_attn_type);
+
     public enum llama_split_mode {
-        LLAMA_SPLIT_MODE_NONE (0), // single GPU
-        LLAMA_SPLIT_MODE_LAYER(1), // split layers and KV across GPUs
-        LLAMA_SPLIT_MODE_ROW  (2);// split layers and KV across GPUs, use tensor parallelism if supported
+        LLAMA_SPLIT_MODE_NONE  (0), // single GPU
+        LLAMA_SPLIT_MODE_LAYER (1), // split layers and KV across GPUs
+        LLAMA_SPLIT_MODE_ROW   (2), // split layers and KV across GPUs, use tensor parallelism if supported
+        LLAMA_SPLIT_MODE_TENSOR(3);
 
         public final int value;
         private llama_split_mode(int v) { this.value = v; }
         private llama_split_mode(llama_split_mode e) { this.value = e.value; }
         public llama_split_mode intern() { for (llama_split_mode e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
+
+    public enum llama_context_type {
+        LLAMA_CONTEXT_TYPE_DEFAULT(0),
+        LLAMA_CONTEXT_TYPE_MTP    (1);
+
+        public final int value;
+        private llama_context_type(int v) { this.value = v; }
+        private llama_context_type(llama_context_type e) { this.value = e.value; }
+        public llama_context_type intern() { for (llama_context_type e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
 // Targeting ../llama_token_data.java
@@ -3146,13 +4058,46 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
         public llama_model_kv_override_type intern() { for (llama_model_kv_override_type e : values()) if (e.value == value) return e; return this; }
         @Override public String toString() { return intern().name(); }
     }
+
+    public enum llama_model_meta_key {
+        LLAMA_MODEL_META_KEY_SAMPLING_SEQUENCE(0),
+        LLAMA_MODEL_META_KEY_SAMPLING_TOP_K(1),
+        LLAMA_MODEL_META_KEY_SAMPLING_TOP_P(2),
+        LLAMA_MODEL_META_KEY_SAMPLING_MIN_P(3),
+        LLAMA_MODEL_META_KEY_SAMPLING_XTC_PROBABILITY(4),
+        LLAMA_MODEL_META_KEY_SAMPLING_XTC_THRESHOLD(5),
+        LLAMA_MODEL_META_KEY_SAMPLING_TEMP(6),
+        LLAMA_MODEL_META_KEY_SAMPLING_PENALTY_LAST_N(7),
+        LLAMA_MODEL_META_KEY_SAMPLING_PENALTY_REPEAT(8),
+        LLAMA_MODEL_META_KEY_SAMPLING_MIROSTAT(9),
+        LLAMA_MODEL_META_KEY_SAMPLING_MIROSTAT_TAU(10),
+        LLAMA_MODEL_META_KEY_SAMPLING_MIROSTAT_ETA(11);
+
+        public final int value;
+        private llama_model_meta_key(int v) { this.value = v; }
+        private llama_model_meta_key(llama_model_meta_key e) { this.value = e.value; }
+        public llama_model_meta_key intern() { for (llama_model_meta_key e : values()) if (e.value == value) return e; return this; }
+        @Override public String toString() { return intern().name(); }
+    }
 // Targeting ../llama_model_kv_override.java
+
+
+// Targeting ../llama_model_tensor_buft_override.java
 
 
 // Targeting ../llama_model_params.java
 
 
+// Targeting ../llama_sampler_seq_config.java
+
+
 // Targeting ../llama_context_params.java
+
+
+// Targeting ../llama_model_tensor_override.java
+
+
+// Targeting ../llama_model_imatrix_data.java
 
 
 // Targeting ../llama_model_quantize_params.java
@@ -3193,6 +4138,14 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     
 
     public static native void llama_detach_threadpool(llama_context ctx);
+// Targeting ../llama_model_set_tensor_data_t.java
+
+
+
+    // Create a new model from GGUF metadata as well as a function to set the tensor data
+    //   - tensors are created as GGML_TYPE_F32 by default,
+    //     override by adding a tensor with the same name but a different name to the context
+    
 
     public static native llama_model llama_load_model_from_file(
                                  @Cast("const char*") BytePointer path_model,
@@ -3201,7 +4154,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                  String path_model,
                   @ByVal llama_model_params params);
 
-    // Load the model from a file
+    // Load a model from a file
     // If the file is split into multiple parts, the file name must follow this pattern: <name>-%05d-of-%05d.gguf
     // If the split file name does not follow this pattern, use llama_model_load_from_splits
     public static native llama_model llama_model_load_from_file(
@@ -3211,7 +4164,12 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                  String path_model,
                   @ByVal llama_model_params params);
 
-    // Load the model from multiple splits (support custom naming scheme)
+    // Load a model from an open FILE pointer
+    public static native llama_model llama_model_load_from_file_ptr(
+                                       @Cast("FILE*") Pointer file,
+                  @ByVal llama_model_params params);
+
+    // Load a model from multiple splits (support custom naming scheme)
     // The paths must be in the correct order
     public static native llama_model llama_model_load_from_splits(
                                  @Cast("const char**") PointerPointer paths,
@@ -3229,6 +4187,13 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                  @Cast("const char**") @ByPtrPtr byte[] paths,
                                      @Cast("size_t") long n_paths,
                   @ByVal llama_model_params params);
+
+    public static native void llama_model_save_to_file(
+                @Const llama_model model,
+                            @Cast("const char*") BytePointer path_model);
+    public static native void llama_model_save_to_file(
+                @Const llama_model model,
+                            String path_model);
 
     public static native void llama_free_model(llama_model model);
 
@@ -3248,16 +4213,23 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native @Cast("int64_t") long llama_time_us();
 
     public static native @Cast("size_t") long llama_max_devices();
+    public static native @Cast("size_t") long llama_max_parallel_sequences();
+    public static native @Cast("size_t") long llama_max_tensor_buft_overrides();
 
     public static native @Cast("bool") boolean llama_supports_mmap();
     public static native @Cast("bool") boolean llama_supports_mlock();
     public static native @Cast("bool") boolean llama_supports_gpu_offload();
     public static native @Cast("bool") boolean llama_supports_rpc();
 
+    // NOTE: After creating a llama_context, it is recommended to query the actual values using these functions
+    //       In some cases the requested values via llama_context_params may differ from the actual values used by the context
+    //       ref: https://github.com/ggml-org/llama.cpp/pull/17046#discussion_r2503085732
     public static native @Cast("uint32_t") int llama_n_ctx(@Const llama_context ctx);
+    public static native @Cast("uint32_t") int llama_n_ctx_seq(@Const llama_context ctx);
     public static native @Cast("uint32_t") int llama_n_batch(@Const llama_context ctx);
     public static native @Cast("uint32_t") int llama_n_ubatch(@Const llama_context ctx);
     public static native @Cast("uint32_t") int llama_n_seq_max(@Const llama_context ctx);
+    public static native @Cast("uint32_t") int llama_n_rs_seq(@Const llama_context ctx);
 
     public static native int llama_n_ctx_train(@Const llama_model model);
     public static native int llama_n_embd(@Const llama_model model);
@@ -3267,19 +4239,31 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native int llama_n_vocab(@Const llama_vocab vocab);
 
     public static native @Const llama_model llama_get_model(@Const llama_context ctx);
-    
+    public static native llama_memory_i llama_get_memory(@Const llama_context ctx);
+     // TODO: rename to llama_get_pooling_type
 
     public static native @Const llama_vocab llama_model_get_vocab(@Const llama_model model);
     public static native llama_rope_type llama_model_rope_type(@Const llama_model model);
 
     public static native int llama_model_n_ctx_train(@Const llama_model model);
     public static native int llama_model_n_embd(@Const llama_model model);
+    public static native int llama_model_n_embd_inp(@Const llama_model model);
+    public static native int llama_model_n_embd_out(@Const llama_model model);
     public static native int llama_model_n_layer(@Const llama_model model);
+    public static native int llama_model_n_layer_nextn(@Const llama_model model);
     public static native int llama_model_n_head(@Const llama_model model);
     public static native int llama_model_n_head_kv(@Const llama_model model);
+    public static native int llama_model_n_swa(@Const llama_model model);
 
     // Get the model's RoPE frequency scaling factor
     public static native float llama_model_rope_freq_scale_train(@Const llama_model model);
+
+    // Returns the number of classifier outputs (only valid for classifier models)
+    // Undefined behavior for non-classifier models
+    public static native @Cast("uint32_t") int llama_model_n_cls_out(@Const llama_model model);
+
+    // Returns label of classifier output by index (<n_cls_out). Returns nullptr if no label provided
+    public static native @Cast("const char*") BytePointer llama_model_cls_label(@Const llama_model model, @Cast("uint32_t") int i);
 
     
 
@@ -3301,6 +4285,10 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
     // Get the number of metadata key/value pairs
     public static native int llama_model_meta_count(@Const llama_model model);
+
+    // Get sampling metadata key name. Returns nullptr if the key is invalid
+    public static native @Cast("const char*") BytePointer llama_model_meta_key_str(llama_model_meta_key key);
+    public static native String llama_model_meta_key_str(@Cast("llama_model_meta_key") int key);
 
     // Get metadata key name by index
     public static native int llama_model_meta_key_by_index(@Const llama_model model, int i, @Cast("char*") BytePointer buf, @Cast("size_t") long buf_size);
@@ -3341,6 +4329,12 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // Returns true if the model is recurrent (like Mamba, RWKV, etc.)
     public static native @Cast("bool") boolean llama_model_is_recurrent(@Const llama_model model);
 
+    // Returns true if the model is hybrid (like Jamba, Granite, etc.)
+    public static native @Cast("bool") boolean llama_model_is_hybrid(@Const llama_model model);
+
+    // Returns true if the model is diffusion-based (like LLaDA, Dream, etc.)
+    public static native @Cast("bool") boolean llama_model_is_diffusion(@Const llama_model model);
+
     // Returns 0 on success
     public static native @Cast("uint32_t") int llama_model_quantize(
                 @Cast("const char*") BytePointer fname_inp,
@@ -3356,6 +4350,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     //
 
     // Load a LoRA adapter from file
+    // The adapter is valid as long as the associated model is not freed
     public static native llama_adapter_lora llama_adapter_lora_init(
                 llama_model model,
                 @Cast("const char*") BytePointer path_lora);
@@ -3363,27 +4358,64 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                 llama_model model,
                 String path_lora);
 
+    // Functions to access the adapter's GGUF metadata scalar values
+    // - The functions return the length of the string on success, or -1 on failure
+    // - The output string is always null-terminated and cleared on failure
+    // - When retrieving a string, an extra byte must be allocated to account for the null terminator
+    // - GGUF array values are not supported by these functions
+
+    // Get metadata value as a string by key name
+    public static native int llama_adapter_meta_val_str(@Const llama_adapter_lora adapter, @Cast("const char*") BytePointer key, @Cast("char*") BytePointer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str(@Const llama_adapter_lora adapter, String key, @Cast("char*") ByteBuffer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str(@Const llama_adapter_lora adapter, @Cast("const char*") BytePointer key, @Cast("char*") byte[] buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str(@Const llama_adapter_lora adapter, String key, @Cast("char*") BytePointer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str(@Const llama_adapter_lora adapter, @Cast("const char*") BytePointer key, @Cast("char*") ByteBuffer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str(@Const llama_adapter_lora adapter, String key, @Cast("char*") byte[] buf, @Cast("size_t") long buf_size);
+
+    // Get the number of metadata key/value pairs
+    public static native int llama_adapter_meta_count(@Const llama_adapter_lora adapter);
+
+    // Get metadata key name by index
+    public static native int llama_adapter_meta_key_by_index(@Const llama_adapter_lora adapter, int i, @Cast("char*") BytePointer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_key_by_index(@Const llama_adapter_lora adapter, int i, @Cast("char*") ByteBuffer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_key_by_index(@Const llama_adapter_lora adapter, int i, @Cast("char*") byte[] buf, @Cast("size_t") long buf_size);
+
+    // Get metadata value as a string by index
+    public static native int llama_adapter_meta_val_str_by_index(@Const llama_adapter_lora adapter, int i, @Cast("char*") BytePointer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str_by_index(@Const llama_adapter_lora adapter, int i, @Cast("char*") ByteBuffer buf, @Cast("size_t") long buf_size);
+    public static native int llama_adapter_meta_val_str_by_index(@Const llama_adapter_lora adapter, int i, @Cast("char*") byte[] buf, @Cast("size_t") long buf_size);
+
     // Manually free a LoRA adapter
-    // Note: loaded adapters will be free when the associated model is deleted
+    // NOTE: loaded adapters that are not manually freed will be freed when the associated model is deleted
     public static native void llama_adapter_lora_free(llama_adapter_lora adapter);
+
+    // Get the invocation tokens if the current lora is an alora
+    public static native @Cast("uint64_t") long llama_adapter_get_alora_n_invocation_tokens(@Const llama_adapter_lora adapter);
+    public static native @Cast("const llama_token*") IntPointer llama_adapter_get_alora_invocation_tokens(@Const llama_adapter_lora adapter);
 
     // The following functions operate on a llama_context, hence the naming: llama_verb_...
 
-    // Add a loaded LoRA adapter to given context
-    // This will not modify model's weight
-    public static native int llama_set_adapter_lora(
+    // Set LoRa adapters on the context. Will only modify if the adapters currently in context are different.
+    public static native int llama_set_adapters_lora(
                 llama_context ctx,
-                llama_adapter_lora adapter,
-                float scale);
-
-    // Remove a specific LoRA adapter from given context
-    // Return -1 if the adapter is not present in the context
-    public static native int llama_rm_adapter_lora(
+                @Cast("llama_adapter_lora**") PointerPointer adapters,
+                @Cast("size_t") long n_adapters,
+                FloatPointer scales);
+    public static native int llama_set_adapters_lora(
                 llama_context ctx,
-                llama_adapter_lora adapter);
-
-    // Remove all LoRA adapters from given context
-    public static native void llama_clear_adapter_lora(llama_context ctx);
+                @ByPtrPtr llama_adapter_lora adapters,
+                @Cast("size_t") long n_adapters,
+                FloatPointer scales);
+    public static native int llama_set_adapters_lora(
+                llama_context ctx,
+                @ByPtrPtr llama_adapter_lora adapters,
+                @Cast("size_t") long n_adapters,
+                FloatBuffer scales);
+    public static native int llama_set_adapters_lora(
+                llama_context ctx,
+                @ByPtrPtr llama_adapter_lora adapters,
+                @Cast("size_t") long n_adapters,
+                float[] scales);
 
     // Apply a loaded control vector to a llama_context, or if data is NULL, clear
     // the currently loaded vector.
@@ -3391,139 +4423,108 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // to an n_embd x n_layers buffer starting from layer 1.
     // il_start and il_end are the layer range the vector should apply to (both inclusive)
     // See llama_control_vector_load in common to load a control vector.
-    public static native int llama_apply_adapter_cvec(
+    public static native int llama_set_adapter_cvec(
                 llama_context ctx,
                          @Const FloatPointer data,
                               @Cast("size_t") long len,
                              int n_embd,
                              int il_start,
                              int il_end);
-    public static native int llama_apply_adapter_cvec(
+    public static native int llama_set_adapter_cvec(
                 llama_context ctx,
                          @Const FloatBuffer data,
                               @Cast("size_t") long len,
                              int n_embd,
                              int il_start,
                              int il_end);
-    public static native int llama_apply_adapter_cvec(
+    public static native int llama_set_adapter_cvec(
                 llama_context ctx,
                          @Const float[] data,
                               @Cast("size_t") long len,
                              int n_embd,
                              int il_start,
                              int il_end);
-// Targeting ../llama_kv_cache_view_cell.java
 
+    //
+    // Memory
+    //
 
-// Targeting ../llama_kv_cache_view.java
-
-
-
-    // Create an empty KV cache view. (use only for debugging purposes)
-    public static native @ByVal llama_kv_cache_view llama_kv_cache_view_init(@Const llama_context ctx, int n_seq_max);
-
-    // Free a KV cache view. (use only for debugging purposes)
-    public static native void llama_kv_cache_view_free(llama_kv_cache_view view);
-
-    // Update the KV cache view structure with the current state of the KV cache. (use only for debugging purposes)
-    // TODO: change signature to llama_kv_cache_view_update(struct llama_kv_cache_view * view, const struct llama_context * ctx)
-    
-    
-    ///
-    public static native void llama_kv_cache_view_update(@Const llama_context ctx, llama_kv_cache_view view);
-
-    /** */
-
-    // Returns the number of tokens in the KV cache (slow, use only for debug)
-    // If a KV cell has multiple sequences assigned to it, it will be counted multiple times
-    public static native int llama_get_kv_cache_token_count(@Const llama_context ctx);
-
-    // Returns the number of used KV cells (i.e. have at least one sequence assigned to them)
-    public static native int llama_get_kv_cache_used_cells(@Const llama_context ctx);
-
-    // Clear the KV cache - both cell info is erased and KV data is zeroed
-    public static native void llama_kv_cache_clear(
-                llama_context ctx);
+    // Clear the memory contents
+    // If data == true, the data buffers will also be cleared together with the metadata
+    public static native void llama_memory_clear(
+                llama_memory_i mem,
+                          @Cast("bool") boolean data);
 
     // Removes all tokens that belong to the specified sequence and have positions in [p0, p1)
     // Returns false if a partial sequence cannot be removed. Removing a whole sequence never fails
     // seq_id < 0 : match any sequence
     // p0 < 0     : [0,  p1]
     // p1 < 0     : [p0, inf)
-    public static native @Cast("bool") boolean llama_kv_cache_seq_rm(
-                llama_context ctx,
-                        @Cast("llama_seq_id") int seq_id,
-                           @Cast("llama_pos") int p0,
-                           @Cast("llama_pos") int p1);
+    public static native @Cast("bool") boolean llama_memory_seq_rm(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id,
+                     @Cast("llama_pos") int p0,
+                     @Cast("llama_pos") int p1);
 
     // Copy all tokens that belong to the specified sequence to another sequence
-    // Note that this does not allocate extra KV cache memory - it simply assigns the tokens to the new sequence
     // p0 < 0 : [0,  p1]
     // p1 < 0 : [p0, inf)
-    public static native void llama_kv_cache_seq_cp(
-                llama_context ctx,
-                        @Cast("llama_seq_id") int seq_id_src,
-                        @Cast("llama_seq_id") int seq_id_dst,
-                           @Cast("llama_pos") int p0,
-                           @Cast("llama_pos") int p1);
+    public static native void llama_memory_seq_cp(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id_src,
+                  @Cast("llama_seq_id") int seq_id_dst,
+                     @Cast("llama_pos") int p0,
+                     @Cast("llama_pos") int p1);
 
     // Removes all tokens that do not belong to the specified sequence
-    public static native void llama_kv_cache_seq_keep(
-                llama_context ctx,
-                        @Cast("llama_seq_id") int seq_id);
+    public static native void llama_memory_seq_keep(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id);
 
     // Adds relative position "delta" to all tokens that belong to the specified sequence and have positions in [p0, p1)
-    // If the KV cache is RoPEd, the KV data is updated accordingly:
-    //   - lazily on next llama_decode()
-    //   - explicitly with llama_kv_cache_update()
     // p0 < 0 : [0,  p1]
     // p1 < 0 : [p0, inf)
-    public static native void llama_kv_cache_seq_add(
-                llama_context ctx,
-                        @Cast("llama_seq_id") int seq_id,
-                           @Cast("llama_pos") int p0,
-                           @Cast("llama_pos") int p1,
-                           @Cast("llama_pos") int delta);
+    public static native void llama_memory_seq_add(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id,
+                     @Cast("llama_pos") int p0,
+                     @Cast("llama_pos") int p1,
+                     @Cast("llama_pos") int delta);
 
     // Integer division of the positions by factor of `d > 1`
-    // If the KV cache is RoPEd, the KV data is updated accordingly:
-    //   - lazily on next llama_decode()
-    //   - explicitly with llama_kv_cache_update()
     // p0 < 0 : [0,  p1]
     // p1 < 0 : [p0, inf)
-    public static native void llama_kv_cache_seq_div(
-                llama_context ctx,
-                        @Cast("llama_seq_id") int seq_id,
-                           @Cast("llama_pos") int p0,
-                           @Cast("llama_pos") int p1,
-                                 int d);
+    public static native void llama_memory_seq_div(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id,
+                     @Cast("llama_pos") int p0,
+                     @Cast("llama_pos") int p1,
+                           int d);
 
-    // Returns the largest position present in the KV cache for the specified sequence
-    public static native @Cast("llama_pos") int llama_kv_cache_seq_pos_max(
-                llama_context ctx,
-                        @Cast("llama_seq_id") int seq_id);
+    // Returns the smallest position present in the memory for the specified sequence
+    // This is typically non-zero only for SWA caches
+    // Note that all positions in the range [pos_min, pos_max] are guaranteed to be present in the memory
+    // Return -1 if the sequence is empty
+    public static native @Cast("llama_pos") int llama_memory_seq_pos_min(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id);
 
-    // TODO: the llama_kv_cache_defrag and llama_kv_cache_update API tightly couples llama_context with llama_kv_cache
-    //       how to avoid this?
+    // Returns the largest position present in the memory for the specified sequence
+    // Note that all positions in the range [pos_min, pos_max] are guaranteed to be present in the memory
+    // Return -1 if the sequence is empty
+    public static native @Cast("llama_pos") int llama_memory_seq_pos_max(
+                llama_memory_i mem,
+                  @Cast("llama_seq_id") int seq_id);
 
-    // Defragment the KV cache
-    // This will be applied:
-    //   - lazily on next llama_decode()
-    //   - explicitly with llama_kv_cache_update()
-    public static native void llama_kv_cache_defrag(llama_context ctx);
-
-    // Apply the KV cache updates (such as K-shifts, defragmentation, etc.)
-    public static native void llama_kv_cache_update(llama_context ctx);
-
-    // Check if the context supports KV cache shifting
-    public static native @Cast("bool") boolean llama_kv_cache_can_shift(llama_context ctx);
+    // Check if the memory supports shifting
+    public static native @Cast("bool") boolean llama_memory_can_shift(llama_memory_i mem);
 
     //
     // State / sessions
     //
 
     // Returns the *actual* size in bytes of the state
-    // (logits, embedding and kv_cache)
+    // (logits, embedding and memory)
     // Only use when saving the state, not when restoring it, otherwise the size may be too small.
     public static native @Cast("size_t") long llama_state_get_size(llama_context ctx);
     public static native @Cast("size_t") long llama_get_state_size(llama_context ctx);
@@ -3712,12 +4713,12 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                    @Cast("const llama_token*") int[] tokens,
                               @Cast("size_t") long n_token_count);
 
-    // Get the exact size needed to copy the KV cache of a single sequence
+    // Get the exact size needed to copy the state of a single sequence
     public static native @Cast("size_t") long llama_state_seq_get_size(
                 llama_context ctx,
                         @Cast("llama_seq_id") int seq_id);
 
-    // Copy the KV cache of a single sequence into the specified buffer
+    // Copy the state of a single sequence into the specified buffer
     public static native @Cast("size_t") long llama_state_seq_get_data(
                 llama_context ctx,
                              @Cast("uint8_t*") BytePointer dst,
@@ -3834,6 +4835,61 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                               @Cast("size_t") long n_token_capacity,
                               @Cast("size_t*") SizeTPointer n_token_count_out);
 
+public static final int LLAMA_STATE_SEQ_FLAGS_NONE = 0;
+
+// for backwards-compat
+public static final int LLAMA_STATE_SEQ_FLAGS_SWA_ONLY = 1;
+
+// work only with partial states, such as SWA KV cache or recurrent cache (e.g. Mamba)
+public static final int LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY = 1;
+
+// Keeps the tensor data on device buffers (i.e. not accessible in host memory, but faster save/load).
+// Getting the state for a seq_id with this flag invalidates all prior states gotten for that seq_id with this flag.
+public static final int LLAMA_STATE_SEQ_FLAGS_ON_DEVICE = 2;
+
+    public static native @Cast("size_t") long llama_state_seq_get_size_ext(
+                llama_context ctx,
+                        @Cast("llama_seq_id") int seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+
+    public static native @Cast("size_t") long llama_state_seq_get_data_ext(
+                llama_context ctx,
+                             @Cast("uint8_t*") BytePointer dst,
+                              @Cast("size_t") long size,
+                        @Cast("llama_seq_id") int seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+    public static native @Cast("size_t") long llama_state_seq_get_data_ext(
+                llama_context ctx,
+                             @Cast("uint8_t*") ByteBuffer dst,
+                              @Cast("size_t") long size,
+                        @Cast("llama_seq_id") int seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+    public static native @Cast("size_t") long llama_state_seq_get_data_ext(
+                llama_context ctx,
+                             @Cast("uint8_t*") byte[] dst,
+                              @Cast("size_t") long size,
+                        @Cast("llama_seq_id") int seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+
+    public static native @Cast("size_t") long llama_state_seq_set_data_ext(
+                llama_context ctx,
+                       @Cast("const uint8_t*") BytePointer src,
+                              @Cast("size_t") long size,
+                        @Cast("llama_seq_id") int dest_seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+    public static native @Cast("size_t") long llama_state_seq_set_data_ext(
+                llama_context ctx,
+                       @Cast("const uint8_t*") ByteBuffer src,
+                              @Cast("size_t") long size,
+                        @Cast("llama_seq_id") int dest_seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+    public static native @Cast("size_t") long llama_state_seq_set_data_ext(
+                llama_context ctx,
+                       @Cast("const uint8_t*") byte[] src,
+                              @Cast("size_t") long size,
+                        @Cast("llama_seq_id") int dest_seq_id,
+               @Cast("llama_state_seq_flags") int flags);
+
     //
     // Decoding
     //
@@ -3869,18 +4925,28 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // Frees a batch of tokens allocated with llama_batch_init()
     public static native void llama_batch_free(@ByVal llama_batch batch);
 
-    // Processes a batch of tokens with the ecoder part of the encoder-decoder model.
-    // Stores the encoder output internally for later use by the decoder cross-attention layers.
+    // Process a batch of tokens.
+    // In contrast to llama_decode() - this call does not use KV cache.
+    // For encode-decoder contexts, processes the batch using the encoder.
+    // Can store the encoder output internally for later use by the decoder's cross-attention layers.
     //   0 - success
-    // < 0 - error. the KV cache state is restored to the state before this call
+    // < 0 - error. the memory state is restored to the state before this call
     public static native int llama_encode(
                 llama_context ctx,
                   @ByVal llama_batch batch);
 
+    // Process a batch of tokens.
+    // Requires the context to have a memory.
+    // For encode-decoder contexts, processes the batch using the decoder.
     // Positive return values does not mean a fatal error, but rather a warning.
-    //   0 - success
-    //   1 - could not find a KV slot for the batch (try reducing the size of the batch or increase the context)
-    // < 0 - error. the KV cache state is restored to the state before this call
+    // Upon fatal-error or abort, the ubatches that managed to be been processed will remain in the memory state of the context
+    //   To handle this correctly, query the memory state using llama_memory_seq_pos_min() and llama_memory_seq_pos_max()
+    // Upon other return values, the memory state is restored to the state before this call
+    //    0 - success
+    //    1 - could not find a KV slot for the batch (try reducing the size of the batch or increase the context)
+    //    2 - aborted     (processed ubatches will remain in the context's memory)
+    //   -1 - invalid input batch
+    // < -1 - fatal error (processed ubatches will remain in the context's memory)
     public static native int llama_decode(
                 llama_context ctx,
                   @ByVal llama_batch batch);
@@ -3896,13 +4962,20 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // Get the number of threads used for prompt and batch processing (multiple token).
     public static native int llama_n_threads_batch(llama_context ctx);
 
-    // Set whether the model is in embeddings mode or not
-    // If true, embeddings will be returned but logits will not
+    // Set whether the context outputs embeddings or not
+    // TODO: rename to avoid confusion with llama_get_embeddings()
     public static native void llama_set_embeddings(llama_context ctx, @Cast("bool") boolean embeddings);
 
     // Set whether to use causal attention or not
     // If set to true, the model will only attend to the past tokens
     public static native void llama_set_causal_attn(llama_context ctx, @Cast("bool") boolean causal_attn);
+
+    // Set whether the model is in warmup mode or not
+    // If true, all model tensors are activated during llama_decode() to load and cache their weights.
+    //
+    // note: using this can cause extra graph reallocations because it changes the graph topology with MoE models,
+    //       so it is generally not recommended to use in practice. will be removed in the future
+    public static native void llama_set_warmup(llama_context ctx, @Cast("bool") boolean warmup);
 
     // Set abort callback
     
@@ -3917,11 +4990,12 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // in the order they have appeared in the batch.
     // Rows: number of tokens for which llama_batch.logits[i] != 0
     // Cols: n_vocab
+    // TODO: deprecate in favor of llama_get_logits_ith() (ref: https://github.com/ggml-org/llama.cpp/pull/14853#issuecomment-3113143522)
     public static native FloatPointer llama_get_logits(llama_context ctx);
 
     // Logits for the ith token. For positive indices, Equivalent to:
     // llama_get_logits(ctx) + ctx->output_ids[i]*n_vocab
-    // Negative indicies can be used to access logits in reverse order, -1 is the last logit.
+    // Negative indices can be used to access logits in reverse order, -1 is the last logit.
     // returns NULL for invalid ids.
     public static native FloatPointer llama_get_logits_ith(llama_context ctx, int i);
 
@@ -3931,20 +5005,47 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // in the order they have appeared in the batch.
     // shape: [n_outputs*n_embd]
     // Otherwise, returns NULL.
+    // TODO: deprecate in favor of llama_get_embeddings_ith() (ref: https://github.com/ggml-org/llama.cpp/pull/14853#issuecomment-3113143522)
     public static native FloatPointer llama_get_embeddings(llama_context ctx);
 
     // Get the embeddings for the ith token. For positive indices, Equivalent to:
     // llama_get_embeddings(ctx) + ctx->output_ids[i]*n_embd
-    // Negative indicies can be used to access embeddings in reverse order, -1 is the last embedding.
+    // Negative indices can be used to access embeddings in reverse order, -1 is the last embedding.
     // shape: [n_embd] (1-dimensional)
     // returns NULL for invalid ids.
     public static native FloatPointer llama_get_embeddings_ith(llama_context ctx, int i);
 
     // Get the embeddings for a sequence id
     // Returns NULL if pooling_type is LLAMA_POOLING_TYPE_NONE
-    // when pooling_type == LLAMA_POOLING_TYPE_RANK, returns float[1] with the rank of the sequence
+    // when pooling_type == LLAMA_POOLING_TYPE_RANK, returns float[n_cls_out] with the rank(s) of the sequence
     // otherwise: float[n_embd] (1-dimensional)
     public static native FloatPointer llama_get_embeddings_seq(llama_context ctx, @Cast("llama_seq_id") int seq_id);
+
+    //
+    // backend sampling API [EXPERIMENTAL]
+    // note: use only if the llama_context was created with at least one llama_sampler_seq_config
+    //
+
+    // Get the backend sampled token for the ith token.
+    // Returns LLAMA_TOKEN_NULL if no token was sampled.
+    public static native @Cast("llama_token") int llama_get_sampled_token_ith(llama_context ctx, int i);
+
+    // Get the backend sampled probabilities for the ith token
+    // The index matches llama_get_sampled_token_ith().
+    // Returns NULL if no probabilities were generated.
+    public static native FloatPointer llama_get_sampled_probs_ith(llama_context ctx, int i);
+    public static native @Cast("uint32_t") int llama_get_sampled_probs_count_ith(llama_context ctx, int i);
+
+    // Get the backend sampled logits for the ith token
+    // Returns NULL if no logits were sampled.
+    public static native FloatPointer llama_get_sampled_logits_ith(llama_context ctx, int i);
+    public static native @Cast("uint32_t") int llama_get_sampled_logits_count_ith(llama_context ctx, int i);
+
+    // Get the backend sampled candidates (token ids) for the ith token
+    // These are needed to map probability/logit indices to vocab token ids.
+    // Returns NULL if no candidates were sampled.
+    public static native @Cast("llama_token*") IntPointer llama_get_sampled_candidates_ith(llama_context ctx, int i);
+    public static native @Cast("uint32_t") int llama_get_sampled_candidates_count_ith(llama_context ctx, int i);
 
     //
     // Vocab
@@ -3969,9 +5070,11 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native @Cast("llama_token") int llama_vocab_sep(@Const llama_vocab vocab); // sentence separator
     public static native @Cast("llama_token") int llama_vocab_nl(@Const llama_vocab vocab); // next-line
     public static native @Cast("llama_token") int llama_vocab_pad(@Const llama_vocab vocab); // padding
+    public static native @Cast("llama_token") int llama_vocab_mask(@Const llama_vocab vocab); // mask
 
     public static native @Cast("bool") boolean llama_vocab_get_add_bos(@Const llama_vocab vocab);
     public static native @Cast("bool") boolean llama_vocab_get_add_eos(@Const llama_vocab vocab);
+    public static native @Cast("bool") boolean llama_vocab_get_add_sep(@Const llama_vocab vocab);
 
     public static native @Cast("llama_token") int llama_vocab_fim_pre(@Const llama_vocab vocab);
     public static native @Cast("llama_token") int llama_vocab_fim_suf(@Const llama_vocab vocab);
@@ -4014,6 +5117,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
      *  @param tokens The tokens pointer must be large enough to hold the resulting tokens.
      *  @return Returns the number of tokens on success, no more than n_tokens_max
      *  @return Returns a negative number on failure - the number of tokens that would have been returned
+     *  @return Returns INT32_MIN on overflow (e.g., tokenization result size exceeds int32_t limit)
      *  @param add_special Allow to add BOS and EOS tokens if model is configured to do so.
      *  @param parse_special Allow tokenizing special and/or control tokens which otherwise are not exposed and treated
      *                       as plaintext. Does not insert a leading space. */
@@ -4099,6 +5203,8 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
      *  @return Returns a negative number on failure - the number of chars/bytes that would have been returned.
      *  @param remove_special Allow to remove BOS and EOS tokens if model is configured to do so.
      *  @param unparse_special If true, special tokens are rendered in the output. */
+    
+    ///
     public static native int llama_detokenize(
             @Const llama_vocab vocab,
                    @Cast("const llama_token*") IntPointer tokens,
@@ -4129,9 +5235,9 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     //
 
     /** Apply chat template. Inspired by hf apply_chat_template() on python.
-     *  Both "model" and "custom_template" are optional, but at least one is required. "custom_template" has higher precedence than "model"
+     * 
      *  NOTE: This function does not use a jinja parser. It only support a pre-defined list of template. See more: https://github.com/ggml-org/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template
-     *  @param tmpl A Jinja template to use for this chat. If this is nullptr, the model???s default chat template will be used instead.
+     *  @param tmpl A Jinja template to use for this chat.
      *  @param chat Pointer to a list of multiple llama_chat_message
      *  @param n_msg Number of llama_chat_message in this chat
      *  @param add_ass Whether to end the prompt with the token(s) that indicate the start of an assistant message.
@@ -4189,6 +5295,9 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 // Targeting ../llama_sampler_context_t.java
 
 
+// Targeting ../llama_sampler_data.java
+
+
 // Targeting ../llama_sampler_i.java
 
 
@@ -4196,8 +5305,13 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
 
 
+    // [EXPERIMENTAL]
+    // attach a sampler to the context
+    // note: prefer initializing the context with llama_context_params.samplers when possible
+    public static native @Cast("bool") boolean llama_set_sampler(llama_context ctx, @Cast("llama_seq_id") int seq_id, llama_sampler smpl);
+
     // mirror of llama_sampler_i:
-    public static native llama_sampler llama_sampler_init(@Const llama_sampler_i iface, llama_sampler_context_t ctx);
+    public static native llama_sampler llama_sampler_init(      llama_sampler_i iface, llama_sampler_context_t ctx);
     public static native @Cast("const char*") BytePointer llama_sampler_name(@Const llama_sampler smpl);
     public static native void llama_sampler_accept(      llama_sampler smpl, @Cast("llama_token") int token);
     public static native void llama_sampler_apply(      llama_sampler smpl, llama_token_data_array cur_p);
@@ -4213,7 +5327,15 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
     // important: takes ownership of the sampler object and will free it when llama_sampler_free is called
     public static native void llama_sampler_chain_add(      llama_sampler chain, llama_sampler smpl);
-    public static native llama_sampler llama_sampler_chain_get(@Const llama_sampler chain, int i);
+
+    // return NULL if:
+    //   - the sampler is NULL
+    //   - the sampler is not a llama_sampler_chain
+    //   - the index is out of bounds, unless i == -1
+    //   - if i == -1, returns the chain itself (can be used to check if the sampler is a chain)
+    public static native llama_sampler llama_sampler_chain_get(      llama_sampler chain, int i);
+
+    // the total number of samplers in the chain
     public static native int llama_sampler_chain_n(@Const llama_sampler chain);
 
     // after removing a sampler, the chain will no longer own it, and it will not be freed when the chain is freed
@@ -4222,13 +5344,12 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     // available samplers:
 
     public static native llama_sampler llama_sampler_init_greedy();
+
+    /** seed == LLAMA_DEFAULT_SEED to use a random seed. */
     public static native llama_sampler llama_sampler_init_dist(@Cast("uint32_t") int seed);
 
-    /** \details Sorts candidate tokens by their logits in descending order and calculate probabilities based on logits.
-     *  NOTE: Avoid using on the full vocabulary as the sorting can become slow. For example, apply top-k or top-p sampling first. */
-    public static native llama_sampler llama_sampler_init_softmax();
-
-    /** \details Top-K sampling described in academic paper "The Curious Case of Neural Text Degeneration" https://arxiv.org/abs/1904.09751 */
+    /** \details Top-K sampling described in academic paper "The Curious Case of Neural Text Degeneration" https://arxiv.org/abs/1904.09751
+     *  Setting k <= 0 makes this a noop */
     public static native llama_sampler llama_sampler_init_top_k(int k);
 
     /** \details Nucleus sampling described in academic paper "The Curious Case of Neural Text Degeneration" https://arxiv.org/abs/1904.09751 */
@@ -4249,7 +5370,7 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     /** \details XTC sampler as described in https://github.com/oobabooga/text-generation-webui/pull/6335 */
     public static native llama_sampler llama_sampler_init_xtc(float p, float t,     @Cast("size_t") long min_keep, @Cast("uint32_t") int seed);
 
-    /** \details Top n sigma sampling as described in academic paper "Top-n??: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
+    /** \details Top n sigma sampling as described in academic paper "Top-nσ: Not All Logits Are You Need" https://arxiv.org/pdf/2411.07641 */
     public static native llama_sampler llama_sampler_init_top_n_sigma(float n);
 
     /** \details Mirostat 1.0 algorithm described in the paper https://arxiv.org/abs/2007.14966. Uses tokens instead of words.
@@ -4275,6 +5396,10 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                    float tau,
                                    float eta);
 
+    /** \details Initializes a GBNF grammar, see grammars/README.md for details.
+     *  @param vocab The vocabulary that this grammar will be used with.
+     *  @param grammar_str The production rules for the grammar, encoded as a string. Returns an empty grammar if empty. Returns NULL if parsing of grammar_str fails.
+     *  @param grammar_root The name of the start symbol for the grammar. */
     public static native llama_sampler llama_sampler_init_grammar(
                 @Const llama_vocab vocab,
                               @Cast("const char*") BytePointer grammar_str,
@@ -4411,6 +5536,14 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                    float penalty_present); // 0.0 = disabled
 
     /**  \details DRY sampler, designed by p-e-w, as described in: https://github.com/oobabooga/text-generation-webui/pull/5677, porting Koboldcpp implementation authored by pi6am: https://github.com/LostRuins/koboldcpp/pull/982 */
+    
+    ///
+    ///
+    ///
+    ///
+    ///
+    ///
+    ///
     public static native llama_sampler llama_sampler_init_dry(
                 @Const llama_vocab vocab,
                                  int n_ctx_train,
@@ -4447,6 +5580,33 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
                                  int dry_penalty_last_n,
                               @Cast("const char**") @ByPtrPtr byte[] seq_breakers,
                                   @Cast("size_t") long num_breakers);
+
+    /** adaptive-p: select tokens near a configurable target probability over time.
+     * 
+     *  the adaptive-p sampler transforms the token probability distribution to favor tokens
+     *  that fall near a user-configurable probability target.
+     * 
+     *  internally, the sampler maintains an exponential moving average of the *ORIGINAL*
+     *  probabilities of selected tokens at each sampling step. it uses this EMA to compute an
+     *  adapted target probability at each sampling step, thus maintaining the desired target
+     *  probability over time.
+     * 
+     *  adaptive-p selects a token ID rather than just mutating candidates, so it must be last
+     *  in the sampler chain (like mirostat, dist, greedy).
+     * 
+     *  only mild truncation before this sampler is recommended. we suggest applying min-p
+     *  before adaptive-p as the only other active sampler in the chain.
+     * 
+     *  @param target select tokens near this probability (valid range 0.0 to 1.0; negative = disabled)
+     *  @param decay  EMA decay for adaptation; history ≈ 1/(1-decay) tokens (valid range 0.0 - 0.99)
+     *  @param seed   RNG seed
+     * 
+     *  ref: https://github.com/ggml-org/llama.cpp/pull/17927
+     *  */
+    public static native llama_sampler llama_sampler_init_adaptive_p(
+                                   float target,
+                                   float decay,
+                                @Cast("uint32_t") int seed);
 
     public static native llama_sampler llama_sampler_init_logit_bias(
                                  int n_vocab,
@@ -4523,6 +5683,9 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
 
     // Set callback for all future logging events.
     // If this is not called, or NULL is supplied, everything is output on stderr.
+    // The logger state is global so these functions are NOT thread safe.
+    public static native void llama_log_get(@ByPtrPtr ggml_log_callback log_callback, @Cast("void**") PointerPointer user_data);
+    public static native void llama_log_get(@ByPtrPtr ggml_log_callback log_callback, @Cast("void**") @ByPtrPtr Pointer user_data);
     public static native void llama_log_set(ggml_log_callback log_callback, Pointer user_data);
 // Targeting ../llama_perf_context_data.java
 
@@ -4539,6 +5702,16 @@ public static final int LLAMA_STATE_SEQ_VERSION = 2;
     public static native @ByVal llama_perf_sampler_data llama_perf_sampler(@Const llama_sampler chain);
     public static native void llama_perf_sampler_print(@Const llama_sampler chain);
     public static native void llama_perf_sampler_reset(      llama_sampler chain);
+// Targeting ../llama_opt_param_filter.java
+
+
+
+    // always returns true
+    public static native @Cast("bool") boolean llama_opt_param_filter_all(@Const ggml_tensor tensor, Pointer userdata);
+
+    
+
+    
 
 // #ifdef __cplusplus
 // #endif

@@ -9,14 +9,13 @@ import org.bytedeco.javacpp.annotation.*;
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
 
-    // custom operators
-
+    // Split buffer type for tensor parallelism (old)
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_unary_op_f32_t extends FunctionPointer {
+public class ggml_backend_split_buffer_type_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_unary_op_f32_t(Pointer p) { super(p); }
-        protected ggml_unary_op_f32_t() { allocate(); }
+        public    ggml_backend_split_buffer_type_t(Pointer p) { super(p); }
+        protected ggml_backend_split_buffer_type_t() { allocate(); }
         private native void allocate();
-        public native void call(int arg0, FloatPointer arg1, @Const FloatPointer arg2);
+        public native ggml_backend_buffer_type call(int main_device, @Const FloatPointer tensor_split);
     }

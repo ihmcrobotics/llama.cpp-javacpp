@@ -27,6 +27,7 @@ public class llama_sampler extends Pointer {
             return new llama_sampler((Pointer)this).offsetAddress(i);
         }
     
-        public native @Const llama_sampler_i iface(); public native llama_sampler iface(llama_sampler_i setter);
+        public native llama_sampler_i iface(); public native llama_sampler iface(llama_sampler_i setter);
+
         public native llama_sampler_context_t ctx(); public native llama_sampler ctx(llama_sampler_context_t setter);
     }

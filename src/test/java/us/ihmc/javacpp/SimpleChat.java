@@ -14,6 +14,7 @@ import us.ihmc.llamacpp.llama_model_params;
 import us.ihmc.llamacpp.llama_sampler;
 import us.ihmc.llamacpp.llama_vocab;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -71,10 +72,15 @@ public class SimpleChat {
 
       BytePointer formatted = new BytePointer(llama_n_ctx(ctx));
       int prev_len = 0;
+      // Create the Scanner once: a fresh Scanner per iteration would drop input buffered by the
+      // previous one (breaks piped/non-interactive input).
+      Scanner scanner = new Scanner(System.in);
       while (true) {
          System.out.print("\033[32m> \033[0m");
          // get user input
-         Scanner scanner = new Scanner(System.in);
+         if (!scanner.hasNextLine()) {
+            break;
+         }
          String user = scanner.nextLine();
 
          if (user.isEmpty()) {
@@ -95,7 +101,7 @@ public class SimpleChat {
             System.exit(1);
          }
 
-         String prompt = formatted.getString().substring(prev_len, new_len);
+         String prompt = formattedSlice(formatted, prev_len, new_len);
 
          // generate a response
          System.out.print("\033[33m");
@@ -121,7 +127,7 @@ public class SimpleChat {
    private String generate(String prompt) {
       String response = "";
 
-      boolean is_first = llama_get_kv_cache_used_cells(ctx) == 0;
+      boolean is_first = llama_memory_seq_pos_max(llama_get_memory(ctx), 0) == -1;
 
       int n_prompt_tokens = -llama_tokenize(vocab, prompt, prompt.length(), (IntPointer) null, 0, is_first, true);
       IntPointer prompt_tokens = new IntPointer(n_prompt_tokens);
@@ -136,7 +142,7 @@ public class SimpleChat {
       while (true) {
          // check if we have enough space in the context to evaluate this batch
          int n_ctx = llama_n_ctx(ctx);
-         int n_ctx_used = llama_get_kv_cache_used_cells(ctx);
+         int n_ctx_used = llama_memory_seq_pos_max(llama_get_memory(ctx), 0) + 1;
          if (n_ctx_used + batch.n_tokens() > n_ctx) {
             System.out.print("\033[0m\n");
             System.err.println("context size exceeded");
@@ -172,6 +178,16 @@ public class SimpleChat {
       }
 
       return response;
+   }
+
+   private static String formattedSlice(BytePointer formatted, int startBytes, int endBytes)
+   {
+      int length = endBytes - startBytes;
+      if (length <= 0)
+         return "";
+      byte[] bytes = new byte[length];
+      formatted.position(startBytes).get(bytes, 0, length);
+      return new String(bytes, StandardCharsets.UTF_8);
    }
 
    private void push_back_message(String role, String content) {

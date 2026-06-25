@@ -29,7 +29,10 @@ public class llama_model_params extends Pointer {
     
         // NULL-terminated list of devices to use for offloading (if NULL, all available devices are used)
 
-        public native int n_gpu_layers(); public native llama_model_params n_gpu_layers(int setter); // number of layers to store in VRAM
+        // NULL-terminated list of buffer types to use for tensors that match a pattern
+        public native @Const llama_model_tensor_buft_override tensor_buft_overrides(); public native llama_model_params tensor_buft_overrides(llama_model_tensor_buft_override setter);
+
+        public native int n_gpu_layers(); public native llama_model_params n_gpu_layers(int setter); // number of layers to store in VRAM, a negative value means all layers
         public native llama_split_mode split_mode(); public native llama_model_params split_mode(llama_split_mode setter); // how to split the model across multiple GPUs
 
         // the GPU that is used for the entire model when split_mode is LLAMA_SPLIT_MODE_NONE
@@ -50,8 +53,12 @@ public class llama_model_params extends Pointer {
         public native @Const llama_model_kv_override kv_overrides(); public native llama_model_params kv_overrides(llama_model_kv_override setter);
 
         // Keep the booleans together to avoid misalignment during copy-by-value.
-        public native @Cast("bool") boolean vocab_only(); public native llama_model_params vocab_only(boolean setter);    // only load the vocabulary, no weights
-        public native @Cast("bool") boolean use_mmap(); public native llama_model_params use_mmap(boolean setter);      // use mmap if possible
-        public native @Cast("bool") boolean use_mlock(); public native llama_model_params use_mlock(boolean setter);     // force system to keep model in RAM
-        public native @Cast("bool") boolean check_tensors(); public native llama_model_params check_tensors(boolean setter); // validate model tensor data
+        public native @Cast("bool") boolean vocab_only(); public native llama_model_params vocab_only(boolean setter);      // only load the vocabulary, no weights
+        public native @Cast("bool") boolean use_mmap(); public native llama_model_params use_mmap(boolean setter);        // use mmap if possible
+        public native @Cast("bool") boolean use_direct_io(); public native llama_model_params use_direct_io(boolean setter);   // use direct io, takes precedence over use_mmap when supported
+        public native @Cast("bool") boolean use_mlock(); public native llama_model_params use_mlock(boolean setter);       // force system to keep model in RAM
+        public native @Cast("bool") boolean check_tensors(); public native llama_model_params check_tensors(boolean setter);   // validate model tensor data
+        public native @Cast("bool") boolean use_extra_bufts(); public native llama_model_params use_extra_bufts(boolean setter); // use extra buffer types (used for weight repacking)
+        public native @Cast("bool") boolean no_host(); public native llama_model_params no_host(boolean setter);         // bypass host buffer allowing extra buffers to be used
+        public native @Cast("bool") boolean no_alloc(); public native llama_model_params no_alloc(boolean setter);        // only load metadata and simulate memory allocations
     }

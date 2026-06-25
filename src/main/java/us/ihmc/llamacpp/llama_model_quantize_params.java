@@ -28,13 +28,16 @@ public class llama_model_quantize_params extends Pointer {
             return new llama_model_quantize_params((Pointer)this).offsetAddress(i);
         }
     
-        public native int nthread(); public native llama_model_quantize_params nthread(int setter);                     // number of threads to use for quantizing, if <=0 will use std::thread::hardware_concurrency()
-        public native llama_ftype ftype(); public native llama_model_quantize_params ftype(llama_ftype setter);              // quantize to this llama_ftype   // output tensor type // token embeddings tensor type
-        public native @Cast("bool") boolean allow_requantize(); public native llama_model_quantize_params allow_requantize(boolean setter);               // allow quantizing non-f32/f16 tensors
-        public native @Cast("bool") boolean quantize_output_tensor(); public native llama_model_quantize_params quantize_output_tensor(boolean setter);         // quantize output.weight
-        public native @Cast("bool") boolean only_copy(); public native llama_model_quantize_params only_copy(boolean setter);                      // only copy tensors - ftype, allow_requantize and quantize_output_tensor are ignored
-        public native @Cast("bool") boolean pure(); public native llama_model_quantize_params pure(boolean setter);                           // quantize all tensors to the default type
-        public native @Cast("bool") boolean keep_split(); public native llama_model_quantize_params keep_split(boolean setter);                     // quantize to the same number of shards
-        public native Pointer imatrix(); public native llama_model_quantize_params imatrix(Pointer setter);                      // pointer to importance matrix data
-        public native Pointer kv_overrides(); public native llama_model_quantize_params kv_overrides(Pointer setter);                 // pointer to vector containing overrides
+        public native int nthread(); public native llama_model_quantize_params nthread(int setter);                                            // number of threads to use for quantizing, if <=0 will use std::thread::hardware_concurrency()
+        public native llama_ftype ftype(); public native llama_model_quantize_params ftype(llama_ftype setter);                                     // quantize to this llama_ftype                          // output tensor type                        // token embeddings tensor type
+        public native @Cast("bool") boolean allow_requantize(); public native llama_model_quantize_params allow_requantize(boolean setter);                                      // allow quantizing non-f32/f16 tensors
+        public native @Cast("bool") boolean quantize_output_tensor(); public native llama_model_quantize_params quantize_output_tensor(boolean setter);                                // quantize output.weight
+        public native @Cast("bool") boolean only_copy(); public native llama_model_quantize_params only_copy(boolean setter);                                             // only copy tensors - ftype, allow_requantize and quantize_output_tensor are ignored
+        public native @Cast("bool") boolean pure(); public native llama_model_quantize_params pure(boolean setter);                                                  // quantize all tensors to the default type
+        public native @Cast("bool") boolean keep_split(); public native llama_model_quantize_params keep_split(boolean setter);                                            // quantize to the same number of shards
+        public native @Cast("bool") boolean dry_run(); public native llama_model_quantize_params dry_run(boolean setter);                                               // calculate and show the final quantization size without performing quantization
+        public native @Const llama_model_imatrix_data imatrix(); public native llama_model_quantize_params imatrix(llama_model_imatrix_data setter);            // pointer to importance matrix data
+        public native @Const llama_model_kv_override kv_overrides(); public native llama_model_quantize_params kv_overrides(llama_model_kv_override setter);        // pointer to kv overrides
+        public native @Const llama_model_tensor_override tt_overrides(); public native llama_model_quantize_params tt_overrides(llama_model_tensor_override setter);    // pointer to tensor overrides
+        public native @Const IntPointer prune_layers(); public native llama_model_quantize_params prune_layers(IntPointer setter);                               // pointer to layer indices to prune
     }

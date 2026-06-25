@@ -8,12 +8,18 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
+
+    //
+    // training
+    //
+
+    // function that returns whether or not a given tensor contains trainable parameters
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_custom3_op_f32_t extends FunctionPointer {
+public class llama_opt_param_filter extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_custom3_op_f32_t(Pointer p) { super(p); }
-        protected ggml_custom3_op_f32_t() { allocate(); }
+        public    llama_opt_param_filter(Pointer p) { super(p); }
+        protected llama_opt_param_filter() { allocate(); }
         private native void allocate();
-        public native void call(ggml_tensor arg0, @Const ggml_tensor arg1, @Const ggml_tensor arg2, @Const ggml_tensor arg3);
+        public native @Cast("bool") boolean call(@Const ggml_tensor tensor, Pointer userdata);
     }

@@ -8,15 +8,13 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
-
-    // custom operators
-
+    // Get additional buffer types provided by the device (returns a NULL-terminated array)
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_custom1_op_t extends FunctionPointer {
+public class ggml_backend_dev_get_extra_bufts_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_custom1_op_t(Pointer p) { super(p); }
-        protected ggml_custom1_op_t() { allocate(); }
+        public    ggml_backend_dev_get_extra_bufts_t(Pointer p) { super(p); }
+        protected ggml_backend_dev_get_extra_bufts_t() { allocate(); }
         private native void allocate();
-        public native void call(ggml_tensor dst, @Const ggml_tensor a, int ith, int nth, Pointer userdata);
+        public native ggml_backend_buffer_type call(ggml_backend_device device);
     }

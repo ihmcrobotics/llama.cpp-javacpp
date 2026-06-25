@@ -38,4 +38,7 @@ public class ggml_cplan extends Pointer {
 
         // abort ggml_graph_compute when true
         public native Pointer abort_callback_data(); public native ggml_cplan abort_callback_data(Pointer setter);
+
+        // use only reference implementations
+        public native @Cast("bool") boolean use_ref(); public native ggml_cplan use_ref(boolean setter);
     }

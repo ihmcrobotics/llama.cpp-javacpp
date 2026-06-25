@@ -4,7 +4,7 @@ plugins {
 
 ihmc {
    group = "us.ihmc"
-   version = "b4829-1"
+   version = "b9789-1"
    vcsUrl = "https://github.com/ihmcrobotics/llama.cpp-javacpp"
    openSource = true
 

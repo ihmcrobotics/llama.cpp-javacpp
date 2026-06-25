@@ -33,11 +33,15 @@ public class llama_context_params extends Pointer {
         public native @Cast("uint32_t") int n_batch(); public native llama_context_params n_batch(int setter);           // logical maximum batch size that can be submitted to llama_decode
         public native @Cast("uint32_t") int n_ubatch(); public native llama_context_params n_ubatch(int setter);          // physical maximum batch size
         public native @Cast("uint32_t") int n_seq_max(); public native llama_context_params n_seq_max(int setter);         // max number of sequences (i.e. distinct states for recurrent models)
+        public native @Cast("uint32_t") int n_rs_seq(); public native llama_context_params n_rs_seq(int setter);          // number of recurrent-state snapshots per seq for rollback (0 = no rollback) [EXPERIMENTAL]
+        public native @Cast("uint32_t") int n_outputs_max(); public native llama_context_params n_outputs_max(int setter);     // max outputs in a ubatch (0 = n_batch)
         public native int n_threads(); public native llama_context_params n_threads(int setter);         // number of threads to use for generation
         public native int n_threads_batch(); public native llama_context_params n_threads_batch(int setter);   // number of threads to use for batch processing
 
+        public native llama_context_type ctx_type(); public native llama_context_params ctx_type(llama_context_type setter);          // set the context type (e.g. MTP)
         public native llama_rope_scaling_type rope_scaling_type(); public native llama_context_params rope_scaling_type(llama_rope_scaling_type setter); // RoPE scaling type, from `enum llama_rope_scaling_type`      // whether to pool (sum) embedding results by sequence id
         public native llama_attention_type attention_type(); public native llama_context_params attention_type(llama_attention_type setter);    // attention type to use for embeddings
+        public native llama_flash_attn_type flash_attn_type(); public native llama_context_params flash_attn_type(llama_flash_attn_type setter);   // when to enable Flash Attention
 
         // ref: https://github.com/ggml-org/llama.cpp/pull/2054
         public native float rope_freq_base(); public native llama_context_params rope_freq_base(float setter);   // RoPE base frequency, 0 = from model
@@ -47,19 +51,33 @@ public class llama_context_params extends Pointer {
         public native float yarn_beta_fast(); public native llama_context_params yarn_beta_fast(float setter);   // YaRN low correction dim
         public native float yarn_beta_slow(); public native llama_context_params yarn_beta_slow(float setter);   // YaRN high correction dim
         public native @Cast("uint32_t") int yarn_orig_ctx(); public native llama_context_params yarn_orig_ctx(int setter);    // YaRN original context size
-        public native float defrag_thold(); public native llama_context_params defrag_thold(float setter);     // defragment the KV cache if holes/size > thold, < 0 disabled (default)
+        public native float defrag_thold(); public native llama_context_params defrag_thold(float setter);     // [DEPRECATED] defragment the KV cache if holes/size > thold, <= 0 disabled (default)
         public native Pointer cb_eval_user_data(); public native llama_context_params cb_eval_user_data(Pointer setter); // data type for K cache [EXPERIMENTAL] // data type for V cache [EXPERIMENTAL]
-
-        // Keep the booleans together and at the end of the struct to avoid misalignment during copy-by-value.
-        // TODO: move at the end of the struct
-        public native @Cast("bool") boolean logits_all(); public native llama_context_params logits_all(boolean setter);  // the llama_decode() call computes all logits, not just the last one (DEPRECATED - set llama_batch.logits instead)
-        public native @Cast("bool") boolean embeddings(); public native llama_context_params embeddings(boolean setter);  // if true, extract embeddings (together with logits)
-        public native @Cast("bool") boolean offload_kqv(); public native llama_context_params offload_kqv(boolean setter); // whether to offload the KQV ops (including the KV cache) to GPU
-        public native @Cast("bool") boolean flash_attn(); public native llama_context_params flash_attn(boolean setter);  // whether to use flash attention [EXPERIMENTAL]
-        public native @Cast("bool") boolean no_perf(); public native llama_context_params no_perf(boolean setter);     // whether to measure performance timings
 
         // Abort callback
         // if it returns true, execution of llama_decode() will be aborted
         // currently works only with CPU execution
         public native Pointer abort_callback_data(); public native llama_context_params abort_callback_data(Pointer setter);
+
+        // Keep the booleans together and at the end of the struct to avoid misalignment during copy-by-value.
+        public native @Cast("bool") boolean embeddings(); public native llama_context_params embeddings(boolean setter);  // if true, extract embeddings (together with logits)
+        public native @Cast("bool") boolean offload_kqv(); public native llama_context_params offload_kqv(boolean setter); // offload the KQV ops (including the KV cache) to GPU
+        public native @Cast("bool") boolean no_perf(); public native llama_context_params no_perf(boolean setter);     // measure performance timings
+        public native @Cast("bool") boolean op_offload(); public native llama_context_params op_offload(boolean setter);  // offload host tensor operations to device
+        public native @Cast("bool") boolean swa_full(); public native llama_context_params swa_full(boolean setter);    // use full-size SWA cache (https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+                          // NOTE: setting to false when n_seq_max > 1 can cause bad performance in some cases
+                          //       ref: https://github.com/ggml-org/llama.cpp/pull/13845#issuecomment-2924800573
+        public native @Cast("bool") boolean kv_unified(); public native llama_context_params kv_unified(boolean setter);  // use a unified buffer across the input sequences when computing the attention
+                          // try to disable when n_seq_max > 1 for improved performance when the sequences do not share a large prefix
+                          // ref: https://github.com/ggml-org/llama.cpp/pull/14363
+
+        // [EXPERIMENTAL]
+        // backend sampler chain configuration (make sure the caller keeps the sampler chains alive)
+        // note: the samplers must be sampler chains (i.e. use llama_sampler_chain_init)
+        public native llama_sampler_seq_config samplers(); public native llama_context_params samplers(llama_sampler_seq_config setter);
+        public native @Cast("size_t") long n_samplers(); public native llama_context_params n_samplers(long setter);
+
+        // a source/target/parent context
+        // can be utilized in various ways, for example by sharing results or llama_memory between 2 contexts
+        public native llama_context ctx_other(); public native llama_context_params ctx_other(llama_context setter);
     }

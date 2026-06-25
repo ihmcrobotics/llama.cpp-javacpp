@@ -9,14 +9,12 @@ import org.bytedeco.javacpp.annotation.*;
 import static us.ihmc.llamacpp.global.llamacpp.*;
 
 
-    // custom operators
-
     @Properties(inherit = us.ihmc.llamacpp.LlamaCPPConfig.class)
-public class ggml_custom1_op_t extends FunctionPointer {
+public class llama_model_set_tensor_data_t extends FunctionPointer {
         static { Loader.load(); }
         /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
-        public    ggml_custom1_op_t(Pointer p) { super(p); }
-        protected ggml_custom1_op_t() { allocate(); }
+        public    llama_model_set_tensor_data_t(Pointer p) { super(p); }
+        protected llama_model_set_tensor_data_t() { allocate(); }
         private native void allocate();
-        public native void call(ggml_tensor dst, @Const ggml_tensor a, int ith, int nth, Pointer userdata);
+        public native void call(ggml_tensor tensor, Pointer userdata);
     }

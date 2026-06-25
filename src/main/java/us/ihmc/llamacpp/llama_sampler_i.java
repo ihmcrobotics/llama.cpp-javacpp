@@ -83,6 +83,59 @@ public class llama_sampler_i extends Pointer {
         }
         public native @Name("free") Free_llama_sampler _free(); public native llama_sampler_i _free(Free_llama_sampler setter);                                 // can be NULL if ctx is NULL
 
-        // TODO: API for internal libllama usage for appending the sampling to an existing ggml_cgraph
-        //void (*apply_ggml) (struct llama_sampler * smpl, ...);
+        // [EXPERIMENTAL]
+        // backend sampling interface:
+
+        // return true if the backend supports all ops needed by the sampler
+        // note: call once per sampler
+        public static class Backend_init_llama_sampler_ggml_backend_buffer_type extends FunctionPointer {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public    Backend_init_llama_sampler_ggml_backend_buffer_type(Pointer p) { super(p); }
+            protected Backend_init_llama_sampler_ggml_backend_buffer_type() { allocate(); }
+            private native void allocate();
+            public native @Cast("bool") boolean call(llama_sampler smpl, ggml_backend_buffer_type buft);
+        }
+        public native Backend_init_llama_sampler_ggml_backend_buffer_type backend_init(); public native llama_sampler_i backend_init(Backend_init_llama_sampler_ggml_backend_buffer_type setter);
+
+        // call after .backend_apply()
+        public static class Backend_accept_llama_sampler_ggml_context_ggml_cgraph_ggml_tensor extends FunctionPointer {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public    Backend_accept_llama_sampler_ggml_context_ggml_cgraph_ggml_tensor(Pointer p) { super(p); }
+            protected Backend_accept_llama_sampler_ggml_context_ggml_cgraph_ggml_tensor() { allocate(); }
+            private native void allocate();
+            public native void call(
+                        llama_sampler smpl,
+                        ggml_context ctx,
+                        ggml_cgraph gf,
+                        ggml_tensor selected_token);
+        }
+        public native Backend_accept_llama_sampler_ggml_context_ggml_cgraph_ggml_tensor backend_accept(); public native llama_sampler_i backend_accept(Backend_accept_llama_sampler_ggml_context_ggml_cgraph_ggml_tensor setter);
+
+        // call after .backend_init()
+        public static class Backend_apply_llama_sampler_ggml_context_ggml_cgraph_llama_sampler_data extends FunctionPointer {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public    Backend_apply_llama_sampler_ggml_context_ggml_cgraph_llama_sampler_data(Pointer p) { super(p); }
+            protected Backend_apply_llama_sampler_ggml_context_ggml_cgraph_llama_sampler_data() { allocate(); }
+            private native void allocate();
+            public native void call(
+                        llama_sampler smpl,
+                        ggml_context ctx,
+                        ggml_cgraph gf,
+                        llama_sampler_data data);
+        }
+        public native Backend_apply_llama_sampler_ggml_context_ggml_cgraph_llama_sampler_data backend_apply(); public native llama_sampler_i backend_apply(Backend_apply_llama_sampler_ggml_context_ggml_cgraph_llama_sampler_data setter);
+
+        // called before graph execution to set inputs for the current ubatch
+        public static class Backend_set_input_llama_sampler extends FunctionPointer {
+            static { Loader.load(); }
+            /** Pointer cast constructor. Invokes {@link Pointer#Pointer(Pointer)}. */
+            public    Backend_set_input_llama_sampler(Pointer p) { super(p); }
+            protected Backend_set_input_llama_sampler() { allocate(); }
+            private native void allocate();
+            public native void call(llama_sampler smpl);
+        }
+        public native Backend_set_input_llama_sampler backend_set_input(); public native llama_sampler_i backend_set_input(Backend_set_input_llama_sampler setter);
     }

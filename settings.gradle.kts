@@ -7,9 +7,15 @@ pluginManagement {
 buildscript {
    repositories {
       maven { url = uri("https://plugins.gradle.org/m2/") }
+      maven { url = uri("https://robotlabfiles.ihmc.us/repository/") }
       mavenLocal()
    }
    dependencies {
       classpath("us.ihmc:ihmc-build:1.3.0")
    }
 }
+
+val ihmcSettingsConfigurator = us.ihmc.build.IHMCSettingsConfigurator(settings, logger, extra)
+ihmcSettingsConfigurator.checkRequiredPropertiesAreSet()
+ihmcSettingsConfigurator.configureExtraSourceSets()
+ihmcSettingsConfigurator.findAndIncludeCompositeBuilds()

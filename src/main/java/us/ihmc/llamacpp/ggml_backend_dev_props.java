@@ -28,9 +28,19 @@ public class ggml_backend_dev_props extends Pointer {
             return new ggml_backend_dev_props((Pointer)this).offsetAddress(i);
         }
     
+        // device name
         public native @Cast("const char*") BytePointer name(); public native ggml_backend_dev_props name(BytePointer setter);
+        // device description
         public native @Cast("const char*") BytePointer description(); public native ggml_backend_dev_props description(BytePointer setter);
+        // device free memory in bytes
         public native @Cast("size_t") long memory_free(); public native ggml_backend_dev_props memory_free(long setter);
+        // device total memory in bytes
         public native @Cast("size_t") long memory_total(); public native ggml_backend_dev_props memory_total(long setter);
+        // device type
+        // device id
+        //   for PCI devices, this should be the lower-case PCI bus id formatted as "domain:bus:device.function" (e.g. "0000:c1:00.0")
+        //   if the id is unknown, this should be NULL
+        public native @Cast("const char*") BytePointer device_id(); public native ggml_backend_dev_props device_id(BytePointer setter);
+        // device capabilities
         public native @ByRef ggml_backend_dev_caps caps(); public native ggml_backend_dev_props caps(ggml_backend_dev_caps setter);
     }
